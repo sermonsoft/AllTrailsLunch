@@ -6,6 +6,16 @@ A production-ready SwiftUI restaurant discovery application powered by Google Pl
 
 AllTrails Lunch helps users discover nearby restaurants, search by cuisine or name, view locations on a map, and manage their favorite dining spots. Built with clean architecture, comprehensive error handling, and modern Swift concurrency patterns.
 
+## 🌲 About AllTrails
+
+AllTrails is a premier brand that offers a comprehensive platform for outdoor enthusiasts to discover and explore over 400,000 trails worldwide. Whether you are an avid hiker, camper, or trail runner, AllTrails has got you covered. With trail information, detailed reviews, maps, and photos curated by millions of hikers, campers, and nature lovers like you, finding the perfect trail for your adventure has never been easier.
+
+AllTrails provides a vast array of trail options, catering to various interests and preferences. From dog-friendly trails and mountain biking routes to wheelchair-friendly paths and scenic drives, there is something for everyone. With features like trail running, road biking, backpacking, camping, and more, AllTrails ensures that you can pursue your outdoor activities with confidence.
+
+The platform also offers inspiration and guidance, helping you navigate your way through unfamiliar terrains. AllTrails+'s additional planning features, offline maps, and wrong-turn alerts enable you to make the most of every minute spent outdoors. Adventure anywhere with AllTrails and discover unexpected gems, even in your own backyard.
+
+Moreover, AllTrails is committed to preserving and protecting our natural environment. As a partner of Leave No Trace and 1% for the Planet, a portion of every AllTrails+ membership goes towards supporting the conservation of wild places. Join the AllTrails community today and embark on your next exciting outdoor adventure.
+
 ## ✨ Features
 
 ### Core Features
