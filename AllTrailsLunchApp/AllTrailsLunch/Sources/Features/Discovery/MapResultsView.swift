@@ -62,8 +62,10 @@ struct MapResultsView: View {
                 HStack(spacing: DesignSystem.Spacing.md) {
                     if let rating = place.rating {
                         HStack(spacing: DesignSystem.Spacing.xs) {
-                            Image(systemName: "star.fill")
-                                .font(.system(size: DesignSystem.IconSize.sm))
+                            Image("star")
+                                .resizable()
+                                .renderingMode(.template)
+                                .frame(width: DesignSystem.IconSize.sm, height: DesignSystem.IconSize.sm)
                                 .foregroundColor(DesignSystem.Colors.star)
                             Text(String(format: "%.1f", rating))
                                 .font(DesignSystem.Typography.captionBold)

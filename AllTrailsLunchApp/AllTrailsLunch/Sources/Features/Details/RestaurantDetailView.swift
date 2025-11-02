@@ -45,8 +45,10 @@ struct RestaurantDetailView: View {
                     HStack(spacing: DesignSystem.Spacing.md) {
                         if let rating = place.rating {
                             HStack(spacing: DesignSystem.Spacing.xs) {
-                                Image(systemName: "star.fill")
-                                    .font(.system(size: DesignSystem.IconSize.md))
+                                Image("star")
+                                    .resizable()
+                                    .renderingMode(.template)
+                                    .frame(width: DesignSystem.IconSize.md, height: DesignSystem.IconSize.md)
                                     .foregroundColor(DesignSystem.Colors.star)
                                 Text(String(format: "%.1f", rating))
                                     .font(DesignSystem.Typography.bodyBold)
