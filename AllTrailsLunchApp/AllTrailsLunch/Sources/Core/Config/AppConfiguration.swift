@@ -26,7 +26,7 @@ struct AppConfiguration {
         }
         
         // Fallback to a placeholder - in production, this should be loaded from xcconfig
-        return "YOUR_API_KEY_HERE"
+        return "AIzaSyAvAaPcSL1SNPUguENa_p2P-SuRaxGUduw"
     }
     
     // MARK: - Dependency Injection
