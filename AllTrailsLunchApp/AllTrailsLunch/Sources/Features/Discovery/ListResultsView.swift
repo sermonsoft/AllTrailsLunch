@@ -45,73 +45,76 @@ struct RestaurantRow: View {
     @EnvironmentObject var favoritesStore: FavoritesStore
 
     var body: some View {
-        VStack(alignment: .leading, spacing: DesignSystem.Spacing.md) {
-            // Restaurant Image
+        HStack(alignment: .top, spacing: DesignSystem.Spacing.md) {
+            // Restaurant Image (left side)
             Image("placeholder-image")
                 .resizable()
                 .aspectRatio(contentMode: .fill)
-                .frame(height: 160)
+                .frame(width: 80, height: 80)
                 .clipped()
-                .cornerRadius(DesignSystem.CornerRadius.md)
+                .cornerRadius(DesignSystem.CornerRadius.sm)
 
-            // Header with name and favorite button
-            HStack(alignment: .top, spacing: DesignSystem.Spacing.md) {
-                VStack(alignment: .leading, spacing: DesignSystem.Spacing.xs) {
-                    Text(place.name)
-                        .font(DesignSystem.Typography.h3)
-                        .foregroundColor(DesignSystem.Colors.textPrimary)
-                        .lineLimit(2)
-                        .multilineTextAlignment(.leading)
+            // Content (middle)
+            VStack(alignment: .leading, spacing: DesignSystem.Spacing.xs) {
+                // Restaurant name
+                Text(place.name)
+                    .font(DesignSystem.Typography.h3)
+                    .foregroundColor(DesignSystem.Colors.textPrimary)
+                    .lineLimit(1)
+                    .multilineTextAlignment(.leading)
 
-                    if let address = place.address {
-                        Text(address)
+                // Rating and reviews
+                HStack(spacing: DesignSystem.Spacing.xs) {
+                    if let rating = place.rating {
+                        HStack(spacing: 2) {
+                            Image(systemName: "star.fill")
+                                .font(.system(size: 12))
+                                .foregroundColor(DesignSystem.Colors.star)
+                            Text(String(format: "%.1f", rating))
+                                .font(DesignSystem.Typography.caption)
+                                .foregroundColor(DesignSystem.Colors.textSecondary)
+                        }
+                    }
+
+                    if let rating = place.rating, let count = place.userRatingsTotal {
+                        Text("•")
                             .font(DesignSystem.Typography.caption)
                             .foregroundColor(DesignSystem.Colors.textSecondary)
-                            .lineLimit(1)
+                    }
+
+                    if let count = place.userRatingsTotal {
+                        Text("(\(count))")
+                            .font(DesignSystem.Typography.caption)
+                            .foregroundColor(DesignSystem.Colors.textSecondary)
                     }
                 }
 
-                Spacer(minLength: DesignSystem.Spacing.sm)
-
-                Button(action: onToggleFavorite) {
-                    Image(place.isFavorite ? "bookmark-saved" : "bookmark-resting")
-                        .resizable()
-                        .renderingMode(.template)
-                        .frame(width: DesignSystem.IconSize.md, height: DesignSystem.IconSize.md)
-                        .foregroundColor(place.isFavorite ? DesignSystem.Colors.favorite : DesignSystem.Colors.textTertiary)
-                }
-                .buttonStyle(.plain)
-            }
-
-            // Rating, price, and review count
-            HStack(spacing: DesignSystem.Spacing.md) {
-                if let rating = place.rating {
-                    HStack(spacing: DesignSystem.Spacing.xs) {
-                        Image(systemName: "star.fill")
-                            .font(.system(size: DesignSystem.IconSize.sm))
-                            .foregroundColor(DesignSystem.Colors.star)
-                        Text(String(format: "%.1f", rating))
-                            .font(DesignSystem.Typography.captionBold)
-                            .foregroundColor(DesignSystem.Colors.textPrimary)
-                    }
-                }
-
-                if !place.priceDisplay.isEmpty {
+                // Supporting text (address or price)
+                if let address = place.address {
+                    Text(address)
+                        .font(DesignSystem.Typography.caption)
+                        .foregroundColor(DesignSystem.Colors.textSecondary)
+                        .lineLimit(1)
+                } else if !place.priceDisplay.isEmpty {
                     Text(place.priceDisplay)
                         .font(DesignSystem.Typography.caption)
                         .foregroundColor(DesignSystem.Colors.textSecondary)
                 }
-
-                if let count = place.userRatingsTotal {
-                    Text("(\(count) reviews)")
-                        .font(DesignSystem.Typography.caption)
-                        .foregroundColor(DesignSystem.Colors.textSecondary)
-                }
-
-                Spacer()
             }
+
+            Spacer(minLength: DesignSystem.Spacing.sm)
+
+            // Bookmark button (right side)
+            Button(action: onToggleFavorite) {
+                Image(place.isFavorite ? "bookmark-saved" : "bookmark-resting")
+                    .resizable()
+                    .renderingMode(.template)
+                    .frame(width: DesignSystem.IconSize.md, height: DesignSystem.IconSize.md)
+                    .foregroundColor(place.isFavorite ? DesignSystem.Colors.primary : DesignSystem.Colors.textTertiary)
+            }
+            .buttonStyle(.plain)
         }
-        .padding(DesignSystem.Spacing.lg)
+        .padding(DesignSystem.Spacing.md)
         .cardStyle()
     }
 }
