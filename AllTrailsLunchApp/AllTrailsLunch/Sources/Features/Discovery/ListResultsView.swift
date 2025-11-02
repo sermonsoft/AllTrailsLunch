@@ -46,6 +46,14 @@ struct RestaurantRow: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.md) {
+            // Restaurant Image
+            Image("placeholder-image")
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(height: 160)
+                .clipped()
+                .cornerRadius(DesignSystem.CornerRadius.md)
+
             // Header with name and favorite button
             HStack(alignment: .top, spacing: DesignSystem.Spacing.md) {
                 VStack(alignment: .leading, spacing: DesignSystem.Spacing.xs) {
@@ -66,8 +74,10 @@ struct RestaurantRow: View {
                 Spacer(minLength: DesignSystem.Spacing.sm)
 
                 Button(action: onToggleFavorite) {
-                    Image(systemName: place.isFavorite ? "heart.fill" : "heart")
-                        .font(.system(size: DesignSystem.IconSize.md))
+                    Image(place.isFavorite ? "bookmark-saved" : "bookmark-resting")
+                        .resizable()
+                        .renderingMode(.template)
+                        .frame(width: DesignSystem.IconSize.md, height: DesignSystem.IconSize.md)
                         .foregroundColor(place.isFavorite ? DesignSystem.Colors.favorite : DesignSystem.Colors.textTertiary)
                 }
                 .buttonStyle(.plain)

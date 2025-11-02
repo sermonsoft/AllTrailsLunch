@@ -135,9 +135,17 @@ struct MapPinView: View {
                         .fill(Color.white)
                         .frame(width: isSelected ? 32 : 24, height: isSelected ? 32 : 24)
 
-                    Image(systemName: place.isFavorite ? "heart.fill" : "fork.knife")
-                        .font(.system(size: isSelected ? 16 : 12, weight: .semibold))
-                        .foregroundColor(pinColor)
+                    if place.isFavorite {
+                        Image("bookmark-saved")
+                            .resizable()
+                            .renderingMode(.template)
+                            .frame(width: isSelected ? 16 : 12, height: isSelected ? 16 : 12)
+                            .foregroundColor(pinColor)
+                    } else {
+                        Image(systemName: "fork.knife")
+                            .font(.system(size: isSelected ? 16 : 12, weight: .semibold))
+                            .foregroundColor(pinColor)
+                    }
                 }
 
                 // Pin pointer

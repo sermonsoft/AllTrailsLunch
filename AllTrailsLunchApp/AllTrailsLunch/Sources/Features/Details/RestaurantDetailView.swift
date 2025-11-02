@@ -33,8 +33,10 @@ struct RestaurantDetailView: View {
                         Spacer()
 
                         Button(action: { toggleFavorite() }) {
-                            Image(systemName: isFavorite ? "heart.fill" : "heart")
-                                .font(.system(size: DesignSystem.IconSize.lg))
+                            Image(isFavorite ? "bookmark-saved" : "bookmark-resting")
+                                .resizable()
+                                .renderingMode(.template)
+                                .frame(width: DesignSystem.IconSize.lg, height: DesignSystem.IconSize.lg)
                                 .foregroundColor(isFavorite ? DesignSystem.Colors.favorite : DesignSystem.Colors.textTertiary)
                         }
                     }
