@@ -13,45 +13,47 @@ struct DiscoveryView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
-                // Search Bar
-                SearchBar(text: $viewModel.searchText) { query in
-                    viewModel.performSearch(query)
-                }
-                .padding(.horizontal, DesignSystem.Spacing.lg)
-                .padding(.top, DesignSystem.Spacing.md)
-                .padding(.bottom, DesignSystem.Spacing.sm)
+            ZStack {
+                VStack(spacing: 0) {
+                    // Search Bar
+                    SearchBar(text: $viewModel.searchText) { query in
+                        viewModel.performSearch(query)
+                    }
+                    .padding(.horizontal, DesignSystem.Spacing.lg)
+                    .padding(.top, DesignSystem.Spacing.md)
+                    .padding(.bottom, DesignSystem.Spacing.sm)
 
-                // View Mode Toggle
-                Picker("View Mode", selection: $viewModel.viewMode) {
-                    Text("List").tag(ViewMode.list)
-                    Text("Map").tag(ViewMode.map)
+                    // Content
+                    if viewModel.isLoading && viewModel.results.isEmpty {
+                        ProgressView()
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .background(DesignSystem.Colors.background)
+                    } else if let error = viewModel.error {
+                        ErrorView(error: error)
+                    } else if viewModel.results.isEmpty {
+                        EmptyStateView()
+                    } else {
+                        switch viewModel.viewMode {
+                        case .list:
+                            ListResultsView(
+                                places: viewModel.results,
+                                isLoading: viewModel.isLoading,
+                                onToggleFavorite: viewModel.toggleFavorite,
+                                onLoadMore: { await viewModel.loadNextPage() }
+                            )
+                        case .map:
+                            MapResultsView(places: viewModel.results)
+                    }
+                    }
                 }
-                .pickerStyle(.segmented)
-                .padding(.horizontal, DesignSystem.Spacing.lg)
-                .padding(.vertical, DesignSystem.Spacing.sm)
 
-                // Content
-                if viewModel.isLoading && viewModel.results.isEmpty {
-                    ProgressView()
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background(DesignSystem.Colors.background)
-                } else if let error = viewModel.error {
-                    ErrorView(error: error)
-                } else if viewModel.results.isEmpty {
-                    EmptyStateView()
-                } else {
-                    switch viewModel.viewMode {
-                    case .list:
-                        ListResultsView(
-                            places: viewModel.results,
-                            isLoading: viewModel.isLoading,
-                            onToggleFavorite: viewModel.toggleFavorite,
-                            onLoadMore: { await viewModel.loadNextPage() }
-                        )
-                    case .map:
-                        MapResultsView(places: viewModel.results)
-                }
+                // Floating Toggle Button
+                if !viewModel.results.isEmpty {
+                    VStack {
+                        Spacer()
+                        ViewModeToggleButton(viewMode: $viewModel.viewMode)
+                            .padding(.bottom, DesignSystem.Spacing.xl)
+                    }
                 }
             }
             .toolbar {
@@ -154,6 +156,43 @@ struct ErrorView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(DesignSystem.Colors.background)
+    }
+}
+
+// MARK: - View Mode Toggle Button
+
+struct ViewModeToggleButton: View {
+    @Binding var viewMode: ViewMode
+
+    var body: some View {
+        Button(action: {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                viewMode = viewMode == .list ? .map : .list
+            }
+        }) {
+            HStack(spacing: DesignSystem.Spacing.sm) {
+                Image(viewMode == .list ? "map" : "list", bundle: nil)
+                    .resizable()
+                    .renderingMode(.template)
+                    .frame(width: 20, height: 20)
+                    .foregroundColor(.white)
+
+                Text(viewMode == .list ? "Map" : "List")
+                    .font(DesignSystem.Typography.h3)
+                    .foregroundColor(.white)
+            }
+            .padding(.horizontal, DesignSystem.Spacing.lg)
+            .padding(.vertical, DesignSystem.Spacing.md)
+            .background(DesignSystem.Colors.primary)
+            .cornerRadius(24)
+            .shadow(
+                color: Color.black.opacity(0.2),
+                radius: 8,
+                x: 0,
+                y: 4
+            )
+        }
+        .buttonStyle(.plain)
     }
 }
 
