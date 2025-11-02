@@ -45,24 +45,24 @@ enum DesignSystem {
     }
     
     // MARK: - Typography
-    
+
     enum Typography {
         // Headings
-        static let h1 = Font.system(size: 28, weight: .bold)
-        static let h2 = Font.system(size: 22, weight: .bold)
-        static let h3 = Font.system(size: 18, weight: .semibold)
-        
+        static let h1 = Font.custom("Manrope-Bold", size: 28)
+        static let h2 = Font.custom("Manrope-Bold", size: 22)
+        static let h3 = Font.custom("Manrope-SemiBold", size: 18)
+
         // Body text
-        static let body = Font.system(size: 16, weight: .regular)
-        static let bodyBold = Font.system(size: 16, weight: .semibold)
-        
+        static let body = Font.custom("Manrope-Regular", size: 16)
+        static let bodyBold = Font.custom("Manrope-SemiBold", size: 16)
+
         // Small text
-        static let caption = Font.system(size: 14, weight: .regular)
-        static let captionBold = Font.system(size: 14, weight: .semibold)
-        
+        static let caption = Font.custom("Manrope-Regular", size: 14)
+        static let captionBold = Font.custom("Manrope-SemiBold", size: 14)
+
         // Tiny text
-        static let footnote = Font.system(size: 12, weight: .regular)
-        static let footnoteBold = Font.system(size: 12, weight: .semibold)
+        static let footnote = Font.custom("Manrope-Regular", size: 12)
+        static let footnoteBold = Font.custom("Manrope-SemiBold", size: 12)
     }
     
     // MARK: - Spacing
