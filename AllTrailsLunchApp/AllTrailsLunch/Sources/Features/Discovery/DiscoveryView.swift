@@ -22,6 +22,7 @@ struct DiscoveryView: View {
                     .padding(.horizontal, DesignSystem.Spacing.lg)
                     .padding(.top, DesignSystem.Spacing.md)
                     .padding(.bottom, DesignSystem.Spacing.sm)
+                    .background(Color.white)
 
                     // Content
                     if viewModel.isLoading && viewModel.results.isEmpty {
@@ -42,7 +43,10 @@ struct DiscoveryView: View {
                                 onLoadMore: { await viewModel.loadNextPage() }
                             )
                         case .map:
-                            MapResultsView(places: viewModel.results)
+                            MapResultsView(
+                                places: viewModel.results,
+                                onToggleFavorite: viewModel.toggleFavorite
+                            )
                     }
                     }
                 }
@@ -65,6 +69,8 @@ struct DiscoveryView: View {
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarBackground(Color.white, for: .navigationBar)
             .background(DesignSystem.Colors.background)
         }
     }
