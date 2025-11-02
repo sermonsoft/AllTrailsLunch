@@ -118,46 +118,13 @@ struct MapPinView: View {
     @EnvironmentObject var favoritesStore: FavoritesStore
 
     var body: some View {
-        ZStack {
-            // Pin shadow
-            Circle()
-                .fill(Color.black.opacity(0.2))
-                .frame(width: isSelected ? 12 : 8, height: isSelected ? 12 : 8)
-                .offset(y: isSelected ? 20 : 16)
-                .blur(radius: 4)
-
-            // Pin body
-            VStack(spacing: 0) {
-                ZStack {
-                    Circle()
-                        .fill(pinColor)
-                        .frame(width: isSelected ? 40 : 32, height: isSelected ? 40 : 32)
-
-                    Circle()
-                        .fill(Color.white)
-                        .frame(width: isSelected ? 32 : 24, height: isSelected ? 32 : 24)
-
-                    if place.isFavorite {
-                        Image("bookmark-saved", bundle: nil)
-                            .resizable()
-                            .renderingMode(.template)
-                            .frame(width: isSelected ? 16 : 12, height: isSelected ? 16 : 12)
-                            .foregroundColor(pinColor)
-                    } else {
-                        Image(systemName: "fork.knife")
-                            .font(.system(size: isSelected ? 16 : 12, weight: .semibold))
-                            .foregroundColor(pinColor)
-                    }
-                }
-
-                // Pin pointer
-                Triangle()
-                    .fill(pinColor)
-                    .frame(width: isSelected ? 12 : 10, height: isSelected ? 8 : 6)
-                    .offset(y: -1)
-            }
-        }
-        .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isSelected)
+        Image(isSelected ? "pin-selected" : "pin-resting", bundle: nil)
+            .resizable()
+            .renderingMode(.template)
+            .aspectRatio(contentMode: .fit)
+            .frame(width: isSelected ? 40 : 32, height: isSelected ? 40 : 32)
+            .foregroundColor(pinColor)
+            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isSelected)
     }
 
     private var pinColor: Color {
@@ -168,19 +135,6 @@ struct MapPinView: View {
         } else {
             return DesignSystem.Colors.accent
         }
-    }
-}
-
-// MARK: - Triangle Shape
-
-struct Triangle: Shape {
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        path.move(to: CGPoint(x: rect.midX, y: rect.maxY))
-        path.addLine(to: CGPoint(x: rect.minX, y: rect.minY))
-        path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY))
-        path.closeSubpath()
-        return path
     }
 }
 
