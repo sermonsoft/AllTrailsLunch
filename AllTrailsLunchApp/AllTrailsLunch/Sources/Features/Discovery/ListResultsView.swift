@@ -78,7 +78,7 @@ struct RestaurantRow: View {
                         }
                     }
 
-                    if let rating = place.rating, let count = place.userRatingsTotal {
+                    if place.rating != nil && place.userRatingsTotal != nil {
                         Text("•")
                             .font(DesignSystem.Typography.caption)
                             .foregroundColor(DesignSystem.Colors.textSecondary)
