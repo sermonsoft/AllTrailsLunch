@@ -33,7 +33,7 @@ struct RestaurantDetailView: View {
                         Spacer()
 
                         Button(action: { toggleFavorite() }) {
-                            Image(isFavorite ? "bookmark-saved" : "bookmark-resting")
+                            Image(isFavorite ? "bookmark-saved" : "bookmark-resting", bundle: nil)
                                 .resizable()
                                 .renderingMode(.template)
                                 .frame(width: DesignSystem.IconSize.lg, height: DesignSystem.IconSize.lg)

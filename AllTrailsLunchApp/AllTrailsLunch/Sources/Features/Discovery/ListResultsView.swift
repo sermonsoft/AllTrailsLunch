@@ -47,7 +47,7 @@ struct RestaurantRow: View {
     var body: some View {
         HStack(alignment: .top, spacing: DesignSystem.Spacing.md) {
             // Restaurant Image (left side)
-            Image("placeholder-image")
+            Image("placeholder-image", bundle: nil)
                 .resizable()
                 .aspectRatio(contentMode: .fill)
                 .frame(width: 80, height: 80)
@@ -108,7 +108,7 @@ struct RestaurantRow: View {
 
             // Bookmark button (right side)
             Button(action: onToggleFavorite) {
-                Image(place.isFavorite ? "bookmark-saved" : "bookmark-resting")
+                Image(place.isFavorite ? "bookmark-saved" : "bookmark-resting", bundle: nil)
                     .resizable()
                     .renderingMode(.template)
                     .frame(width: DesignSystem.IconSize.md, height: DesignSystem.IconSize.md)

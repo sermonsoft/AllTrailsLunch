@@ -138,7 +138,7 @@ struct MapPinView: View {
                         .frame(width: isSelected ? 32 : 24, height: isSelected ? 32 : 24)
 
                     if place.isFavorite {
-                        Image("bookmark-saved")
+                        Image("bookmark-saved", bundle: nil)
                             .resizable()
                             .renderingMode(.template)
                             .frame(width: isSelected ? 16 : 12, height: isSelected ? 16 : 12)

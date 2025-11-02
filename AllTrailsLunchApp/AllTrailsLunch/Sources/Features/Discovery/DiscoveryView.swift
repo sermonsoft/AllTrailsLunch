@@ -54,8 +54,15 @@ struct DiscoveryView: View {
                 }
                 }
             }
-            .navigationTitle("Restaurants")
-            .navigationBarTitleDisplayMode(.large)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Image("logo-lockup", bundle: nil)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(height: 24)
+                }
+            }
+            .navigationBarTitleDisplayMode(.inline)
             .background(DesignSystem.Colors.background)
         }
     }
