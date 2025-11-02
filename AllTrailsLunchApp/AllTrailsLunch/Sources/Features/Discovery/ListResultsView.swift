@@ -16,28 +16,38 @@ struct ListResultsView: View {
     var body: some View {
         ScrollView {
             LazyVStack(spacing: DesignSystem.Spacing.md) {
-                ForEach(places) { place in
-                    NavigationLink(destination: RestaurantDetailView(place: place)) {
-                        RestaurantRow(
-                            place: place,
-                            onToggleFavorite: { onToggleFavorite(place) }
-                        )
-                    }
-                    .buttonStyle(.plain)
-                }
-
-                if isLoading {
-                    ProgressView()
-                        .padding(DesignSystem.Spacing.lg)
-                }
+                restaurantList
+                loadingIndicator
             }
             .padding(DesignSystem.Spacing.lg)
         }
         .background(DesignSystem.Colors.background)
     }
+
+    // MARK: - Subviews
+
+    private var restaurantList: some View {
+        ForEach(places) { place in
+            NavigationLink(destination: RestaurantDetailView(place: place)) {
+                RestaurantRow(
+                    place: place,
+                    onToggleFavorite: { onToggleFavorite(place) }
+                )
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
+    @ViewBuilder
+    private var loadingIndicator: some View {
+        if isLoading {
+            ProgressView()
+                .padding(DesignSystem.Spacing.lg)
+        }
+    }
 }
 
-// MARK: - Restaurant Row
+// MARK: - Restaurant Row Component
 
 struct RestaurantRow: View {
     let place: Place
@@ -46,78 +56,115 @@ struct RestaurantRow: View {
 
     var body: some View {
         HStack(alignment: .top, spacing: DesignSystem.Spacing.md) {
-            // Restaurant Image (left side)
-            Image("placeholder-image", bundle: nil)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: 80, height: 80)
-                .clipped()
-                .cornerRadius(DesignSystem.CornerRadius.sm)
-
-            // Content (middle)
-            VStack(alignment: .leading, spacing: DesignSystem.Spacing.xs) {
-                // Restaurant name
-                Text(place.name)
-                    .font(DesignSystem.Typography.h3)
-                    .foregroundColor(DesignSystem.Colors.textPrimary)
-                    .lineLimit(1)
-                    .multilineTextAlignment(.leading)
-
-                // Rating and reviews
-                HStack(spacing: DesignSystem.Spacing.xs) {
-                    if let rating = place.rating {
-                        HStack(spacing: 2) {
-                            Image(.star)
-                                .resizable()
-                                .renderingMode(.template)
-                                .frame(width: 12, height: 12)
-                                .foregroundColor(DesignSystem.Colors.star)
-                            Text(String(format: "%.1f", rating))
-                                .font(DesignSystem.Typography.caption)
-                                .foregroundColor(DesignSystem.Colors.textSecondary)
-                        }
-                    }
-
-                    if place.rating != nil && place.userRatingsTotal != nil {
-                        Text("•")
-                            .font(DesignSystem.Typography.caption)
-                            .foregroundColor(DesignSystem.Colors.textSecondary)
-                    }
-
-                    if let count = place.userRatingsTotal {
-                        Text("(\(count))")
-                            .font(DesignSystem.Typography.caption)
-                            .foregroundColor(DesignSystem.Colors.textSecondary)
-                    }
-                }
-
-                // Supporting text (address or price)
-                if let address = place.address {
-                    Text(address)
-                        .font(DesignSystem.Typography.caption)
-                        .foregroundColor(DesignSystem.Colors.textSecondary)
-                        .lineLimit(1)
-                } else if !place.priceDisplay.isEmpty {
-                    Text(place.priceDisplay)
-                        .font(DesignSystem.Typography.caption)
-                        .foregroundColor(DesignSystem.Colors.textSecondary)
-                }
-            }
-
+            restaurantImage
+            restaurantInfo
             Spacer(minLength: DesignSystem.Spacing.sm)
-
-            // Bookmark button (right side)
-            Button(action: onToggleFavorite) {
-                Image(place.isFavorite ? "bookmark-saved" : "bookmark-resting", bundle: nil)
-                    .resizable()
-                    .renderingMode(.template)
-                    .frame(width: DesignSystem.IconSize.md, height: DesignSystem.IconSize.md)
-                    .foregroundColor(place.isFavorite ? DesignSystem.Colors.primary : DesignSystem.Colors.textTertiary)
-            }
-            .buttonStyle(.plain)
+            bookmarkButton
         }
         .padding(DesignSystem.Spacing.md)
         .cardStyle()
+    }
+
+    // MARK: - Image
+
+    private var restaurantImage: some View {
+        Image("placeholder-image", bundle: nil)
+            .resizable()
+            .aspectRatio(contentMode: .fill)
+            .frame(width: 80, height: 80)
+            .clipped()
+            .cornerRadius(DesignSystem.CornerRadius.sm)
+    }
+
+    // MARK: - Info Section
+
+    private var restaurantInfo: some View {
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.xs) {
+            restaurantName
+            ratingAndReviews
+            supportingText
+        }
+    }
+
+    private var restaurantName: some View {
+        Text(place.name)
+            .font(DesignSystem.Typography.h3)
+            .foregroundColor(DesignSystem.Colors.textPrimary)
+            .lineLimit(1)
+            .multilineTextAlignment(.leading)
+    }
+
+    private var ratingAndReviews: some View {
+        HStack(spacing: DesignSystem.Spacing.xs) {
+            ratingView
+            separator
+            reviewCount
+        }
+    }
+
+    @ViewBuilder
+    private var ratingView: some View {
+        if let rating = place.rating {
+            HStack(spacing: 2) {
+                Image(.star)
+                    .resizable()
+                    .renderingMode(.template)
+                    .frame(width: 12, height: 12)
+                    .foregroundColor(DesignSystem.Colors.star)
+                Text(String(format: "%.1f", rating))
+                    .font(DesignSystem.Typography.caption)
+                    .foregroundColor(DesignSystem.Colors.textSecondary)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var separator: some View {
+        if place.rating != nil && place.userRatingsTotal != nil {
+            Text("•")
+                .font(DesignSystem.Typography.caption)
+                .foregroundColor(DesignSystem.Colors.textSecondary)
+        }
+    }
+
+    @ViewBuilder
+    private var reviewCount: some View {
+        if let count = place.userRatingsTotal {
+            Text("(\(count))")
+                .font(DesignSystem.Typography.caption)
+                .foregroundColor(DesignSystem.Colors.textSecondary)
+        }
+    }
+
+    @ViewBuilder
+    private var supportingText: some View {
+        if let address = place.address {
+            Text(address)
+                .font(DesignSystem.Typography.caption)
+                .foregroundColor(DesignSystem.Colors.textSecondary)
+                .lineLimit(1)
+        } else if !place.priceDisplay.isEmpty {
+            Text(place.priceDisplay)
+                .font(DesignSystem.Typography.caption)
+                .foregroundColor(DesignSystem.Colors.textSecondary)
+        }
+    }
+
+    // MARK: - Bookmark Button
+
+    private var bookmarkButton: some View {
+        Button(action: onToggleFavorite) {
+            Image(place.isFavorite ? "bookmark-saved" : "bookmark-resting", bundle: nil)
+                .resizable()
+                .renderingMode(.template)
+                .frame(width: DesignSystem.IconSize.md, height: DesignSystem.IconSize.md)
+                .foregroundColor(bookmarkColor)
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var bookmarkColor: Color {
+        place.isFavorite ? DesignSystem.Colors.primary : DesignSystem.Colors.textTertiary
     }
 }
 

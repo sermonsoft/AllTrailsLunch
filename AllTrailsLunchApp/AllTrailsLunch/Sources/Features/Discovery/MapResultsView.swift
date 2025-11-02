@@ -9,44 +9,61 @@ import SwiftUI
 import MapKit
 
 struct MapResultsView: View {
+    // MARK: - Properties
+
     let places: [Place]
     let onToggleFavorite: (Place) -> Void
+
     @State private var position: MapCameraPosition = .automatic
     @State private var selectedPlace: Place?
+
+    // MARK: - Constants
+
+    private let cardTopOffset: CGFloat = 200
+    private let mapSpan: Double = 0.05
+
+    // MARK: - Body
 
     var body: some View {
         ZStack(alignment: .top) {
             mapView
-
-            if let selectedPlace = selectedPlace {
-                VStack {
-                    Spacer()
-                        .frame(height: 200) // Position card in upper portion of map
-                    selectedPlaceCard(selectedPlace)
-                        .transition(.scale.combined(with: .opacity))
-                    Spacer()
-                }
-                .animation(.spring(response: 0.3, dampingFraction: 0.7), value: selectedPlace.id)
-            }
+            selectedPlaceCallout
         }
-        .onAppear {
-            updateMapRegion()
-        }
-        .onChange(of: places) { _, _ in
-            updateMapRegion()
-        }
+        .onAppear(perform: updateMapRegion)
+        .onChange(of: places) { _, _ in updateMapRegion() }
     }
+
+    // MARK: - Map View
 
     private var mapView: some View {
         Map(position: $position, selection: $selectedPlace) {
             ForEach(places) { place in
                 Annotation("", coordinate: place.coordinate) {
-                    MapPinView(place: place, isSelected: selectedPlace?.id == place.id)
+                    MapPinView(
+                        place: place,
+                        isSelected: selectedPlace?.id == place.id
+                    )
                 }
                 .tag(place)
             }
         }
         .mapStyle(.standard)
+    }
+
+    // MARK: - Selected Place Callout
+
+    @ViewBuilder
+    private var selectedPlaceCallout: some View {
+        if let selectedPlace = selectedPlace {
+            VStack {
+                Spacer()
+                    .frame(height: cardTopOffset)
+                selectedPlaceCard(selectedPlace)
+                    .transition(.scale.combined(with: .opacity))
+                Spacer()
+            }
+            .animation(.spring(response: 0.3, dampingFraction: 0.7), value: selectedPlace.id)
+        }
     }
 
     private func selectedPlaceCard(_ place: Place) -> some View {
@@ -60,37 +77,63 @@ struct MapResultsView: View {
         .padding(.horizontal, DesignSystem.Spacing.lg)
     }
 
+    // MARK: - Map Region Update
+
     private func updateMapRegion() {
         guard !places.isEmpty else { return }
-        
+
         let coordinates = places.map { $0.coordinate }
+        let center = calculateCenter(from: coordinates)
+        let region = MKCoordinateRegion(
+            center: center,
+            span: MKCoordinateSpan(latitudeDelta: mapSpan, longitudeDelta: mapSpan)
+        )
+
+        position = .region(region)
+    }
+
+    private func calculateCenter(from coordinates: [CLLocationCoordinate2D]) -> CLLocationCoordinate2D {
         let avgLat = coordinates.map { $0.latitude }.reduce(0, +) / Double(coordinates.count)
         let avgLon = coordinates.map { $0.longitude }.reduce(0, +) / Double(coordinates.count)
-        
-        let region = MKCoordinateRegion(
-            center: CLLocationCoordinate2D(latitude: avgLat, longitude: avgLon),
-            span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
-        )
-        
-        position = .region(region)
+        return CLLocationCoordinate2D(latitude: avgLat, longitude: avgLon)
     }
 }
 
-// MARK: - Map Pin View
+// MARK: - Map Pin View Component
 
 struct MapPinView: View {
+    // MARK: - Properties
+
     let place: Place
     let isSelected: Bool
+
     @EnvironmentObject var favoritesStore: FavoritesStore
 
+    // MARK: - Constants
+
+    private let selectedPinSize: CGFloat = 40
+    private let defaultPinSize: CGFloat = 32
+
+    // MARK: - Body
+
     var body: some View {
-        Image(isSelected ? "pin-selected" : "pin-resting", bundle: nil)
+        Image(pinImageName, bundle: nil)
             .resizable()
             .renderingMode(.template)
             .aspectRatio(contentMode: .fit)
-            .frame(width: isSelected ? 40 : 32, height: isSelected ? 40 : 32)
+            .frame(width: pinSize, height: pinSize)
             .foregroundColor(pinColor)
             .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isSelected)
+    }
+
+    // MARK: - Computed Properties
+
+    private var pinImageName: String {
+        isSelected ? "pin-selected" : "pin-resting"
+    }
+
+    private var pinSize: CGFloat {
+        isSelected ? selectedPinSize : defaultPinSize
     }
 
     private var pinColor: Color {
