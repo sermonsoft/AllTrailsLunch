@@ -120,8 +120,9 @@ enum DesignSystem {
     }
     
     // MARK: - Icon Sizes
-    
+
     enum IconSize {
+        static let xs: CGFloat = 12
         static let sm: CGFloat = 16
         static let md: CGFloat = 20
         static let lg: CGFloat = 24

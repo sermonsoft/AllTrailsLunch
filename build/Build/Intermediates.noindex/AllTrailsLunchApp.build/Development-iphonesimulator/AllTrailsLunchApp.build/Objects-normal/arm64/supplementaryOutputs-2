@@ -1,0 +1,18 @@
+"/Users/dev/job_search/alltrails/AllTrailsLunchApp/AllTrailsLunchApp/AllTrailsLunch/Sources/Core/Models/Place.swift":
+  object: "/Users/dev/job_search/alltrails/AllTrailsLunchApp/build/Build/Intermediates.noindex/AllTrailsLunchApp.build/Development-iphonesimulator/AllTrailsLunchApp.build/Objects-normal/arm64/Place.o"
+  swift-dependencies: "/Users/dev/job_search/alltrails/AllTrailsLunchApp/build/Build/Intermediates.noindex/AllTrailsLunchApp.build/Development-iphonesimulator/AllTrailsLunchApp.build/Objects-normal/arm64/Place.swiftdeps"
+  dependencies: "/Users/dev/job_search/alltrails/AllTrailsLunchApp/build/Build/Intermediates.noindex/AllTrailsLunchApp.build/Development-iphonesimulator/AllTrailsLunchApp.build/Objects-normal/arm64/Place.d"
+  diagnostics: "/Users/dev/job_search/alltrails/AllTrailsLunchApp/build/Build/Intermediates.noindex/AllTrailsLunchApp.build/Development-iphonesimulator/AllTrailsLunchApp.build/Objects-normal/arm64/Place.dia"
+  const-values: "/Users/dev/job_search/alltrails/AllTrailsLunchApp/build/Build/Intermediates.noindex/AllTrailsLunchApp.build/Development-iphonesimulator/AllTrailsLunchApp.build/Objects-normal/arm64/Place.swiftconstvalues"
+"/Users/dev/job_search/alltrails/AllTrailsLunchApp/AllTrailsLunchApp/AllTrailsLunch/Sources/Core/Favorites/FavoritesStore.swift":
+  object: "/Users/dev/job_search/alltrails/AllTrailsLunchApp/build/Build/Intermediates.noindex/AllTrailsLunchApp.build/Development-iphonesimulator/AllTrailsLunchApp.build/Objects-normal/arm64/FavoritesStore.o"
+  diagnostics: "/Users/dev/job_search/alltrails/AllTrailsLunchApp/build/Build/Intermediates.noindex/AllTrailsLunchApp.build/Development-iphonesimulator/AllTrailsLunchApp.build/Objects-normal/arm64/FavoritesStore.dia"
+  dependencies: "/Users/dev/job_search/alltrails/AllTrailsLunchApp/build/Build/Intermediates.noindex/AllTrailsLunchApp.build/Development-iphonesimulator/AllTrailsLunchApp.build/Objects-normal/arm64/FavoritesStore.d"
+  const-values: "/Users/dev/job_search/alltrails/AllTrailsLunchApp/build/Build/Intermediates.noindex/AllTrailsLunchApp.build/Development-iphonesimulator/AllTrailsLunchApp.build/Objects-normal/arm64/FavoritesStore.swiftconstvalues"
+  swift-dependencies: "/Users/dev/job_search/alltrails/AllTrailsLunchApp/build/Build/Intermediates.noindex/AllTrailsLunchApp.build/Development-iphonesimulator/AllTrailsLunchApp.build/Objects-normal/arm64/FavoritesStore.swiftdeps"
+"/Users/dev/job_search/alltrails/AllTrailsLunchApp/AllTrailsLunchApp/AllTrailsLunch/Sources/Core/Location/LocationManager.swift":
+  dependencies: "/Users/dev/job_search/alltrails/AllTrailsLunchApp/build/Build/Intermediates.noindex/AllTrailsLunchApp.build/Development-iphonesimulator/AllTrailsLunchApp.build/Objects-normal/arm64/LocationManager.d"
+  swift-dependencies: "/Users/dev/job_search/alltrails/AllTrailsLunchApp/build/Build/Intermediates.noindex/AllTrailsLunchApp.build/Development-iphonesimulator/AllTrailsLunchApp.build/Objects-normal/arm64/LocationManager.swiftdeps"
+  diagnostics: "/Users/dev/job_search/alltrails/AllTrailsLunchApp/build/Build/Intermediates.noindex/AllTrailsLunchApp.build/Development-iphonesimulator/AllTrailsLunchApp.build/Objects-normal/arm64/LocationManager.dia"
+  const-values: "/Users/dev/job_search/alltrails/AllTrailsLunchApp/build/Build/Intermediates.noindex/AllTrailsLunchApp.build/Development-iphonesimulator/AllTrailsLunchApp.build/Objects-normal/arm64/LocationManager.swiftconstvalues"
+  object: "/Users/dev/job_search/alltrails/AllTrailsLunchApp/build/Build/Intermediates.noindex/AllTrailsLunchApp.build/Development-iphonesimulator/AllTrailsLunchApp.build/Objects-normal/arm64/LocationManager.o"

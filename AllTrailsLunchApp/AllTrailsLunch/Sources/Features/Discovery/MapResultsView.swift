@@ -12,16 +12,20 @@ struct MapResultsView: View {
     let places: [Place]
     @State private var position: MapCameraPosition = .automatic
     @State private var selectedPlace: Place?
-    
+
     var body: some View {
-        ZStack {
+        ZStack(alignment: .top) {
             mapView
-            
+
             if let selectedPlace = selectedPlace {
                 VStack {
                     Spacer()
-                    selectedPlaceCard(selectedPlace)
+                        .frame(height: 200) // Position card in upper portion of map
+                    selectedPlaceCallout(selectedPlace)
+                        .transition(.scale.combined(with: .opacity))
+                    Spacer()
                 }
+                .animation(.spring(response: 0.3, dampingFraction: 0.7), value: selectedPlace.id)
             }
         }
         .onAppear {
@@ -31,7 +35,7 @@ struct MapResultsView: View {
             updateMapRegion()
         }
     }
-    
+
     private var mapView: some View {
         Map(position: $position, selection: $selectedPlace) {
             ForEach(places) { place in
@@ -43,57 +47,70 @@ struct MapResultsView: View {
         }
         .mapStyle(.standard)
     }
-    
-    private func selectedPlaceCard(_ place: Place) -> some View {
+
+    private func selectedPlaceCallout(_ place: Place) -> some View {
         NavigationLink(destination: RestaurantDetailView(place: place)) {
-            VStack(alignment: .leading, spacing: DesignSystem.Spacing.md) {
-                Text(place.name)
-                    .font(DesignSystem.Typography.h3)
-                    .foregroundColor(DesignSystem.Colors.textPrimary)
-                    .lineLimit(2)
+            HStack(alignment: .top, spacing: DesignSystem.Spacing.md) {
+                // Placeholder for image
+                RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.sm)
+                    .fill(DesignSystem.Colors.searchBackground)
+                    .frame(width: 60, height: 60)
+                    .overlay(
+                        Image(systemName: "photo")
+                            .foregroundColor(DesignSystem.Colors.textTertiary)
+                    )
 
-                if let address = place.address {
-                    Text(address)
-                        .font(DesignSystem.Typography.caption)
-                        .foregroundColor(DesignSystem.Colors.textSecondary)
+                VStack(alignment: .leading, spacing: DesignSystem.Spacing.xs) {
+                    Text(place.name)
+                        .font(DesignSystem.Typography.bodyBold)
+                        .foregroundColor(DesignSystem.Colors.textPrimary)
                         .lineLimit(1)
-                }
 
-                HStack(spacing: DesignSystem.Spacing.md) {
                     if let rating = place.rating {
                         HStack(spacing: DesignSystem.Spacing.xs) {
                             Image(.star)
                                 .resizable()
                                 .renderingMode(.template)
-                                .frame(width: DesignSystem.IconSize.sm, height: DesignSystem.IconSize.sm)
+                                .frame(width: DesignSystem.IconSize.xs, height: DesignSystem.IconSize.xs)
                                 .foregroundColor(DesignSystem.Colors.star)
                             Text(String(format: "%.1f", rating))
-                                .font(DesignSystem.Typography.captionBold)
+                                .font(DesignSystem.Typography.caption)
                                 .foregroundColor(DesignSystem.Colors.textPrimary)
+                            if let count = place.userRatingsTotal {
+                                Text("(\(count))")
+                                    .font(DesignSystem.Typography.caption)
+                                    .foregroundColor(DesignSystem.Colors.textSecondary)
+                            }
                         }
                     }
 
-                    if !place.priceDisplay.isEmpty {
-                        Text(place.priceDisplay)
+                    if let address = place.address {
+                        Text(address)
                             .font(DesignSystem.Typography.caption)
                             .foregroundColor(DesignSystem.Colors.textSecondary)
+                            .lineLimit(1)
                     }
+                }
 
-                    Spacer()
+                Spacer()
 
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: DesignSystem.IconSize.sm))
-                        .foregroundColor(DesignSystem.Colors.textTertiary)
+                Button(action: {}) {
+                    Image(place.isFavorite ? "bookmark-saved" : "bookmark-resting", bundle: nil)
+                        .resizable()
+                        .renderingMode(.template)
+                        .frame(width: DesignSystem.IconSize.md, height: DesignSystem.IconSize.md)
+                        .foregroundColor(place.isFavorite ? DesignSystem.Colors.favorite : DesignSystem.Colors.textSecondary)
                 }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(DesignSystem.Spacing.lg)
-            .cardStyle()
-            .padding(DesignSystem.Spacing.lg)
+            .padding(DesignSystem.Spacing.md)
+            .background(Color.white)
+            .cornerRadius(DesignSystem.CornerRadius.md)
+            .shadow(color: DesignSystem.Shadows.card.color, radius: DesignSystem.Shadows.card.radius, x: DesignSystem.Shadows.card.x, y: DesignSystem.Shadows.card.y)
+            .frame(width: 320)
         }
         .buttonStyle(.plain)
     }
-    
+
     private func updateMapRegion() {
         guard !places.isEmpty else { return }
         
