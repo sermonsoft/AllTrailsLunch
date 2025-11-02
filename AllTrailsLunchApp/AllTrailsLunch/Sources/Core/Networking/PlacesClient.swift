@@ -21,52 +21,72 @@ class PlacesClient {
     }
     
     func execute<T: Decodable>(_ request: PlacesRequest) async throws -> T {
+        let urlRequest = request.toURLRequest()
+        let context = NetworkLogger.shared.logRequest(urlRequest)
+
         for attempt in 0..<maxRetries {
             do {
-                let urlRequest = request.toURLRequest()
                 let (data, response) = try await session.data(for: urlRequest)
-                
+
                 guard let httpResponse = response as? HTTPURLResponse else {
-                    throw PlacesError.invalidResponse("Invalid response type")
+                    let error = PlacesError.invalidResponse("Invalid response type")
+                    NetworkLogger.shared.logError(context, error: error)
+                    throw error
                 }
-                
+
                 switch httpResponse.statusCode {
                 case 200...299:
+                    NetworkLogger.shared.logResponse(context, response: httpResponse, data: data)
+
                     do {
                         let decoder = JSONDecoder()
                         return try decoder.decode(T.self, from: data)
                     } catch {
-                        throw PlacesError.decodingError(error.localizedDescription)
+                        let decodingError = PlacesError.decodingError(error.localizedDescription)
+                        NetworkLogger.shared.logError(context, error: decodingError, response: httpResponse, data: data)
+                        throw decodingError
                     }
-                    
+
                 case 400...499:
                     let message = String(data: data, encoding: .utf8) ?? "Unknown error"
-                    throw PlacesError.requestFailed(statusCode: httpResponse.statusCode, message: message)
-                    
+                    let error = PlacesError.requestFailed(statusCode: httpResponse.statusCode, message: message)
+                    NetworkLogger.shared.logError(context, error: error, response: httpResponse, data: data)
+                    throw error
+
                 case 500...599:
                     if attempt < maxRetries - 1 {
                         let delay = retryDelay * pow(2.0, Double(attempt))
+                        NetworkLogger.shared.logRetry(context, attempt: attempt + 1, delay: delay)
                         try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
                         continue
                     }
-                    throw PlacesError.requestFailed(statusCode: httpResponse.statusCode, message: "Server error")
-                    
+                    let error = PlacesError.requestFailed(statusCode: httpResponse.statusCode, message: "Server error")
+                    NetworkLogger.shared.logError(context, error: error, response: httpResponse, data: data)
+                    throw error
+
                 default:
-                    throw PlacesError.requestFailed(statusCode: httpResponse.statusCode, message: "Unknown status code")
+                    let error = PlacesError.requestFailed(statusCode: httpResponse.statusCode, message: "Unknown status code")
+                    NetworkLogger.shared.logError(context, error: error, response: httpResponse, data: data)
+                    throw error
                 }
             } catch let error as PlacesError {
                 throw error
             } catch {
                 if attempt < maxRetries - 1 {
                     let delay = retryDelay * pow(2.0, Double(attempt))
+                    NetworkLogger.shared.logRetry(context, attempt: attempt + 1, delay: delay)
                     try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
                     continue
                 }
-                throw PlacesError.unknown(error.localizedDescription)
+                let unknownError = PlacesError.unknown(error.localizedDescription)
+                NetworkLogger.shared.logError(context, error: unknownError)
+                throw unknownError
             }
         }
-        
-        throw PlacesError.unknown("Max retries exceeded")
+
+        let maxRetriesError = PlacesError.unknown("Max retries exceeded")
+        NetworkLogger.shared.logError(context, error: maxRetriesError)
+        throw maxRetriesError
     }
     
     // MARK: - Endpoint Builders
