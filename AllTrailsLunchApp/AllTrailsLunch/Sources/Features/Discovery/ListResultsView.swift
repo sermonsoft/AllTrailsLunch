@@ -67,7 +67,7 @@ struct RestaurantRow: View {
                 HStack(spacing: DesignSystem.Spacing.xs) {
                     if let rating = place.rating {
                         HStack(spacing: 2) {
-                            Image("star")
+                            Image(.star)
                                 .resizable()
                                 .renderingMode(.template)
                                 .frame(width: 12, height: 12)

@@ -62,7 +62,7 @@ struct MapResultsView: View {
                 HStack(spacing: DesignSystem.Spacing.md) {
                     if let rating = place.rating {
                         HStack(spacing: DesignSystem.Spacing.xs) {
-                            Image("star")
+                            Image(.star)
                                 .resizable()
                                 .renderingMode(.template)
                                 .frame(width: DesignSystem.IconSize.sm, height: DesignSystem.IconSize.sm)
