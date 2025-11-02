@@ -10,7 +10,7 @@ import SwiftUI
 struct DiscoveryView: View {
     @ObservedObject var viewModel: DiscoveryViewModel
     @EnvironmentObject var favoritesStore: FavoritesStore
-    
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
@@ -18,21 +18,24 @@ struct DiscoveryView: View {
                 SearchBar(text: $viewModel.searchText) { query in
                     viewModel.performSearch(query)
                 }
-                .padding()
-                
+                .padding(.horizontal, DesignSystem.Spacing.lg)
+                .padding(.top, DesignSystem.Spacing.md)
+                .padding(.bottom, DesignSystem.Spacing.sm)
+
                 // View Mode Toggle
                 Picker("View Mode", selection: $viewModel.viewMode) {
                     Text("List").tag(ViewMode.list)
                     Text("Map").tag(ViewMode.map)
                 }
                 .pickerStyle(.segmented)
-                .padding(.horizontal)
-                .padding(.vertical, 8)
-                
+                .padding(.horizontal, DesignSystem.Spacing.lg)
+                .padding(.vertical, DesignSystem.Spacing.sm)
+
                 // Content
                 if viewModel.isLoading && viewModel.results.isEmpty {
                     ProgressView()
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .background(DesignSystem.Colors.background)
                 } else if let error = viewModel.error {
                     ErrorView(error: error)
                 } else if viewModel.results.isEmpty {
@@ -48,10 +51,12 @@ struct DiscoveryView: View {
                         )
                     case .map:
                         MapResultsView(places: viewModel.results)
-                    }
+                }
                 }
             }
-            .navigationTitle("Find Lunch")
+            .navigationTitle("Restaurants")
+            .navigationBarTitleDisplayMode(.large)
+            .background(DesignSystem.Colors.background)
         }
     }
 }
@@ -61,27 +66,29 @@ struct DiscoveryView: View {
 struct SearchBar: View {
     @Binding var text: String
     let onSearch: (String) -> Void
-    
+
     var body: some View {
-        HStack {
+        HStack(spacing: DesignSystem.Spacing.sm) {
             Image(systemName: "magnifyingglass")
-                .foregroundColor(.gray)
-            
-            TextField("Search restaurants...", text: $text)
+                .font(.system(size: DesignSystem.IconSize.md))
+                .foregroundColor(DesignSystem.Colors.textSecondary)
+
+            TextField("Search restaurants", text: $text)
+                .font(DesignSystem.Typography.body)
+                .foregroundColor(DesignSystem.Colors.textPrimary)
                 .onChange(of: text) { _, newValue in
                     onSearch(newValue)
                 }
-            
+
             if !text.isEmpty {
                 Button(action: { text = "" }) {
                     Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(.gray)
+                        .font(.system(size: DesignSystem.IconSize.md))
+                        .foregroundColor(DesignSystem.Colors.textTertiary)
                 }
             }
         }
-        .padding(8)
-        .background(Color(.systemGray6))
-        .cornerRadius(8)
+        .searchBarStyle()
     }
 }
 
@@ -89,21 +96,23 @@ struct SearchBar: View {
 
 struct EmptyStateView: View {
     var body: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "fork.knife")
-                .font(.system(size: 48))
-                .foregroundColor(.gray)
-            
+        VStack(spacing: DesignSystem.Spacing.lg) {
+            Image(systemName: "fork.knife.circle")
+                .font(.system(size: 64))
+                .foregroundColor(DesignSystem.Colors.textTertiary)
+
             Text("No Restaurants Found")
-                .font(.headline)
-            
+                .font(DesignSystem.Typography.h2)
+                .foregroundColor(DesignSystem.Colors.textPrimary)
+
             Text("Try searching for a different restaurant or location")
-                .font(.subheadline)
-                .foregroundColor(.gray)
+                .font(DesignSystem.Typography.body)
+                .foregroundColor(DesignSystem.Colors.textSecondary)
                 .multilineTextAlignment(.center)
+                .padding(.horizontal, DesignSystem.Spacing.xxl)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(.systemBackground))
+        .background(DesignSystem.Colors.background)
     }
 }
 
@@ -111,30 +120,33 @@ struct EmptyStateView: View {
 
 struct ErrorView: View {
     let error: PlacesError
-    
+
     var body: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "exclamationmark.triangle")
-                .font(.system(size: 48))
-                .foregroundColor(.red)
-            
-            Text("Error")
-                .font(.headline)
-            
+        VStack(spacing: DesignSystem.Spacing.lg) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.system(size: 64))
+                .foregroundColor(DesignSystem.Colors.error)
+
+            Text("Oops!")
+                .font(DesignSystem.Typography.h2)
+                .foregroundColor(DesignSystem.Colors.textPrimary)
+
             Text(error.errorDescription ?? "An unknown error occurred")
-                .font(.subheadline)
-                .foregroundColor(.gray)
+                .font(DesignSystem.Typography.body)
+                .foregroundColor(DesignSystem.Colors.textSecondary)
                 .multilineTextAlignment(.center)
-            
+                .padding(.horizontal, DesignSystem.Spacing.xxl)
+
             if let suggestion = error.recoverySuggestion {
                 Text(suggestion)
-                    .font(.caption)
-                    .foregroundColor(.blue)
+                    .font(DesignSystem.Typography.caption)
+                    .foregroundColor(DesignSystem.Colors.primary)
                     .multilineTextAlignment(.center)
+                    .padding(.horizontal, DesignSystem.Spacing.xxl)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(.systemBackground))
+        .background(DesignSystem.Colors.background)
     }
 }
 

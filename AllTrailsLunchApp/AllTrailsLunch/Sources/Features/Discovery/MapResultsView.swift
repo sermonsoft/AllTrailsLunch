@@ -46,34 +46,50 @@ struct MapResultsView: View {
     
     private func selectedPlaceCard(_ place: Place) -> some View {
         NavigationLink(destination: RestaurantDetailView(place: place)) {
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: DesignSystem.Spacing.md) {
                 Text(place.name)
-                    .font(.headline)
-                
+                    .font(DesignSystem.Typography.h3)
+                    .foregroundColor(DesignSystem.Colors.textPrimary)
+                    .lineLimit(2)
+
                 if let address = place.address {
                     Text(address)
-                        .font(.caption)
-                        .foregroundColor(.gray)
+                        .font(DesignSystem.Typography.caption)
+                        .foregroundColor(DesignSystem.Colors.textSecondary)
+                        .lineLimit(1)
                 }
-                
-                HStack {
+
+                HStack(spacing: DesignSystem.Spacing.md) {
                     if let rating = place.rating {
-                        HStack(spacing: 4) {
+                        HStack(spacing: DesignSystem.Spacing.xs) {
                             Image(systemName: "star.fill")
-                                .foregroundColor(.yellow)
+                                .font(.system(size: DesignSystem.IconSize.sm))
+                                .foregroundColor(DesignSystem.Colors.star)
                             Text(String(format: "%.1f", rating))
+                                .font(DesignSystem.Typography.captionBold)
+                                .foregroundColor(DesignSystem.Colors.textPrimary)
                         }
                     }
+
+                    if !place.priceDisplay.isEmpty {
+                        Text(place.priceDisplay)
+                            .font(DesignSystem.Typography.caption)
+                            .foregroundColor(DesignSystem.Colors.textSecondary)
+                    }
+
                     Spacer()
+
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: DesignSystem.IconSize.sm))
+                        .foregroundColor(DesignSystem.Colors.textTertiary)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding()
-            .background(Color(.systemBackground))
-            .cornerRadius(12)
-            .shadow(radius: 4)
-            .padding()
+            .padding(DesignSystem.Spacing.lg)
+            .cardStyle()
+            .padding(DesignSystem.Spacing.lg)
         }
+        .buttonStyle(.plain)
     }
     
     private func updateMapRegion() {
@@ -97,13 +113,64 @@ struct MapResultsView: View {
 struct MapPinView: View {
     let place: Place
     let isSelected: Bool
-    
+    @EnvironmentObject var favoritesStore: FavoritesStore
+
     var body: some View {
-        VStack {
-            Image(systemName: "mappin.circle.fill")
-                .font(.system(size: isSelected ? 32 : 24))
-                .foregroundColor(isSelected ? .red : .blue)
+        ZStack {
+            // Pin shadow
+            Circle()
+                .fill(Color.black.opacity(0.2))
+                .frame(width: isSelected ? 12 : 8, height: isSelected ? 12 : 8)
+                .offset(y: isSelected ? 20 : 16)
+                .blur(radius: 4)
+
+            // Pin body
+            VStack(spacing: 0) {
+                ZStack {
+                    Circle()
+                        .fill(pinColor)
+                        .frame(width: isSelected ? 40 : 32, height: isSelected ? 40 : 32)
+
+                    Circle()
+                        .fill(Color.white)
+                        .frame(width: isSelected ? 32 : 24, height: isSelected ? 32 : 24)
+
+                    Image(systemName: place.isFavorite ? "heart.fill" : "fork.knife")
+                        .font(.system(size: isSelected ? 16 : 12, weight: .semibold))
+                        .foregroundColor(pinColor)
+                }
+
+                // Pin pointer
+                Triangle()
+                    .fill(pinColor)
+                    .frame(width: isSelected ? 12 : 10, height: isSelected ? 8 : 6)
+                    .offset(y: -1)
+            }
         }
+        .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isSelected)
+    }
+
+    private var pinColor: Color {
+        if isSelected {
+            return DesignSystem.Colors.primary
+        } else if place.isFavorite {
+            return DesignSystem.Colors.favorite
+        } else {
+            return DesignSystem.Colors.accent
+        }
+    }
+}
+
+// MARK: - Triangle Shape
+
+struct Triangle: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: rect.midX, y: rect.maxY))
+        path.addLine(to: CGPoint(x: rect.minX, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY))
+        path.closeSubpath()
+        return path
     }
 }
 

@@ -14,103 +14,135 @@ struct RestaurantDetailView: View {
     
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                // Header
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: DesignSystem.Spacing.lg) {
+                // Header Card
+                VStack(alignment: .leading, spacing: DesignSystem.Spacing.md) {
+                    HStack(alignment: .top) {
+                        VStack(alignment: .leading, spacing: DesignSystem.Spacing.xs) {
                             Text(place.name)
-                                .font(.title2)
-                                .fontWeight(.bold)
-                            
+                                .font(DesignSystem.Typography.h2)
+                                .foregroundColor(DesignSystem.Colors.textPrimary)
+
                             if let address = place.address {
                                 Text(address)
-                                    .font(.caption)
-                                    .foregroundColor(.gray)
+                                    .font(DesignSystem.Typography.caption)
+                                    .foregroundColor(DesignSystem.Colors.textSecondary)
                             }
                         }
-                        
+
                         Spacer()
-                        
+
                         Button(action: { toggleFavorite() }) {
                             Image(systemName: isFavorite ? "heart.fill" : "heart")
-                                .font(.title2)
-                                .foregroundColor(isFavorite ? .red : .gray)
+                                .font(.system(size: DesignSystem.IconSize.lg))
+                                .foregroundColor(isFavorite ? DesignSystem.Colors.favorite : DesignSystem.Colors.textTertiary)
                         }
                     }
-                    
+
                     // Rating and Price
-                    HStack(spacing: 16) {
+                    HStack(spacing: DesignSystem.Spacing.md) {
                         if let rating = place.rating {
-                            HStack(spacing: 4) {
+                            HStack(spacing: DesignSystem.Spacing.xs) {
                                 Image(systemName: "star.fill")
-                                    .foregroundColor(.yellow)
+                                    .font(.system(size: DesignSystem.IconSize.md))
+                                    .foregroundColor(DesignSystem.Colors.star)
                                 Text(String(format: "%.1f", rating))
-                                    .fontWeight(.semibold)
+                                    .font(DesignSystem.Typography.bodyBold)
+                                    .foregroundColor(DesignSystem.Colors.textPrimary)
                             }
                         }
-                        
+
                         if !place.priceDisplay.isEmpty {
                             Text(place.priceDisplay)
-                                .foregroundColor(.gray)
+                                .font(DesignSystem.Typography.body)
+                                .foregroundColor(DesignSystem.Colors.textSecondary)
                         }
-                        
+
+                        if let count = place.userRatingsTotal {
+                            Text("(\(count) reviews)")
+                                .font(DesignSystem.Typography.caption)
+                                .foregroundColor(DesignSystem.Colors.textSecondary)
+                        }
+
                         Spacer()
                     }
-                    .font(.subheadline)
                 }
-                .padding()
-                .background(Color(.systemGray6))
-                .cornerRadius(12)
+                .padding(DesignSystem.Spacing.lg)
+                .cardStyle()
                 
-                // Contact Information
-                VStack(alignment: .leading, spacing: 12) {
+                // Contact Information Card
+                VStack(alignment: .leading, spacing: DesignSystem.Spacing.md) {
                     Text("Contact")
-                        .font(.headline)
-                    
-                    HStack(spacing: 12) {
-                        Image(systemName: "phone.fill")
-                            .foregroundColor(.blue)
-                        Text("Call")
-                            .font(.subheadline)
-                        Spacer()
+                        .font(DesignSystem.Typography.h3)
+                        .foregroundColor(DesignSystem.Colors.textPrimary)
+
+                    Button(action: {}) {
+                        HStack(spacing: DesignSystem.Spacing.md) {
+                            Image(systemName: "phone.fill")
+                                .font(.system(size: DesignSystem.IconSize.md))
+                                .foregroundColor(DesignSystem.Colors.primary)
+                            Text("Call Restaurant")
+                                .font(DesignSystem.Typography.body)
+                                .foregroundColor(DesignSystem.Colors.textPrimary)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: DesignSystem.IconSize.sm))
+                                .foregroundColor(DesignSystem.Colors.textTertiary)
+                        }
+                        .padding(DesignSystem.Spacing.md)
+                        .background(DesignSystem.Colors.searchBackground)
+                        .cornerRadius(DesignSystem.CornerRadius.md)
                     }
-                    .padding()
-                    .background(Color(.systemGray6))
-                    .cornerRadius(8)
-                    
-                    HStack(spacing: 12) {
-                        Image(systemName: "globe")
-                            .foregroundColor(.blue)
-                        Text("Website")
-                            .font(.subheadline)
-                        Spacer()
+
+                    Button(action: {}) {
+                        HStack(spacing: DesignSystem.Spacing.md) {
+                            Image(systemName: "globe")
+                                .font(.system(size: DesignSystem.IconSize.md))
+                                .foregroundColor(DesignSystem.Colors.primary)
+                            Text("Visit Website")
+                                .font(DesignSystem.Typography.body)
+                                .foregroundColor(DesignSystem.Colors.textPrimary)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: DesignSystem.IconSize.sm))
+                                .foregroundColor(DesignSystem.Colors.textTertiary)
+                        }
+                        .padding(DesignSystem.Spacing.md)
+                        .background(DesignSystem.Colors.searchBackground)
+                        .cornerRadius(DesignSystem.CornerRadius.md)
                     }
-                    .padding()
-                    .background(Color(.systemGray6))
-                    .cornerRadius(8)
                 }
-                
-                // Hours
-                VStack(alignment: .leading, spacing: 12) {
+                .padding(DesignSystem.Spacing.lg)
+                .cardStyle()
+
+                // Hours Card
+                VStack(alignment: .leading, spacing: DesignSystem.Spacing.md) {
                     Text("Hours")
-                        .font(.headline)
-                    
-                    VStack(alignment: .leading, spacing: 4) {
+                        .font(DesignSystem.Typography.h3)
+                        .foregroundColor(DesignSystem.Colors.textPrimary)
+
+                    HStack {
+                        Image(systemName: "clock.fill")
+                            .font(.system(size: DesignSystem.IconSize.md))
+                            .foregroundColor(DesignSystem.Colors.success)
                         Text("Open now")
-                            .font(.subheadline)
-                            .foregroundColor(.green)
+                            .font(DesignSystem.Typography.body)
+                            .foregroundColor(DesignSystem.Colors.success)
+                        Spacer()
                     }
-                    .padding()
-                    .background(Color(.systemGray6))
-                    .cornerRadius(8)
+                    .padding(DesignSystem.Spacing.md)
+                    .background(DesignSystem.Colors.searchBackground)
+                    .cornerRadius(DesignSystem.CornerRadius.md)
                 }
-                
+                .padding(DesignSystem.Spacing.lg)
+                .cardStyle()
+
                 Spacer()
             }
-            .padding()
+            .padding(DesignSystem.Spacing.lg)
         }
-        .navigationTitle("Restaurant Details")
+        .background(DesignSystem.Colors.background)
+        .navigationTitle("Details")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             isFavorite = favoritesStore.isFavorite(place.id)

@@ -12,28 +12,28 @@ struct ListResultsView: View {
     let isLoading: Bool
     let onToggleFavorite: (Place) -> Void
     let onLoadMore: () async -> Void
-    
+
     var body: some View {
-        List {
-            ForEach(places) { place in
-                NavigationLink(destination: RestaurantDetailView(place: place)) {
-                    RestaurantRow(
-                        place: place,
-                        onToggleFavorite: { onToggleFavorite(place) }
-                    )
+        ScrollView {
+            LazyVStack(spacing: DesignSystem.Spacing.md) {
+                ForEach(places) { place in
+                    NavigationLink(destination: RestaurantDetailView(place: place)) {
+                        RestaurantRow(
+                            place: place,
+                            onToggleFavorite: { onToggleFavorite(place) }
+                        )
+                    }
+                    .buttonStyle(.plain)
                 }
-            }
-            
-            if isLoading {
-                HStack {
-                    Spacer()
+
+                if isLoading {
                     ProgressView()
-                    Spacer()
+                        .padding(DesignSystem.Spacing.lg)
                 }
-                .listRowSeparator(.hidden)
             }
+            .padding(DesignSystem.Spacing.lg)
         }
-        .listStyle(.plain)
+        .background(DesignSystem.Colors.background)
     }
 }
 
@@ -43,58 +43,66 @@ struct RestaurantRow: View {
     let place: Place
     let onToggleFavorite: () -> Void
     @EnvironmentObject var favoritesStore: FavoritesStore
-    
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.md) {
+            // Header with name and favorite button
+            HStack(alignment: .top, spacing: DesignSystem.Spacing.md) {
+                VStack(alignment: .leading, spacing: DesignSystem.Spacing.xs) {
                     Text(place.name)
-                        .font(.headline)
+                        .font(DesignSystem.Typography.h3)
+                        .foregroundColor(DesignSystem.Colors.textPrimary)
                         .lineLimit(2)
-                    
+                        .multilineTextAlignment(.leading)
+
                     if let address = place.address {
                         Text(address)
-                            .font(.caption)
-                            .foregroundColor(.gray)
+                            .font(DesignSystem.Typography.caption)
+                            .foregroundColor(DesignSystem.Colors.textSecondary)
                             .lineLimit(1)
                     }
                 }
-                
-                Spacer()
-                
+
+                Spacer(minLength: DesignSystem.Spacing.sm)
+
                 Button(action: onToggleFavorite) {
                     Image(systemName: place.isFavorite ? "heart.fill" : "heart")
-                        .foregroundColor(place.isFavorite ? .red : .gray)
+                        .font(.system(size: DesignSystem.IconSize.md))
+                        .foregroundColor(place.isFavorite ? DesignSystem.Colors.favorite : DesignSystem.Colors.textTertiary)
                 }
                 .buttonStyle(.plain)
             }
-            
-            HStack(spacing: 12) {
+
+            // Rating, price, and review count
+            HStack(spacing: DesignSystem.Spacing.md) {
                 if let rating = place.rating {
-                    HStack(spacing: 4) {
+                    HStack(spacing: DesignSystem.Spacing.xs) {
                         Image(systemName: "star.fill")
-                            .foregroundColor(.yellow)
+                            .font(.system(size: DesignSystem.IconSize.sm))
+                            .foregroundColor(DesignSystem.Colors.star)
                         Text(String(format: "%.1f", rating))
-                            .font(.caption)
+                            .font(DesignSystem.Typography.captionBold)
+                            .foregroundColor(DesignSystem.Colors.textPrimary)
                     }
                 }
-                
+
                 if !place.priceDisplay.isEmpty {
                     Text(place.priceDisplay)
-                        .font(.caption)
-                        .foregroundColor(.gray)
+                        .font(DesignSystem.Typography.caption)
+                        .foregroundColor(DesignSystem.Colors.textSecondary)
                 }
-                
+
                 if let count = place.userRatingsTotal {
-                    Text("(\(count))")
-                        .font(.caption)
-                        .foregroundColor(.gray)
+                    Text("(\(count) reviews)")
+                        .font(DesignSystem.Typography.caption)
+                        .foregroundColor(DesignSystem.Colors.textSecondary)
                 }
-                
+
                 Spacer()
             }
         }
-        .padding(.vertical, 8)
+        .padding(DesignSystem.Spacing.lg)
+        .cardStyle()
     }
 }
 

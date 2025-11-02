@@ -1,950 +1,565 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-	<key>archiveVersion</key>
-	<string>1</string>
-	<key>classes</key>
-	<dict/>
-	<key>objectVersion</key>
-	<string>77</string>
-	<key>objects</key>
-	<dict>
-		<key>D763B61A2EB7D76300F8564C</key>
-		<dict>
-			<key>children</key>
-			<array>
-				<string>D763B6252EB7D76300F8564C</string>
-				<string>D763B6362EB7D76400F8564C</string>
-				<string>D763B6402EB7D76400F8564C</string>
-				<string>D763B6242EB7D76300F8564C</string>
-			</array>
-			<key>isa</key>
-			<string>PBXGroup</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>D763B61B2EB7D76300F8564C</key>
-		<dict>
-			<key>attributes</key>
-			<dict>
-				<key>BuildIndependentTargetsInParallel</key>
-				<string>1</string>
-				<key>LastSwiftUpdateCheck</key>
-				<string>1620</string>
-				<key>LastUpgradeCheck</key>
-				<string>1620</string>
-				<key>TargetAttributes</key>
-				<dict>
-					<key>D763B6222EB7D76300F8564C</key>
-					<dict>
-						<key>CreatedOnToolsVersion</key>
-						<string>16.2</string>
-					</dict>
-					<key>D763B6322EB7D76400F8564C</key>
-					<dict>
-						<key>CreatedOnToolsVersion</key>
-						<string>16.2</string>
-						<key>TestTargetID</key>
-						<string>D763B6222EB7D76300F8564C</string>
-					</dict>
-					<key>D763B63C2EB7D76400F8564C</key>
-					<dict>
-						<key>CreatedOnToolsVersion</key>
-						<string>16.2</string>
-						<key>TestTargetID</key>
-						<string>D763B6222EB7D76300F8564C</string>
-					</dict>
-				</dict>
-			</dict>
-			<key>buildConfigurationList</key>
-			<string>D763B61E2EB7D76300F8564C</string>
-			<key>developmentRegion</key>
-			<string>en</string>
-			<key>hasScannedForEncodings</key>
-			<string>0</string>
-			<key>isa</key>
-			<string>PBXProject</string>
-			<key>knownRegions</key>
-			<array>
-				<string>en</string>
-				<string>Base</string>
-			</array>
-			<key>mainGroup</key>
-			<string>D763B61A2EB7D76300F8564C</string>
-			<key>minimizedProjectReferenceProxies</key>
-			<string>1</string>
-			<key>preferredProjectObjectVersion</key>
-			<string>77</string>
-			<key>productRefGroup</key>
-			<string>D763B6242EB7D76300F8564C</string>
-			<key>projectDirPath</key>
-			<string></string>
-			<key>projectRoot</key>
-			<string></string>
-			<key>targets</key>
-			<array>
-				<string>D763B6222EB7D76300F8564C</string>
-				<string>D763B6322EB7D76400F8564C</string>
-				<string>D763B63C2EB7D76400F8564C</string>
-			</array>
-		</dict>
-		<key>D763B61E2EB7D76300F8564C</key>
-		<dict>
-			<key>buildConfigurations</key>
-			<array>
-				<string>D763B6452EB7D76400F8564C</string>
-				<string>D763B6462EB7D76400F8564C</string>
-			</array>
-			<key>defaultConfigurationIsVisible</key>
-			<string>0</string>
-			<key>defaultConfigurationName</key>
-			<string>Release</string>
-			<key>isa</key>
-			<string>XCConfigurationList</string>
-		</dict>
-		<key>D763B61F2EB7D76300F8564C</key>
-		<dict>
-			<key>buildActionMask</key>
-			<string>2147483647</string>
-			<key>files</key>
-			<array/>
-			<key>isa</key>
-			<string>PBXSourcesBuildPhase</string>
-			<key>runOnlyForDeploymentPostprocessing</key>
-			<string>0</string>
-		</dict>
-		<key>D763B6202EB7D76300F8564C</key>
-		<dict>
-			<key>buildActionMask</key>
-			<string>2147483647</string>
-			<key>files</key>
-			<array/>
-			<key>isa</key>
-			<string>PBXFrameworksBuildPhase</string>
-			<key>runOnlyForDeploymentPostprocessing</key>
-			<string>0</string>
-		</dict>
-		<key>D763B6212EB7D76300F8564C</key>
-		<dict>
-			<key>buildActionMask</key>
-			<string>2147483647</string>
-			<key>files</key>
-			<array/>
-			<key>isa</key>
-			<string>PBXResourcesBuildPhase</string>
-			<key>runOnlyForDeploymentPostprocessing</key>
-			<string>0</string>
-		</dict>
-		<key>D763B6222EB7D76300F8564C</key>
-		<dict>
-			<key>buildConfigurationList</key>
-			<string>D763B6472EB7D76400F8564C</string>
-			<key>buildPhases</key>
-			<array>
-				<string>D763B61F2EB7D76300F8564C</string>
-				<string>D763B6202EB7D76300F8564C</string>
-				<string>D763B6212EB7D76300F8564C</string>
-			</array>
-			<key>buildRules</key>
-			<array/>
-			<key>dependencies</key>
-			<array/>
-			<key>fileSystemSynchronizedGroups</key>
-			<array>
-				<string>D763B6252EB7D76300F8564C</string>
-			</array>
-			<key>isa</key>
-			<string>PBXNativeTarget</string>
-			<key>name</key>
-			<string>AllTrailsLunchApp</string>
-			<key>packageProductDependencies</key>
-			<array/>
-			<key>productName</key>
-			<string>AllTrailsLunchApp</string>
-			<key>productReference</key>
-			<string>D763B6232EB7D76300F8564C</string>
-			<key>productType</key>
-			<string>com.apple.product-type.application</string>
-		</dict>
-		<key>D763B6232EB7D76300F8564C</key>
-		<dict>
-			<key>explicitFileType</key>
-			<string>wrapper.application</string>
-			<key>includeInIndex</key>
-			<string>0</string>
-			<key>isa</key>
-			<string>PBXFileReference</string>
-			<key>path</key>
-			<string>AllTrailsLunchApp.app</string>
-			<key>sourceTree</key>
-			<string>BUILT_PRODUCTS_DIR</string>
-		</dict>
-		<key>D763B6242EB7D76300F8564C</key>
-		<dict>
-			<key>children</key>
-			<array>
-				<string>D763B6232EB7D76300F8564C</string>
-				<string>D763B6332EB7D76400F8564C</string>
-				<string>D763B63D2EB7D76400F8564C</string>
-			</array>
-			<key>isa</key>
-			<string>PBXGroup</string>
-			<key>name</key>
-			<string>Products</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>D763B6252EB7D76300F8564C</key>
-		<dict>
-			<key>isa</key>
-			<string>PBXFileSystemSynchronizedRootGroup</string>
-			<key>path</key>
-			<string>AllTrailsLunchApp</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>D763B62F2EB7D76400F8564C</key>
-		<dict>
-			<key>buildActionMask</key>
-			<string>2147483647</string>
-			<key>files</key>
-			<array/>
-			<key>isa</key>
-			<string>PBXSourcesBuildPhase</string>
-			<key>runOnlyForDeploymentPostprocessing</key>
-			<string>0</string>
-		</dict>
-		<key>D763B6302EB7D76400F8564C</key>
-		<dict>
-			<key>buildActionMask</key>
-			<string>2147483647</string>
-			<key>files</key>
-			<array/>
-			<key>isa</key>
-			<string>PBXFrameworksBuildPhase</string>
-			<key>runOnlyForDeploymentPostprocessing</key>
-			<string>0</string>
-		</dict>
-		<key>D763B6312EB7D76400F8564C</key>
-		<dict>
-			<key>buildActionMask</key>
-			<string>2147483647</string>
-			<key>files</key>
-			<array/>
-			<key>isa</key>
-			<string>PBXResourcesBuildPhase</string>
-			<key>runOnlyForDeploymentPostprocessing</key>
-			<string>0</string>
-		</dict>
-		<key>D763B6322EB7D76400F8564C</key>
-		<dict>
-			<key>buildConfigurationList</key>
-			<string>D763B64A2EB7D76400F8564C</string>
-			<key>buildPhases</key>
-			<array>
-				<string>D763B62F2EB7D76400F8564C</string>
-				<string>D763B6302EB7D76400F8564C</string>
-				<string>D763B6312EB7D76400F8564C</string>
-			</array>
-			<key>buildRules</key>
-			<array/>
-			<key>dependencies</key>
-			<array>
-				<string>D763B6352EB7D76400F8564C</string>
-			</array>
-			<key>fileSystemSynchronizedGroups</key>
-			<array>
-				<string>D763B6362EB7D76400F8564C</string>
-			</array>
-			<key>isa</key>
-			<string>PBXNativeTarget</string>
-			<key>name</key>
-			<string>AllTrailsLunchAppTests</string>
-			<key>packageProductDependencies</key>
-			<array/>
-			<key>productName</key>
-			<string>AllTrailsLunchAppTests</string>
-			<key>productReference</key>
-			<string>D763B6332EB7D76400F8564C</string>
-			<key>productType</key>
-			<string>com.apple.product-type.bundle.unit-test</string>
-		</dict>
-		<key>D763B6332EB7D76400F8564C</key>
-		<dict>
-			<key>explicitFileType</key>
-			<string>wrapper.cfbundle</string>
-			<key>includeInIndex</key>
-			<string>0</string>
-			<key>isa</key>
-			<string>PBXFileReference</string>
-			<key>path</key>
-			<string>AllTrailsLunchAppTests.xctest</string>
-			<key>sourceTree</key>
-			<string>BUILT_PRODUCTS_DIR</string>
-		</dict>
-		<key>D763B6342EB7D76400F8564C</key>
-		<dict>
-			<key>containerPortal</key>
-			<string>D763B61B2EB7D76300F8564C</string>
-			<key>isa</key>
-			<string>PBXContainerItemProxy</string>
-			<key>proxyType</key>
-			<string>1</string>
-			<key>remoteGlobalIDString</key>
-			<string>D763B6222EB7D76300F8564C</string>
-			<key>remoteInfo</key>
-			<string>AllTrailsLunchApp</string>
-		</dict>
-		<key>D763B6352EB7D76400F8564C</key>
-		<dict>
-			<key>isa</key>
-			<string>PBXTargetDependency</string>
-			<key>target</key>
-			<string>D763B6222EB7D76300F8564C</string>
-			<key>targetProxy</key>
-			<string>D763B6342EB7D76400F8564C</string>
-		</dict>
-		<key>D763B6362EB7D76400F8564C</key>
-		<dict>
-			<key>isa</key>
-			<string>PBXFileSystemSynchronizedRootGroup</string>
-			<key>path</key>
-			<string>AllTrailsLunchAppTests</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>D763B6392EB7D76400F8564C</key>
-		<dict>
-			<key>buildActionMask</key>
-			<string>2147483647</string>
-			<key>files</key>
-			<array/>
-			<key>isa</key>
-			<string>PBXSourcesBuildPhase</string>
-			<key>runOnlyForDeploymentPostprocessing</key>
-			<string>0</string>
-		</dict>
-		<key>D763B63A2EB7D76400F8564C</key>
-		<dict>
-			<key>buildActionMask</key>
-			<string>2147483647</string>
-			<key>files</key>
-			<array/>
-			<key>isa</key>
-			<string>PBXFrameworksBuildPhase</string>
-			<key>runOnlyForDeploymentPostprocessing</key>
-			<string>0</string>
-		</dict>
-		<key>D763B63B2EB7D76400F8564C</key>
-		<dict>
-			<key>buildActionMask</key>
-			<string>2147483647</string>
-			<key>files</key>
-			<array/>
-			<key>isa</key>
-			<string>PBXResourcesBuildPhase</string>
-			<key>runOnlyForDeploymentPostprocessing</key>
-			<string>0</string>
-		</dict>
-		<key>D763B63C2EB7D76400F8564C</key>
-		<dict>
-			<key>buildConfigurationList</key>
-			<string>D763B64D2EB7D76400F8564C</string>
-			<key>buildPhases</key>
-			<array>
-				<string>D763B6392EB7D76400F8564C</string>
-				<string>D763B63A2EB7D76400F8564C</string>
-				<string>D763B63B2EB7D76400F8564C</string>
-			</array>
-			<key>buildRules</key>
-			<array/>
-			<key>dependencies</key>
-			<array>
-				<string>D763B63F2EB7D76400F8564C</string>
-			</array>
-			<key>fileSystemSynchronizedGroups</key>
-			<array>
-				<string>D763B6402EB7D76400F8564C</string>
-			</array>
-			<key>isa</key>
-			<string>PBXNativeTarget</string>
-			<key>name</key>
-			<string>AllTrailsLunchAppUITests</string>
-			<key>packageProductDependencies</key>
-			<array/>
-			<key>productName</key>
-			<string>AllTrailsLunchAppUITests</string>
-			<key>productReference</key>
-			<string>D763B63D2EB7D76400F8564C</string>
-			<key>productType</key>
-			<string>com.apple.product-type.bundle.ui-testing</string>
-		</dict>
-		<key>D763B63D2EB7D76400F8564C</key>
-		<dict>
-			<key>explicitFileType</key>
-			<string>wrapper.cfbundle</string>
-			<key>includeInIndex</key>
-			<string>0</string>
-			<key>isa</key>
-			<string>PBXFileReference</string>
-			<key>path</key>
-			<string>AllTrailsLunchAppUITests.xctest</string>
-			<key>sourceTree</key>
-			<string>BUILT_PRODUCTS_DIR</string>
-		</dict>
-		<key>D763B63E2EB7D76400F8564C</key>
-		<dict>
-			<key>containerPortal</key>
-			<string>D763B61B2EB7D76300F8564C</string>
-			<key>isa</key>
-			<string>PBXContainerItemProxy</string>
-			<key>proxyType</key>
-			<string>1</string>
-			<key>remoteGlobalIDString</key>
-			<string>D763B6222EB7D76300F8564C</string>
-			<key>remoteInfo</key>
-			<string>AllTrailsLunchApp</string>
-		</dict>
-		<key>D763B63F2EB7D76400F8564C</key>
-		<dict>
-			<key>isa</key>
-			<string>PBXTargetDependency</string>
-			<key>target</key>
-			<string>D763B6222EB7D76300F8564C</string>
-			<key>targetProxy</key>
-			<string>D763B63E2EB7D76400F8564C</string>
-		</dict>
-		<key>D763B6402EB7D76400F8564C</key>
-		<dict>
-			<key>isa</key>
-			<string>PBXFileSystemSynchronizedRootGroup</string>
-			<key>path</key>
-			<string>AllTrailsLunchAppUITests</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>D763B6452EB7D76400F8564C</key>
-		<dict>
-			<key>buildSettings</key>
-			<dict>
-				<key>ALWAYS_SEARCH_USER_PATHS</key>
-				<string>NO</string>
-				<key>ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS</key>
-				<string>YES</string>
-				<key>CLANG_ANALYZER_NONNULL</key>
-				<string>YES</string>
-				<key>CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION</key>
-				<string>YES_AGGRESSIVE</string>
-				<key>CLANG_CXX_LANGUAGE_STANDARD</key>
-				<string>gnu++20</string>
-				<key>CLANG_ENABLE_MODULES</key>
-				<string>YES</string>
-				<key>CLANG_ENABLE_OBJC_ARC</key>
-				<string>YES</string>
-				<key>CLANG_ENABLE_OBJC_WEAK</key>
-				<string>YES</string>
-				<key>CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING</key>
-				<string>YES</string>
-				<key>CLANG_WARN_BOOL_CONVERSION</key>
-				<string>YES</string>
-				<key>CLANG_WARN_COMMA</key>
-				<string>YES</string>
-				<key>CLANG_WARN_CONSTANT_CONVERSION</key>
-				<string>YES</string>
-				<key>CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS</key>
-				<string>YES</string>
-				<key>CLANG_WARN_DIRECT_OBJC_ISA_USAGE</key>
-				<string>YES_ERROR</string>
-				<key>CLANG_WARN_DOCUMENTATION_COMMENTS</key>
-				<string>YES</string>
-				<key>CLANG_WARN_EMPTY_BODY</key>
-				<string>YES</string>
-				<key>CLANG_WARN_ENUM_CONVERSION</key>
-				<string>YES</string>
-				<key>CLANG_WARN_INFINITE_RECURSION</key>
-				<string>YES</string>
-				<key>CLANG_WARN_INT_CONVERSION</key>
-				<string>YES</string>
-				<key>CLANG_WARN_NON_LITERAL_NULL_CONVERSION</key>
-				<string>YES</string>
-				<key>CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF</key>
-				<string>YES</string>
-				<key>CLANG_WARN_OBJC_LITERAL_CONVERSION</key>
-				<string>YES</string>
-				<key>CLANG_WARN_OBJC_ROOT_CLASS</key>
-				<string>YES_ERROR</string>
-				<key>CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER</key>
-				<string>YES</string>
-				<key>CLANG_WARN_RANGE_LOOP_ANALYSIS</key>
-				<string>YES</string>
-				<key>CLANG_WARN_STRICT_PROTOTYPES</key>
-				<string>YES</string>
-				<key>CLANG_WARN_SUSPICIOUS_MOVE</key>
-				<string>YES</string>
-				<key>CLANG_WARN_UNGUARDED_AVAILABILITY</key>
-				<string>YES_AGGRESSIVE</string>
-				<key>CLANG_WARN_UNREACHABLE_CODE</key>
-				<string>YES</string>
-				<key>CLANG_WARN__DUPLICATE_METHOD_MATCH</key>
-				<string>YES</string>
-				<key>COPY_PHASE_STRIP</key>
-				<string>NO</string>
-				<key>DEBUG_INFORMATION_FORMAT</key>
-				<string>dwarf</string>
-				<key>ENABLE_STRICT_OBJC_MSGSEND</key>
-				<string>YES</string>
-				<key>ENABLE_TESTABILITY</key>
-				<string>YES</string>
-				<key>ENABLE_USER_SCRIPT_SANDBOXING</key>
-				<string>YES</string>
-				<key>GCC_C_LANGUAGE_STANDARD</key>
-				<string>gnu17</string>
-				<key>GCC_DYNAMIC_NO_PIC</key>
-				<string>NO</string>
-				<key>GCC_NO_COMMON_BLOCKS</key>
-				<string>YES</string>
-				<key>GCC_OPTIMIZATION_LEVEL</key>
-				<string>0</string>
-				<key>GCC_PREPROCESSOR_DEFINITIONS</key>
-				<array>
-					<string>DEBUG=1</string>
-					<string>$(inherited)</string>
-				</array>
-				<key>GCC_WARN_64_TO_32_BIT_CONVERSION</key>
-				<string>YES</string>
-				<key>GCC_WARN_ABOUT_RETURN_TYPE</key>
-				<string>YES_ERROR</string>
-				<key>GCC_WARN_UNDECLARED_SELECTOR</key>
-				<string>YES</string>
-				<key>GCC_WARN_UNINITIALIZED_AUTOS</key>
-				<string>YES_AGGRESSIVE</string>
-				<key>GCC_WARN_UNUSED_FUNCTION</key>
-				<string>YES</string>
-				<key>GCC_WARN_UNUSED_VARIABLE</key>
-				<string>YES</string>
-				<key>IPHONEOS_DEPLOYMENT_TARGET</key>
-				<string>18.2</string>
-				<key>LOCALIZATION_PREFERS_STRING_CATALOGS</key>
-				<string>YES</string>
-				<key>MTL_ENABLE_DEBUG_INFO</key>
-				<string>INCLUDE_SOURCE</string>
-				<key>MTL_FAST_MATH</key>
-				<string>YES</string>
-				<key>ONLY_ACTIVE_ARCH</key>
-				<string>YES</string>
-				<key>SDKROOT</key>
-				<string>iphoneos</string>
-				<key>SWIFT_ACTIVE_COMPILATION_CONDITIONS</key>
-				<string>DEBUG $(inherited)</string>
-				<key>SWIFT_OPTIMIZATION_LEVEL</key>
-				<string>-Onone</string>
-			</dict>
-			<key>isa</key>
-			<string>XCBuildConfiguration</string>
-			<key>name</key>
-			<string>Debug</string>
-		</dict>
-		<key>D763B6462EB7D76400F8564C</key>
-		<dict>
-			<key>buildSettings</key>
-			<dict>
-				<key>ALWAYS_SEARCH_USER_PATHS</key>
-				<string>NO</string>
-				<key>ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS</key>
-				<string>YES</string>
-				<key>CLANG_ANALYZER_NONNULL</key>
-				<string>YES</string>
-				<key>CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION</key>
-				<string>YES_AGGRESSIVE</string>
-				<key>CLANG_CXX_LANGUAGE_STANDARD</key>
-				<string>gnu++20</string>
-				<key>CLANG_ENABLE_MODULES</key>
-				<string>YES</string>
-				<key>CLANG_ENABLE_OBJC_ARC</key>
-				<string>YES</string>
-				<key>CLANG_ENABLE_OBJC_WEAK</key>
-				<string>YES</string>
-				<key>CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING</key>
-				<string>YES</string>
-				<key>CLANG_WARN_BOOL_CONVERSION</key>
-				<string>YES</string>
-				<key>CLANG_WARN_COMMA</key>
-				<string>YES</string>
-				<key>CLANG_WARN_CONSTANT_CONVERSION</key>
-				<string>YES</string>
-				<key>CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS</key>
-				<string>YES</string>
-				<key>CLANG_WARN_DIRECT_OBJC_ISA_USAGE</key>
-				<string>YES_ERROR</string>
-				<key>CLANG_WARN_DOCUMENTATION_COMMENTS</key>
-				<string>YES</string>
-				<key>CLANG_WARN_EMPTY_BODY</key>
-				<string>YES</string>
-				<key>CLANG_WARN_ENUM_CONVERSION</key>
-				<string>YES</string>
-				<key>CLANG_WARN_INFINITE_RECURSION</key>
-				<string>YES</string>
-				<key>CLANG_WARN_INT_CONVERSION</key>
-				<string>YES</string>
-				<key>CLANG_WARN_NON_LITERAL_NULL_CONVERSION</key>
-				<string>YES</string>
-				<key>CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF</key>
-				<string>YES</string>
-				<key>CLANG_WARN_OBJC_LITERAL_CONVERSION</key>
-				<string>YES</string>
-				<key>CLANG_WARN_OBJC_ROOT_CLASS</key>
-				<string>YES_ERROR</string>
-				<key>CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER</key>
-				<string>YES</string>
-				<key>CLANG_WARN_RANGE_LOOP_ANALYSIS</key>
-				<string>YES</string>
-				<key>CLANG_WARN_STRICT_PROTOTYPES</key>
-				<string>YES</string>
-				<key>CLANG_WARN_SUSPICIOUS_MOVE</key>
-				<string>YES</string>
-				<key>CLANG_WARN_UNGUARDED_AVAILABILITY</key>
-				<string>YES_AGGRESSIVE</string>
-				<key>CLANG_WARN_UNREACHABLE_CODE</key>
-				<string>YES</string>
-				<key>CLANG_WARN__DUPLICATE_METHOD_MATCH</key>
-				<string>YES</string>
-				<key>COPY_PHASE_STRIP</key>
-				<string>NO</string>
-				<key>DEBUG_INFORMATION_FORMAT</key>
-				<string>dwarf-with-dsym</string>
-				<key>ENABLE_NS_ASSERTIONS</key>
-				<string>NO</string>
-				<key>ENABLE_STRICT_OBJC_MSGSEND</key>
-				<string>YES</string>
-				<key>ENABLE_USER_SCRIPT_SANDBOXING</key>
-				<string>YES</string>
-				<key>GCC_C_LANGUAGE_STANDARD</key>
-				<string>gnu17</string>
-				<key>GCC_NO_COMMON_BLOCKS</key>
-				<string>YES</string>
-				<key>GCC_WARN_64_TO_32_BIT_CONVERSION</key>
-				<string>YES</string>
-				<key>GCC_WARN_ABOUT_RETURN_TYPE</key>
-				<string>YES_ERROR</string>
-				<key>GCC_WARN_UNDECLARED_SELECTOR</key>
-				<string>YES</string>
-				<key>GCC_WARN_UNINITIALIZED_AUTOS</key>
-				<string>YES_AGGRESSIVE</string>
-				<key>GCC_WARN_UNUSED_FUNCTION</key>
-				<string>YES</string>
-				<key>GCC_WARN_UNUSED_VARIABLE</key>
-				<string>YES</string>
-				<key>IPHONEOS_DEPLOYMENT_TARGET</key>
-				<string>18.2</string>
-				<key>LOCALIZATION_PREFERS_STRING_CATALOGS</key>
-				<string>YES</string>
-				<key>MTL_ENABLE_DEBUG_INFO</key>
-				<string>NO</string>
-				<key>MTL_FAST_MATH</key>
-				<string>YES</string>
-				<key>SDKROOT</key>
-				<string>iphoneos</string>
-				<key>SWIFT_COMPILATION_MODE</key>
-				<string>wholemodule</string>
-				<key>VALIDATE_PRODUCT</key>
-				<string>YES</string>
-			</dict>
-			<key>isa</key>
-			<string>XCBuildConfiguration</string>
-			<key>name</key>
-			<string>Release</string>
-		</dict>
-		<key>D763B6472EB7D76400F8564C</key>
-		<dict>
-			<key>buildConfigurations</key>
-			<array>
-				<string>D763B6482EB7D76400F8564C</string>
-				<string>D763B6492EB7D76400F8564C</string>
-			</array>
-			<key>defaultConfigurationIsVisible</key>
-			<string>0</string>
-			<key>defaultConfigurationName</key>
-			<string>Release</string>
-			<key>isa</key>
-			<string>XCConfigurationList</string>
-		</dict>
-		<key>D763B6482EB7D76400F8564C</key>
-		<dict>
-			<key>buildSettings</key>
-			<dict>
-				<key>ASSETCATALOG_COMPILER_APPICON_NAME</key>
-				<string>AppIcon</string>
-				<key>ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME</key>
-				<string>AccentColor</string>
-				<key>CODE_SIGN_STYLE</key>
-				<string>Automatic</string>
-				<key>CURRENT_PROJECT_VERSION</key>
-				<string>1</string>
-				<key>DEVELOPMENT_ASSET_PATHS</key>
-				<string>"AllTrailsLunchApp/Preview Content"</string>
-				<key>DEVELOPMENT_TEAM</key>
-				<string>D568Z8S8MN</string>
-				<key>ENABLE_PREVIEWS</key>
-				<string>YES</string>
-				<key>GENERATE_INFOPLIST_FILE</key>
-				<string>YES</string>
-				<key>INFOPLIST_KEY_UIApplicationSceneManifest_Generation</key>
-				<string>YES</string>
-				<key>INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents</key>
-				<string>YES</string>
-				<key>INFOPLIST_KEY_UILaunchScreen_Generation</key>
-				<string>YES</string>
-				<key>INFOPLIST_KEY_NSLocationWhenInUseUsageDescription</key>
-				<string>AllTrails Lunch needs your location to find nearby restaurants.</string>
-				<key>INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad</key>
-				<string>UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight</string>
-				<key>INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone</key>
-				<string>UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight</string>
-				<key>LD_RUNPATH_SEARCH_PATHS</key>
-				<array>
-					<string>$(inherited)</string>
-					<string>@executable_path/Frameworks</string>
-				</array>
-				<key>MARKETING_VERSION</key>
-				<string>1.0</string>
-				<key>PRODUCT_BUNDLE_IDENTIFIER</key>
-				<string>com.sermonsoft.AllTrailsLunchApp</string>
-				<key>PRODUCT_NAME</key>
-				<string>$(TARGET_NAME)</string>
-				<key>SWIFT_EMIT_LOC_STRINGS</key>
-				<string>YES</string>
-				<key>SWIFT_VERSION</key>
-				<string>5.0</string>
-				<key>TARGETED_DEVICE_FAMILY</key>
-				<string>1,2</string>
-			</dict>
-			<key>isa</key>
-			<string>XCBuildConfiguration</string>
-			<key>name</key>
-			<string>Debug</string>
-		</dict>
-		<key>D763B6492EB7D76400F8564C</key>
-		<dict>
-			<key>buildSettings</key>
-			<dict>
-				<key>ASSETCATALOG_COMPILER_APPICON_NAME</key>
-				<string>AppIcon</string>
-				<key>ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME</key>
-				<string>AccentColor</string>
-				<key>CODE_SIGN_STYLE</key>
-				<string>Automatic</string>
-				<key>CURRENT_PROJECT_VERSION</key>
-				<string>1</string>
-				<key>DEVELOPMENT_ASSET_PATHS</key>
-				<string>"AllTrailsLunchApp/Preview Content"</string>
-				<key>DEVELOPMENT_TEAM</key>
-				<string>D568Z8S8MN</string>
-				<key>ENABLE_PREVIEWS</key>
-				<string>YES</string>
-				<key>GENERATE_INFOPLIST_FILE</key>
-				<string>YES</string>
-				<key>INFOPLIST_KEY_UIApplicationSceneManifest_Generation</key>
-				<string>YES</string>
-				<key>INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents</key>
-				<string>YES</string>
-				<key>INFOPLIST_KEY_UILaunchScreen_Generation</key>
-				<string>YES</string>
-				<key>INFOPLIST_KEY_NSLocationWhenInUseUsageDescription</key>
-				<string>AllTrails Lunch needs your location to find nearby restaurants.</string>
-				<key>INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad</key>
-				<string>UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight</string>
-				<key>INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone</key>
-				<string>UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight</string>
-				<key>LD_RUNPATH_SEARCH_PATHS</key>
-				<array>
-					<string>$(inherited)</string>
-					<string>@executable_path/Frameworks</string>
-				</array>
-				<key>MARKETING_VERSION</key>
-				<string>1.0</string>
-				<key>PRODUCT_BUNDLE_IDENTIFIER</key>
-				<string>com.sermonsoft.AllTrailsLunchApp</string>
-				<key>PRODUCT_NAME</key>
-				<string>$(TARGET_NAME)</string>
-				<key>SWIFT_EMIT_LOC_STRINGS</key>
-				<string>YES</string>
-				<key>SWIFT_VERSION</key>
-				<string>5.0</string>
-				<key>TARGETED_DEVICE_FAMILY</key>
-				<string>1,2</string>
-			</dict>
-			<key>isa</key>
-			<string>XCBuildConfiguration</string>
-			<key>name</key>
-			<string>Release</string>
-		</dict>
-		<key>D763B64A2EB7D76400F8564C</key>
-		<dict>
-			<key>buildConfigurations</key>
-			<array>
-				<string>D763B64B2EB7D76400F8564C</string>
-				<string>D763B64C2EB7D76400F8564C</string>
-			</array>
-			<key>defaultConfigurationIsVisible</key>
-			<string>0</string>
-			<key>defaultConfigurationName</key>
-			<string>Release</string>
-			<key>isa</key>
-			<string>XCConfigurationList</string>
-		</dict>
-		<key>D763B64B2EB7D76400F8564C</key>
-		<dict>
-			<key>buildSettings</key>
-			<dict>
-				<key>BUNDLE_LOADER</key>
-				<string>$(TEST_HOST)</string>
-				<key>CODE_SIGN_STYLE</key>
-				<string>Automatic</string>
-				<key>CURRENT_PROJECT_VERSION</key>
-				<string>1</string>
-				<key>DEVELOPMENT_TEAM</key>
-				<string>D568Z8S8MN</string>
-				<key>GENERATE_INFOPLIST_FILE</key>
-				<string>YES</string>
-				<key>IPHONEOS_DEPLOYMENT_TARGET</key>
-				<string>18.2</string>
-				<key>MARKETING_VERSION</key>
-				<string>1.0</string>
-				<key>PRODUCT_BUNDLE_IDENTIFIER</key>
-				<string>com.sermonsoft.AllTrailsLunchAppTests</string>
-				<key>PRODUCT_NAME</key>
-				<string>$(TARGET_NAME)</string>
-				<key>SWIFT_EMIT_LOC_STRINGS</key>
-				<string>NO</string>
-				<key>SWIFT_VERSION</key>
-				<string>5.0</string>
-				<key>TARGETED_DEVICE_FAMILY</key>
-				<string>1,2</string>
-				<key>TEST_HOST</key>
-				<string>$(BUILT_PRODUCTS_DIR)/AllTrailsLunchApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AllTrailsLunchApp</string>
-			</dict>
-			<key>isa</key>
-			<string>XCBuildConfiguration</string>
-			<key>name</key>
-			<string>Debug</string>
-		</dict>
-		<key>D763B64C2EB7D76400F8564C</key>
-		<dict>
-			<key>buildSettings</key>
-			<dict>
-				<key>BUNDLE_LOADER</key>
-				<string>$(TEST_HOST)</string>
-				<key>CODE_SIGN_STYLE</key>
-				<string>Automatic</string>
-				<key>CURRENT_PROJECT_VERSION</key>
-				<string>1</string>
-				<key>DEVELOPMENT_TEAM</key>
-				<string>D568Z8S8MN</string>
-				<key>GENERATE_INFOPLIST_FILE</key>
-				<string>YES</string>
-				<key>IPHONEOS_DEPLOYMENT_TARGET</key>
-				<string>18.2</string>
-				<key>MARKETING_VERSION</key>
-				<string>1.0</string>
-				<key>PRODUCT_BUNDLE_IDENTIFIER</key>
-				<string>com.sermonsoft.AllTrailsLunchAppTests</string>
-				<key>PRODUCT_NAME</key>
-				<string>$(TARGET_NAME)</string>
-				<key>SWIFT_EMIT_LOC_STRINGS</key>
-				<string>NO</string>
-				<key>SWIFT_VERSION</key>
-				<string>5.0</string>
-				<key>TARGETED_DEVICE_FAMILY</key>
-				<string>1,2</string>
-				<key>TEST_HOST</key>
-				<string>$(BUILT_PRODUCTS_DIR)/AllTrailsLunchApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AllTrailsLunchApp</string>
-			</dict>
-			<key>isa</key>
-			<string>XCBuildConfiguration</string>
-			<key>name</key>
-			<string>Release</string>
-		</dict>
-		<key>D763B64D2EB7D76400F8564C</key>
-		<dict>
-			<key>buildConfigurations</key>
-			<array>
-				<string>D763B64E2EB7D76400F8564C</string>
-				<string>D763B64F2EB7D76400F8564C</string>
-			</array>
-			<key>defaultConfigurationIsVisible</key>
-			<string>0</string>
-			<key>defaultConfigurationName</key>
-			<string>Release</string>
-			<key>isa</key>
-			<string>XCConfigurationList</string>
-		</dict>
-		<key>D763B64E2EB7D76400F8564C</key>
-		<dict>
-			<key>buildSettings</key>
-			<dict>
-				<key>CODE_SIGN_STYLE</key>
-				<string>Automatic</string>
-				<key>CURRENT_PROJECT_VERSION</key>
-				<string>1</string>
-				<key>DEVELOPMENT_TEAM</key>
-				<string>D568Z8S8MN</string>
-				<key>GENERATE_INFOPLIST_FILE</key>
-				<string>YES</string>
-				<key>MARKETING_VERSION</key>
-				<string>1.0</string>
-				<key>PRODUCT_BUNDLE_IDENTIFIER</key>
-				<string>com.sermonsoft.AllTrailsLunchAppUITests</string>
-				<key>PRODUCT_NAME</key>
-				<string>$(TARGET_NAME)</string>
-				<key>SWIFT_EMIT_LOC_STRINGS</key>
-				<string>NO</string>
-				<key>SWIFT_VERSION</key>
-				<string>5.0</string>
-				<key>TARGETED_DEVICE_FAMILY</key>
-				<string>1,2</string>
-				<key>TEST_TARGET_NAME</key>
-				<string>AllTrailsLunchApp</string>
-			</dict>
-			<key>isa</key>
-			<string>XCBuildConfiguration</string>
-			<key>name</key>
-			<string>Debug</string>
-		</dict>
-		<key>D763B64F2EB7D76400F8564C</key>
-		<dict>
-			<key>buildSettings</key>
-			<dict>
-				<key>CODE_SIGN_STYLE</key>
-				<string>Automatic</string>
-				<key>CURRENT_PROJECT_VERSION</key>
-				<string>1</string>
-				<key>DEVELOPMENT_TEAM</key>
-				<string>D568Z8S8MN</string>
-				<key>GENERATE_INFOPLIST_FILE</key>
-				<string>YES</string>
-				<key>MARKETING_VERSION</key>
-				<string>1.0</string>
-				<key>PRODUCT_BUNDLE_IDENTIFIER</key>
-				<string>com.sermonsoft.AllTrailsLunchAppUITests</string>
-				<key>PRODUCT_NAME</key>
-				<string>$(TARGET_NAME)</string>
-				<key>SWIFT_EMIT_LOC_STRINGS</key>
-				<string>NO</string>
-				<key>SWIFT_VERSION</key>
-				<string>5.0</string>
-				<key>TARGETED_DEVICE_FAMILY</key>
-				<string>1,2</string>
-				<key>TEST_TARGET_NAME</key>
-				<string>AllTrailsLunchApp</string>
-			</dict>
-			<key>isa</key>
-			<string>XCBuildConfiguration</string>
-			<key>name</key>
-			<string>Release</string>
-		</dict>
-	</dict>
-	<key>rootObject</key>
-	<string>D763B61B2EB7D76300F8564C</string>
-</dict>
-</plist>
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXContainerItemProxy section */
+		D763B6342EB7D76400F8564C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D763B61B2EB7D76300F8564C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D763B6222EB7D76300F8564C;
+			remoteInfo = AllTrailsLunchApp;
+		};
+		D763B63E2EB7D76400F8564C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D763B61B2EB7D76300F8564C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D763B6222EB7D76300F8564C;
+			remoteInfo = AllTrailsLunchApp;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		D763B6232EB7D76300F8564C /* AllTrailsLunchApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AllTrailsLunchApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D763B6332EB7D76400F8564C /* AllTrailsLunchAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AllTrailsLunchAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D763B63D2EB7D76400F8564C /* AllTrailsLunchAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AllTrailsLunchAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		D763B6252EB7D76300F8564C /* AllTrailsLunchApp */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = AllTrailsLunchApp;
+			sourceTree = "<group>";
+		};
+		D763B6362EB7D76400F8564C /* AllTrailsLunchAppTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = AllTrailsLunchAppTests;
+			sourceTree = "<group>";
+		};
+		D763B6402EB7D76400F8564C /* AllTrailsLunchAppUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = AllTrailsLunchAppUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D763B6202EB7D76300F8564C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D763B6302EB7D76400F8564C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D763B63A2EB7D76400F8564C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		D763B61A2EB7D76300F8564C = {
+			isa = PBXGroup;
+			children = (
+				D763B6252EB7D76300F8564C /* AllTrailsLunchApp */,
+				D763B6362EB7D76400F8564C /* AllTrailsLunchAppTests */,
+				D763B6402EB7D76400F8564C /* AllTrailsLunchAppUITests */,
+				D763B6242EB7D76300F8564C /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		D763B6242EB7D76300F8564C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D763B6232EB7D76300F8564C /* AllTrailsLunchApp.app */,
+				D763B6332EB7D76400F8564C /* AllTrailsLunchAppTests.xctest */,
+				D763B63D2EB7D76400F8564C /* AllTrailsLunchAppUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		D763B6222EB7D76300F8564C /* AllTrailsLunchApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D763B6472EB7D76400F8564C /* Build configuration list for PBXNativeTarget "AllTrailsLunchApp" */;
+			buildPhases = (
+				D763B61F2EB7D76300F8564C /* Sources */,
+				D763B6202EB7D76300F8564C /* Frameworks */,
+				D763B6212EB7D76300F8564C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				D763B6252EB7D76300F8564C /* AllTrailsLunchApp */,
+			);
+			name = AllTrailsLunchApp;
+			packageProductDependencies = (
+			);
+			productName = AllTrailsLunchApp;
+			productReference = D763B6232EB7D76300F8564C /* AllTrailsLunchApp.app */;
+			productType = "com.apple.product-type.application";
+		};
+		D763B6322EB7D76400F8564C /* AllTrailsLunchAppTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D763B64A2EB7D76400F8564C /* Build configuration list for PBXNativeTarget "AllTrailsLunchAppTests" */;
+			buildPhases = (
+				D763B62F2EB7D76400F8564C /* Sources */,
+				D763B6302EB7D76400F8564C /* Frameworks */,
+				D763B6312EB7D76400F8564C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D763B6352EB7D76400F8564C /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				D763B6362EB7D76400F8564C /* AllTrailsLunchAppTests */,
+			);
+			name = AllTrailsLunchAppTests;
+			packageProductDependencies = (
+			);
+			productName = AllTrailsLunchAppTests;
+			productReference = D763B6332EB7D76400F8564C /* AllTrailsLunchAppTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		D763B63C2EB7D76400F8564C /* AllTrailsLunchAppUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D763B64D2EB7D76400F8564C /* Build configuration list for PBXNativeTarget "AllTrailsLunchAppUITests" */;
+			buildPhases = (
+				D763B6392EB7D76400F8564C /* Sources */,
+				D763B63A2EB7D76400F8564C /* Frameworks */,
+				D763B63B2EB7D76400F8564C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D763B63F2EB7D76400F8564C /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				D763B6402EB7D76400F8564C /* AllTrailsLunchAppUITests */,
+			);
+			name = AllTrailsLunchAppUITests;
+			packageProductDependencies = (
+			);
+			productName = AllTrailsLunchAppUITests;
+			productReference = D763B63D2EB7D76400F8564C /* AllTrailsLunchAppUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D763B61B2EB7D76300F8564C /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1620;
+				LastUpgradeCheck = 1620;
+				TargetAttributes = {
+					D763B6222EB7D76300F8564C = {
+						CreatedOnToolsVersion = 16.2;
+					};
+					D763B6322EB7D76400F8564C = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = D763B6222EB7D76300F8564C;
+					};
+					D763B63C2EB7D76400F8564C = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = D763B6222EB7D76300F8564C;
+					};
+				};
+			};
+			buildConfigurationList = D763B61E2EB7D76300F8564C /* Build configuration list for PBXProject "AllTrailsLunchApp" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = D763B61A2EB7D76300F8564C;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = D763B6242EB7D76300F8564C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D763B6222EB7D76300F8564C /* AllTrailsLunchApp */,
+				D763B6322EB7D76400F8564C /* AllTrailsLunchAppTests */,
+				D763B63C2EB7D76400F8564C /* AllTrailsLunchAppUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		D763B6212EB7D76300F8564C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D763B6312EB7D76400F8564C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D763B63B2EB7D76400F8564C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D763B61F2EB7D76300F8564C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D763B62F2EB7D76400F8564C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D763B6392EB7D76400F8564C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		D763B6352EB7D76400F8564C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D763B6222EB7D76300F8564C /* AllTrailsLunchApp */;
+			targetProxy = D763B6342EB7D76400F8564C /* PBXContainerItemProxy */;
+		};
+		D763B63F2EB7D76400F8564C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D763B6222EB7D76300F8564C /* AllTrailsLunchApp */;
+			targetProxy = D763B63E2EB7D76400F8564C /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		D763B6452EB7D76400F8564C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		D763B6462EB7D76400F8564C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		D763B6482EB7D76400F8564C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"AllTrailsLunchApp/Preview Content\"";
+				DEVELOPMENT_TEAM = D568Z8S8MN;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "AllTrails Lunch needs your location to find nearby restaurants.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sermonsoft.AllTrailsLunchApp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D763B6492EB7D76400F8564C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"AllTrailsLunchApp/Preview Content\"";
+				DEVELOPMENT_TEAM = D568Z8S8MN;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "AllTrails Lunch needs your location to find nearby restaurants.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sermonsoft.AllTrailsLunchApp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		D763B64B2EB7D76400F8564C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = D568Z8S8MN;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sermonsoft.AllTrailsLunchAppTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AllTrailsLunchApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AllTrailsLunchApp";
+			};
+			name = Debug;
+		};
+		D763B64C2EB7D76400F8564C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = D568Z8S8MN;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sermonsoft.AllTrailsLunchAppTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AllTrailsLunchApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AllTrailsLunchApp";
+			};
+			name = Release;
+		};
+		D763B64E2EB7D76400F8564C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = D568Z8S8MN;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sermonsoft.AllTrailsLunchAppUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = AllTrailsLunchApp;
+			};
+			name = Debug;
+		};
+		D763B64F2EB7D76400F8564C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = D568Z8S8MN;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sermonsoft.AllTrailsLunchAppUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = AllTrailsLunchApp;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		D763B61E2EB7D76300F8564C /* Build configuration list for PBXProject "AllTrailsLunchApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D763B6452EB7D76400F8564C /* Debug */,
+				D763B6462EB7D76400F8564C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D763B6472EB7D76400F8564C /* Build configuration list for PBXNativeTarget "AllTrailsLunchApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D763B6482EB7D76400F8564C /* Debug */,
+				D763B6492EB7D76400F8564C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D763B64A2EB7D76400F8564C /* Build configuration list for PBXNativeTarget "AllTrailsLunchAppTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D763B64B2EB7D76400F8564C /* Debug */,
+				D763B64C2EB7D76400F8564C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D763B64D2EB7D76400F8564C /* Build configuration list for PBXNativeTarget "AllTrailsLunchAppUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D763B64E2EB7D76400F8564C /* Debug */,
+				D763B64F2EB7D76400F8564C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D763B61B2EB7D76300F8564C /* Project object */;
+}
