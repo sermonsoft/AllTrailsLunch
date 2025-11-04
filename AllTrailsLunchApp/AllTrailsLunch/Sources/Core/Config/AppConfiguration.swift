@@ -172,14 +172,42 @@ struct AppConfiguration {
 
     // MARK: - Dependency Injection
 
+    // MARK: - Low-Level Services
+
     func createPlacesClient() -> PlacesClient {
         PlacesClient(apiKey: googlePlacesAPIKey)
+    }
+
+    func createRemotePlacesService() -> RemotePlacesService {
+        GooglePlacesService(client: createPlacesClient())
+    }
+
+    func createFavoritesService() -> FavoritesService {
+        UserDefaultsFavoritesService()
+    }
+
+    // MARK: - Managers
+
+    @MainActor
+    func createFavoritesManager() -> FavoritesManager {
+        FavoritesManager(service: createFavoritesService())
+    }
+
+    @MainActor
+    func createRestaurantManager() -> RestaurantManager {
+        RestaurantManager(
+            remote: createRemotePlacesService(),
+            cache: nil, // No caching for now
+            favorites: createFavoritesManager()
+        )
     }
 
     @MainActor
     func createLocationManager() -> LocationManager {
         LocationManager()
     }
+
+    // MARK: - Legacy Support (for backward compatibility)
 
     @MainActor
     func createFavoritesStore() -> FavoritesStore {
