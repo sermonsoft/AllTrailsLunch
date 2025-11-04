@@ -11,17 +11,28 @@ struct DiscoveryView: View {
     @Bindable var viewModel: DiscoveryViewModel
     @EnvironmentObject var favoritesStore: FavoritesStore
     @State private var photoManager: PhotoManager
+    @State private var networkMonitor: NetworkMonitor
 
-    init(viewModel: DiscoveryViewModel, photoManager: PhotoManager? = nil) {
+    init(
+        viewModel: DiscoveryViewModel,
+        photoManager: PhotoManager? = nil,
+        networkMonitor: NetworkMonitor? = nil
+    ) {
         self.viewModel = viewModel
         self._photoManager = State(initialValue: photoManager ?? AppConfiguration.shared.createPhotoManager())
+        self._networkMonitor = State(initialValue: networkMonitor ?? AppConfiguration.shared.createNetworkMonitor())
     }
 
     var body: some View {
         NavigationStack {
-            ZStack {
-                contentView
-                floatingToggleButton
+            VStack(spacing: 0) {
+                OfflineIndicatorView(isOffline: !networkMonitor.isConnected)
+                    .animation(.easeInOut, value: networkMonitor.isConnected)
+
+                ZStack {
+                    contentView
+                    floatingToggleButton
+                }
             }
             .toolbar { logoToolbarItem }
             .navigationBarTitleDisplayMode(.inline)

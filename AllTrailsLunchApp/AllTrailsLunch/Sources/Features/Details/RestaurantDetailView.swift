@@ -92,6 +92,25 @@ struct RestaurantDetailView: View {
                         .font(DesignSystem.Typography.h3)
                         .foregroundColor(DesignSystem.Colors.textPrimary)
 
+                    // Get Directions Button (always available)
+                    Button(action: { getDirections() }) {
+                        HStack(spacing: DesignSystem.Spacing.md) {
+                            Image(systemName: "map.fill")
+                                .font(.system(size: DesignSystem.IconSize.md))
+                                .foregroundColor(DesignSystem.Colors.primary)
+                            Text("Get Directions")
+                                .font(DesignSystem.Typography.body)
+                                .foregroundColor(DesignSystem.Colors.textPrimary)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: DesignSystem.IconSize.sm))
+                                .foregroundColor(DesignSystem.Colors.textTertiary)
+                        }
+                        .padding(DesignSystem.Spacing.md)
+                        .background(DesignSystem.Colors.searchBackground)
+                        .cornerRadius(DesignSystem.CornerRadius.md)
+                    }
+
                     if let phoneNumber = placeDetail?.phoneNumber {
                         Button(action: { callRestaurant(phoneNumber: phoneNumber) }) {
                             HStack(spacing: DesignSystem.Spacing.md) {
@@ -235,6 +254,16 @@ struct RestaurantDetailView: View {
 
     private func openWebsite(url: URL) {
         openURL(url)
+    }
+
+    private func getDirections() {
+        // Open Apple Maps with directions to the restaurant
+        let coordinate = "\(place.latitude),\(place.longitude)"
+        let encodedName = place.name.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+
+        if let url = URL(string: "http://maps.apple.com/?daddr=\(coordinate)&q=\(encodedName)") {
+            openURL(url)
+        }
     }
 
     // MARK: - Hero Photo

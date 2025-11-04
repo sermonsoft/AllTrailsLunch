@@ -206,6 +206,10 @@ struct AppConfiguration {
         NSCachePhotoCache()
     }
 
+    func createPlacesCacheService() -> LocalPlacesCache {
+        FileBasedPlacesCache()
+    }
+
     // MARK: - Managers
 
     @MainActor
@@ -217,7 +221,7 @@ struct AppConfiguration {
     func createRestaurantManager() -> RestaurantManager {
         RestaurantManager(
             remote: createRemotePlacesService(),
-            cache: nil, // No caching for now
+            cache: createPlacesCacheService(),
             favorites: createFavoritesManager()
         )
     }
@@ -233,6 +237,11 @@ struct AppConfiguration {
             loader: createPhotoLoaderService(),
             cache: createPhotoCacheService()
         )
+    }
+
+    @MainActor
+    func createNetworkMonitor() -> NetworkMonitor {
+        NetworkMonitor()
     }
 
     // MARK: - Interactors (Protocol-Based Services)

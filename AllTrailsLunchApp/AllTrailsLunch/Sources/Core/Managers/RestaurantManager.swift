@@ -37,31 +37,49 @@ class RestaurantManager {
         radius: Int = 1500,
         pageToken: String? = nil
     ) async throws -> (places: [Place], nextPageToken: String?) {
-        // Check cache first (if available)
-        if pageToken == nil, // Only use cache for first page
-           let cached = try? cache?.getCachedPlaces(location: location, radius: radius) {
-            return (cached, nil)
+        // Only use cache for first page
+        guard pageToken == nil else {
+            return try await fetchNearbyFromRemote(location: location, radius: radius, pageToken: pageToken)
         }
-        
-        // Fetch from remote
+
+        do {
+            // Try to fetch from remote first
+            let result = try await fetchNearbyFromRemote(location: location, radius: radius, pageToken: nil)
+
+            // Cache successful results
+            try? cache?.cachePlaces(result.places, location: location, radius: radius)
+
+            return result
+        } catch {
+            // If network fails, try to load from cache
+            if let cached = try? cache?.getCachedPlaces(location: location, radius: radius) {
+                print("⚠️ RestaurantManager: Network failed, using cached data")
+                return (cached, nil)
+            }
+
+            // No cache available, rethrow error
+            throw error
+        }
+    }
+
+    private func fetchNearbyFromRemote(
+        location: CLLocationCoordinate2D,
+        radius: Int,
+        pageToken: String?
+    ) async throws -> (places: [Place], nextPageToken: String?) {
         let (dtos, nextToken) = try await remote.searchNearby(
             latitude: location.latitude,
             longitude: location.longitude,
             radius: radius,
             pageToken: pageToken
         )
-        
+
         // Convert DTOs to domain models
         let places = dtos.map { Place(from: $0) }
-        
+
         // Apply favorite status
         let placesWithFavorites = favorites.applyFavoriteStatus(to: places)
-        
-        // Cache results (first page only)
-        if pageToken == nil {
-            try? cache?.cachePlaces(placesWithFavorites, location: location, radius: radius)
-        }
-        
+
         return (placesWithFavorites, nextToken)
     }
     
