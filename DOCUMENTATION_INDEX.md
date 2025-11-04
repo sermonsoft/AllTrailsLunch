@@ -98,6 +98,64 @@ All documentation is organized at the root level for easy access. Choose the gui
 
 ---
 
+## 🏛️ Architecture Improvements
+
+### Enhancing the Codebase
+
+11. **[ARCHITECTURE_IMPROVEMENTS.md](ARCHITECTURE_IMPROVEMENTS.md)** - Architecture enhancement guide
+    - Protocol-oriented architecture
+    - Use case / interactor layer
+    - CoreData for persistence
+    - Coordinator pattern for navigation
+    - Caching layer implementation
+    - State management improvements
+    - Implementation priority
+    - Expected outcomes
+
+12. **[IMPLEMENTATION_GUIDE.md](IMPLEMENTATION_GUIDE.md)** - Step-by-step implementation
+    - Phase 1: Protocol-oriented architecture
+    - Phase 2: Use case layer
+    - Phase 3: Unified state management
+    - Practical code examples
+    - Testing benefits
+    - Migration checklist
+
+13. **[VIPER_ARCHITECTURE_ANALYSIS.md](VIPER_ARCHITECTURE_ANALYSIS.md)** - VIPER pattern analysis
+    - VIPER components explained (View, Interactor, Presenter, Entity, Router)
+    - Protocol-oriented VIPER
+    - Manager layer pattern
+    - Builder pattern
+    - Dependency container
+    - Observable presenter
+    - Event tracking
+    - Key patterns from lesson_151_starter_project
+
+14. **[VIPER_IMPLEMENTATION_GUIDE.md](VIPER_IMPLEMENTATION_GUIDE.md)** - VIPER implementation steps
+    - Phase 1: Manager layer (Week 1)
+    - Phase 2: Interactor layer (Week 2)
+    - Phase 3: Router layer (Week 3)
+    - Phase 4: Presenter layer (Week 4)
+    - Service protocols
+    - Complete code examples
+
+15. **[ARCHITECTURE_COMPARISON.md](ARCHITECTURE_COMPARISON.md)** - MVVM vs VIPER comparison
+    - Current MVVM architecture
+    - VIPER architecture (lesson 151)
+    - Side-by-side code comparison
+    - Key differences
+    - Hybrid approach (recommended)
+    - Migration strategy
+
+16. **[LESSON_151_ANALYSIS_SUMMARY.md](LESSON_151_ANALYSIS_SUMMARY.md)** - Executive summary
+    - Project overview (190 Swift files)
+    - Key architectural patterns
+    - Recommendations for AllTrails Lunch
+    - What to adopt vs skip
+    - Implementation roadmap
+    - Hybrid approach (80% benefits, 30% complexity)
+
+---
+
 ## 📖 Quick Reference by Role
 
 ### I'm a New Developer
@@ -114,7 +172,8 @@ All documentation is organized at the root level for easy access. Choose the gui
 1. [PROJECT_SUMMARY.md](PROJECT_SUMMARY.md) - Understand architecture
 2. [FILE_STRUCTURE.md](FILE_STRUCTURE.md) - Find where to add code
 3. [QUICK_START.md](QUICK_START.md) - See code examples
-4. [NETWORK_LOGGING.md](NETWORK_LOGGING.md) - Debug your API calls
+4. [ARCHITECTURE_IMPROVEMENTS.md](ARCHITECTURE_IMPROVEMENTS.md) - Best practices
+5. [NETWORK_LOGGING.md](NETWORK_LOGGING.md) - Debug your API calls
 
 ### I'm Debugging an Issue
 
@@ -152,6 +211,12 @@ All documentation is organized at the root level for easy access. Choose the gui
 - [PROJECT_SUMMARY.md](PROJECT_SUMMARY.md)
 - [FILE_STRUCTURE.md](FILE_STRUCTURE.md)
 - [IMPLEMENTATION_COMPLETE.md](IMPLEMENTATION_COMPLETE.md)
+- [ARCHITECTURE_IMPROVEMENTS.md](ARCHITECTURE_IMPROVEMENTS.md)
+- [IMPLEMENTATION_GUIDE.md](IMPLEMENTATION_GUIDE.md)
+- [VIPER_ARCHITECTURE_ANALYSIS.md](VIPER_ARCHITECTURE_ANALYSIS.md)
+- [VIPER_IMPLEMENTATION_GUIDE.md](VIPER_IMPLEMENTATION_GUIDE.md)
+- [ARCHITECTURE_COMPARISON.md](ARCHITECTURE_COMPARISON.md)
+- [LESSON_151_ANALYSIS_SUMMARY.md](LESSON_151_ANALYSIS_SUMMARY.md)
 
 ### Build & Configuration
 - [BUILD_CONFIGURATIONS.md](BUILD_CONFIGURATIONS.md)
@@ -191,6 +256,21 @@ All documentation is organized at the root level for easy access. Choose the gui
 **"What build schemes are available?"**
 → [SCHEMES_QUICK_REFERENCE.md](SCHEMES_QUICK_REFERENCE.md)
 
+**"How can I improve the architecture?"**
+→ [ARCHITECTURE_IMPROVEMENTS.md](ARCHITECTURE_IMPROVEMENTS.md)
+
+**"How do I implement protocol-oriented design?"**
+→ [IMPLEMENTATION_GUIDE.md](IMPLEMENTATION_GUIDE.md)
+
+**"What is VIPER architecture?"**
+→ [VIPER_ARCHITECTURE_ANALYSIS.md](VIPER_ARCHITECTURE_ANALYSIS.md)
+
+**"How do I migrate to VIPER?"**
+→ [VIPER_IMPLEMENTATION_GUIDE.md](VIPER_IMPLEMENTATION_GUIDE.md)
+
+**"MVVM vs VIPER - which is better?"**
+→ [ARCHITECTURE_COMPARISON.md](ARCHITECTURE_COMPARISON.md)
+
 ---
 
 ## 📊 Documentation Stats
@@ -207,8 +287,14 @@ All documentation is organized at the root level for easy access. Choose the gui
 | SCHEMES_QUICK_REFERENCE.md | ~150 | Build reference | Developers |
 | NETWORK_LOGGING.md | ~300 | Logging guide | Developers, QA |
 | LOGGING_EXAMPLE.md | ~300 | Log examples | Developers, QA |
+| ARCHITECTURE_IMPROVEMENTS.md | ~300 | Architecture guide | Architects, Developers |
+| IMPLEMENTATION_GUIDE.md | ~300 | Implementation steps | Developers |
+| VIPER_ARCHITECTURE_ANALYSIS.md | ~300 | VIPER patterns | Architects, Developers |
+| VIPER_IMPLEMENTATION_GUIDE.md | ~300 | VIPER implementation | Developers |
+| ARCHITECTURE_COMPARISON.md | ~300 | MVVM vs VIPER | Architects, Tech Leads |
+| LESSON_151_ANALYSIS_SUMMARY.md | ~300 | Executive summary | Everyone |
 
-**Total**: ~2,250 lines of comprehensive documentation
+**Total**: ~4,050 lines of comprehensive documentation
 
 ---
 
