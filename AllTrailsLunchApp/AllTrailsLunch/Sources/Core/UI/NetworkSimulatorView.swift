@@ -170,17 +170,36 @@ struct NetworkSimulatorView: View {
                     HStack {
                         Image(systemName: "info.circle.fill")
                             .foregroundColor(.blue)
-                        Text("How to Use")
+                        Text("How to Test Offline Mode")
                             .font(DesignSystem.Typography.captionBold)
                     }
-                    
-                    Text("1. Enable simulation to override network requests\n2. Toggle network on/off to test offline mode\n3. Check that cached data loads when offline")
+
+                    Text("1. Search for restaurants while ONLINE (data gets cached)\n2. Enable simulation and go OFFLINE\n3. Pull to refresh or search again\n4. Cached data should load with orange banner\n5. Photos show placeholder if not cached")
                         .font(DesignSystem.Typography.caption)
                         .foregroundColor(DesignSystem.Colors.textSecondary)
                 }
                 .padding()
                 .background(Color.blue.opacity(0.1))
                 .cornerRadius(DesignSystem.CornerRadius.md)
+
+                // Warning
+                if simulator.isSimulationEnabled && !simulator.isNetworkOnline {
+                    VStack(alignment: .leading, spacing: DesignSystem.Spacing.xs) {
+                        HStack {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .foregroundColor(.orange)
+                            Text("Note")
+                                .font(DesignSystem.Typography.captionBold)
+                        }
+
+                        Text("Only previously loaded data and photos will be available offline. New searches require cached data from when you were online.")
+                            .font(DesignSystem.Typography.caption)
+                            .foregroundColor(DesignSystem.Colors.textSecondary)
+                    }
+                    .padding()
+                    .background(Color.orange.opacity(0.1))
+                    .cornerRadius(DesignSystem.CornerRadius.md)
+                }
             }
             .padding()
             .background(Color.white)

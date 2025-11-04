@@ -4,7 +4,6 @@
 ///
 /// High-level manager for favorites operations.
 /// Uses @Observable macro for modern SwiftUI state management.
-/// Inspired by VIPER architecture from lesson_151_starter_project.
 ///
 
 import Foundation

@@ -53,9 +53,24 @@ struct CachedPhotoView: View {
     }
     
     private var placeholderImage: some View {
-        Image("placeholder-image", bundle: nil)
-            .resizable()
-            .aspectRatio(contentMode: contentMode)
+        ZStack {
+            Rectangle()
+                .fill(Color.gray.opacity(0.2))
+
+            VStack(spacing: DesignSystem.Spacing.sm) {
+                Image(systemName: "photo")
+                    .font(.system(size: 40))
+                    .foregroundColor(.gray.opacity(0.5))
+
+                #if DEV
+                if NetworkSimulator.shared.shouldBlockRequest() {
+                    Text("Offline")
+                        .font(DesignSystem.Typography.caption)
+                        .foregroundColor(.gray.opacity(0.7))
+                }
+                #endif
+            }
+        }
     }
     
     private func loadPhoto() async {

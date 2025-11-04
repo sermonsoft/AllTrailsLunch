@@ -11,22 +11,42 @@ import SwiftUI
 
 struct OfflineIndicatorView: View {
     let isOffline: Bool
-    
+
     var body: some View {
         if isOffline {
-            HStack(spacing: DesignSystem.Spacing.sm) {
-                Image(systemName: "wifi.slash")
-                    .font(.system(size: DesignSystem.IconSize.sm))
-                    .foregroundColor(.white)
-                
-                Text("You're offline. Showing cached results.")
-                    .font(DesignSystem.Typography.caption)
-                    .foregroundColor(.white)
+            VStack(spacing: 0) {
+                HStack(spacing: DesignSystem.Spacing.sm) {
+                    Image(systemName: "wifi.slash")
+                        .font(.system(size: DesignSystem.IconSize.sm))
+                        .foregroundColor(.white)
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("You're offline")
+                            .font(DesignSystem.Typography.captionBold)
+                            .foregroundColor(.white)
+
+                        #if DEV
+                        if NetworkSimulator.shared.isSimulationEnabled {
+                            Text("Network simulation active • Showing cached data")
+                                .font(.system(size: 11))
+                                .foregroundColor(.white.opacity(0.9))
+                        } else {
+                            Text("Showing cached results")
+                                .font(.system(size: 11))
+                                .foregroundColor(.white.opacity(0.9))
+                        }
+                        #else
+                        Text("Showing cached results")
+                            .font(.system(size: 11))
+                            .foregroundColor(.white.opacity(0.9))
+                        #endif
+                    }
+                }
+                .padding(.vertical, DesignSystem.Spacing.sm)
+                .padding(.horizontal, DesignSystem.Spacing.md)
+                .frame(maxWidth: .infinity)
+                .background(Color.orange)
             }
-            .padding(.vertical, DesignSystem.Spacing.sm)
-            .padding(.horizontal, DesignSystem.Spacing.md)
-            .frame(maxWidth: .infinity)
-            .background(Color.orange)
             .transition(.move(edge: .top).combined(with: .opacity))
         }
     }
