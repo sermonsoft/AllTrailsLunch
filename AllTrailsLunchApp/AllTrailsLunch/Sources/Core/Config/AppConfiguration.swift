@@ -207,6 +207,27 @@ struct AppConfiguration {
         LocationManager()
     }
 
+    // MARK: - Interactors (Week 2: Protocol-Based Services)
+
+    @MainActor
+    func createCoreInteractor() -> CoreInteractor {
+        CoreInteractor(
+            restaurantManager: createRestaurantManager(),
+            favoritesManager: createFavoritesManager(),
+            locationManager: createLocationManager()
+        )
+    }
+
+    @MainActor
+    func createDiscoveryInteractor() -> DiscoveryInteractor {
+        createCoreInteractor()
+    }
+
+    @MainActor
+    func createDetailInteractor() -> DetailInteractor {
+        createCoreInteractor()
+    }
+
     // MARK: - Legacy Support (for backward compatibility)
 
     @MainActor
@@ -222,8 +243,17 @@ struct AppConfiguration {
         )
     }
 
+    // MARK: - ViewModels (Week 2: Protocol-Based)
+
     @MainActor
     func createDiscoveryViewModel() -> DiscoveryViewModel {
+        DiscoveryViewModel(interactor: createDiscoveryInteractor())
+    }
+
+    // MARK: - Legacy ViewModel Factory (for backward compatibility)
+
+    @MainActor
+    func createLegacyDiscoveryViewModel() -> DiscoveryViewModel {
         DiscoveryViewModel(
             repository: createRepository(),
             locationManager: createLocationManager(),

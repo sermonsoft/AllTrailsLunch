@@ -23,28 +23,32 @@ class DiscoveryViewModel: ObservableObject {
     @Published var error: PlacesError?
     @Published var userLocation: CLLocationCoordinate2D?
     @Published var nextPageToken: String?
-    
-    private let repository: RestaurantRepository
-    private let locationManager: LocationManager
-    private let favoritesStore: FavoritesStore
+
+    private let interactor: DiscoveryInteractor
     private var searchTask: Task<Void, Never>?
     private var debounceTimer: Timer?
-    
+
+    init(interactor: DiscoveryInteractor) {
+        self.interactor = interactor
+    }
+
+    // MARK: - Legacy Initializer (for backward compatibility)
+
     init(
         repository: RestaurantRepository,
         locationManager: LocationManager,
         favoritesStore: FavoritesStore
     ) {
-        self.repository = repository
-        self.locationManager = locationManager
-        self.favoritesStore = favoritesStore
+        // Create a temporary CoreInteractor for legacy support
+        let config = AppConfiguration.shared
+        self.interactor = config.createCoreInteractor()
     }
     
     // MARK: - Initialization
-    
+
     func initialize() async {
         do {
-            let location = try await locationManager.requestLocationPermission()
+            let location = try await interactor.requestLocationPermission()
             self.userLocation = location
             await searchNearby()
         } catch let error as PlacesError {
@@ -80,14 +84,15 @@ class DiscoveryViewModel: ObservableObject {
             error = .locationPermissionDenied
             return
         }
-        
+
         isLoading = true
         error = nil
-        
+
         do {
-            let (places, nextToken) = try await repository.searchNearby(
-                latitude: location.latitude,
-                longitude: location.longitude
+            let (places, nextToken) = try await interactor.searchNearby(
+                location: location,
+                radius: 1500,
+                pageToken: nil
             )
             self.results = places
             self.nextPageToken = nextToken
@@ -96,19 +101,19 @@ class DiscoveryViewModel: ObservableObject {
         } catch {
             self.error = .unknown(error.localizedDescription)
         }
-        
+
         isLoading = false
     }
-    
+
     private func searchText(_ query: String) async {
         isLoading = true
         error = nil
-        
+
         do {
-            let (places, nextToken) = try await repository.searchText(
+            let (places, nextToken) = try await interactor.searchText(
                 query: query,
-                latitude: userLocation?.latitude,
-                longitude: userLocation?.longitude
+                location: userLocation,
+                pageToken: nil
             )
             self.results = places
             self.nextPageToken = nextToken
@@ -117,20 +122,19 @@ class DiscoveryViewModel: ObservableObject {
         } catch {
             self.error = .unknown(error.localizedDescription)
         }
-        
+
         isLoading = false
     }
     
     func loadNextPage() async {
         guard let nextPageToken = nextPageToken else { return }
-        
+
         isLoading = true
-        
+
         do {
-            let (places, nextToken) = try await repository.searchText(
+            let (places, nextToken) = try await interactor.searchText(
                 query: searchText,
-                latitude: userLocation?.latitude,
-                longitude: userLocation?.longitude,
+                location: userLocation,
                 pageToken: nextPageToken
             )
             self.results.append(contentsOf: places)
@@ -140,17 +144,17 @@ class DiscoveryViewModel: ObservableObject {
         } catch {
             self.error = .unknown(error.localizedDescription)
         }
-        
+
         isLoading = false
     }
-    
+
     // MARK: - Favorites
-    
+
     func toggleFavorite(_ place: Place) {
-        favoritesStore.toggleFavorite(place.id)
-        
+        interactor.toggleFavorite(place.id)
+
         if let index = results.firstIndex(where: { $0.id == place.id }) {
-            results[index].isFavorite = favoritesStore.isFavorite(place.id)
+            results[index].isFavorite = interactor.isFavorite(place.id)
         }
     }
 }
