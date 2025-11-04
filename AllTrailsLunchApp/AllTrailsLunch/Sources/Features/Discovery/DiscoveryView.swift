@@ -25,21 +25,28 @@ struct DiscoveryView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
-                OfflineIndicatorView(isOffline: !networkMonitor.isConnected)
-                    .animation(.easeInOut, value: networkMonitor.isConnected)
+            ZStack {
+                VStack(spacing: 0) {
+                    OfflineIndicatorView(isOffline: !networkMonitor.isConnected)
+                        .animation(.easeInOut, value: networkMonitor.isConnected)
 
-                ZStack {
-                    contentView
-                    floatingToggleButton
+                    ZStack {
+                        contentView
+                        floatingToggleButton
+                    }
                 }
+                .toolbar { logoToolbarItem }
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbarBackground(.visible, for: .navigationBar)
+                .toolbarBackground(Color.white, for: .navigationBar)
+                .background(DesignSystem.Colors.background)
+                .photoManager(photoManager)
+
+                // Network Simulator (Development only)
+                #if DEV
+                NetworkSimulatorView()
+                #endif
             }
-            .toolbar { logoToolbarItem }
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(.visible, for: .navigationBar)
-            .toolbarBackground(Color.white, for: .navigationBar)
-            .background(DesignSystem.Colors.background)
-            .photoManager(photoManager)
         }
     }
 

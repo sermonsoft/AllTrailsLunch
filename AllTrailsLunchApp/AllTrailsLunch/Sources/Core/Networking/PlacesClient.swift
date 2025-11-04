@@ -26,7 +26,12 @@ class PlacesClient {
 
         for attempt in 0..<maxRetries {
             do {
+                // Use simulated network in development builds
+                #if DEV
+                let (data, response) = try await session.simulatedData(for: urlRequest)
+                #else
                 let (data, response) = try await session.data(for: urlRequest)
+                #endif
 
                 guard let httpResponse = response as? HTTPURLResponse else {
                     let error = PlacesError.invalidResponse("Invalid response type")

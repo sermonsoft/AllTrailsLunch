@@ -265,17 +265,22 @@ class GooglePlacesPhotoLoader: PhotoLoaderService {
     }
     
     func loadPhoto(from url: URL) async throws -> UIImage {
+        // Use simulated network in development builds
+        #if DEV
+        let (data, response) = try await session.simulatedData(from: url)
+        #else
         let (data, response) = try await session.data(from: url)
-        
+        #endif
+
         guard let httpResponse = response as? HTTPURLResponse,
               (200...299).contains(httpResponse.statusCode) else {
             throw PhotoError.invalidResponse
         }
-        
+
         guard let image = UIImage(data: data) else {
             throw PhotoError.invalidImageData
         }
-        
+
         return image
     }
 }
