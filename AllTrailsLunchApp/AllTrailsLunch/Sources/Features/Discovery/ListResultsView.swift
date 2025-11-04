@@ -14,6 +14,8 @@ struct ListResultsView: View {
     let onLoadMore: () async -> Void
     let onRefresh: (() async -> Void)?
 
+    @Environment(\.photoManager) private var photoManager
+
     init(
         places: [Place],
         isLoading: Bool,
@@ -48,7 +50,10 @@ struct ListResultsView: View {
 
     private var restaurantList: some View {
         ForEach(Array(places.enumerated()), id: \.element.id) { index, place in
-            NavigationLink(destination: RestaurantDetailView(place: place)) {
+            NavigationLink(destination:
+                RestaurantDetailView(place: place)
+                    .photoManager(photoManager ?? AppConfiguration.shared.createPhotoManager())
+            ) {
                 RestaurantRow(
                     place: place,
                     onToggleFavorite: { onToggleFavorite(place) }
