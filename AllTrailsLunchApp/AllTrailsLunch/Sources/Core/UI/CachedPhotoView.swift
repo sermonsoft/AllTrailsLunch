@@ -60,16 +60,24 @@ struct CachedPhotoView: View {
     
     private func loadPhoto() async {
         guard let photoManager = photoManager else {
+            print("⚠️ CachedPhotoView: photoManager is nil!")
             isLoading = false
             return
         }
-        
+
+        print("✅ CachedPhotoView: Loading photo with references: \(photoReferences)")
         let loadedImage = await photoManager.loadFirstPhoto(
             from: photoReferences,
             maxWidth: maxWidth,
             maxHeight: maxHeight
         )
-        
+
+        if loadedImage != nil {
+            print("✅ CachedPhotoView: Photo loaded successfully")
+        } else {
+            print("⚠️ CachedPhotoView: Photo loading returned nil")
+        }
+
         image = loadedImage
         isLoading = false
     }

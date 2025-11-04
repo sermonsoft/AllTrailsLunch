@@ -15,14 +15,15 @@ struct RestaurantDetailView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DesignSystem.Spacing.lg) {
-                // Photo Gallery
+            VStack(alignment: .leading, spacing: 0) {
+                // Hero Photo
                 if !place.photoReferences.isEmpty {
-                    photoGallery
+                    heroPhoto
                 }
 
-                // Header Card
-                VStack(alignment: .leading, spacing: DesignSystem.Spacing.md) {
+                VStack(alignment: .leading, spacing: DesignSystem.Spacing.lg) {
+                    // Header Card
+                    VStack(alignment: .leading, spacing: DesignSystem.Spacing.md) {
                     HStack(alignment: .top) {
                         VStack(alignment: .leading, spacing: DesignSystem.Spacing.xs) {
                             Text(place.name)
@@ -149,9 +150,10 @@ struct RestaurantDetailView: View {
                 .padding(DesignSystem.Spacing.lg)
                 .cardStyle()
 
-                Spacer()
+                    Spacer()
+                }
+                .padding(DesignSystem.Spacing.lg)
             }
-            .padding(DesignSystem.Spacing.lg)
         }
         .background(DesignSystem.Colors.background)
         .navigationTitle("Details")
@@ -176,30 +178,18 @@ struct RestaurantDetailView: View {
         favoritesStore.toggleFavorite(place.id)
     }
 
-    // MARK: - Photo Gallery
+    // MARK: - Hero Photo
 
-    private var photoGallery: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: DesignSystem.Spacing.md) {
-                ForEach(Array(place.photoReferences.prefix(5).enumerated()), id: \.offset) { index, photoRef in
-                    photoGalleryItem(photoRef: photoRef, index: index)
-                }
-            }
-            .padding(.horizontal, DesignSystem.Spacing.lg)
-        }
-    }
-
-    private func photoGalleryItem(photoRef: String, index: Int) -> some View {
+    private var heroPhoto: some View {
         CachedPhotoView(
-            photoReferences: [photoRef],
-            maxWidth: 300,
-            maxHeight: 200,
+            photoReferences: place.photoReferences,
+            maxWidth: 800,
+            maxHeight: 400,
             contentMode: .fill
         )
-        .frame(width: 300, height: 200)
-        .clipShape(RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.lg))
-        .transition(.scale.combined(with: .opacity))
-        .animation(.spring(response: 0.4, dampingFraction: 0.8).delay(Double(index) * 0.05), value: place.id)
+        .frame(height: 250)
+        .clipped()
+        .transition(.opacity)
     }
 }
 

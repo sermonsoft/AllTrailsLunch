@@ -42,23 +42,6 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "D763B6222EB7D76300F8564C"
-            BuildableName = "AllTrailsLunchApp.app"
-            BlueprintName = "AllTrailsLunchApp"
-            ReferencedContainer = "container:AllTrailsLunchApp.xcodeproj">
-         </BuildableReference>
-      </BuildableProductRunnable>
-   </LaunchAction>
-   <ProfileAction
-      buildConfiguration = "Development"
-      shouldUseLaunchSchemeArgsEnv = "YES"
-      savedToolIdentifier = ""
-      useCustomWorkingDirectory = "NO"
-      debugDocumentVersioning = "YES">
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
@@ -68,6 +51,13 @@
             ReferencedContainer = "container:AllTrailsLunchApp.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
+   </LaunchAction>
+   <ProfileAction
+      buildConfiguration = "Development"
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      savedToolIdentifier = ""
+      useCustomWorkingDirectory = "NO"
+      debugDocumentVersioning = "YES">
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Development">
