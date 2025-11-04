@@ -131,22 +131,6 @@ class DiscoveryViewModel {
         // Log screen view
         eventLogger.log(Event.screenViewed)
     }
-
-    // MARK: - Legacy Initializer (for backward compatibility)
-
-    init(
-        repository: RestaurantRepository,
-        locationManager: LocationManager,
-        favoritesStore: FavoritesStore
-    ) {
-        // Create a temporary CoreInteractor for legacy support
-        let config = AppConfiguration.shared
-        self.interactor = config.createCoreInteractor()
-        self.eventLogger = config.createEventLogger()
-
-        // Log screen view
-        eventLogger.log(Event.screenViewed)
-    }
     
     // MARK: - Initialization
 

@@ -240,39 +240,20 @@ struct AppConfiguration {
         createCoreInteractor()
     }
 
-    // MARK: - Legacy Support (for backward compatibility)
+    // MARK: - Legacy Support (for backward compatibility with views)
 
     @MainActor
     func createFavoritesStore() -> FavoritesStore {
         FavoritesStore()
     }
 
-    @MainActor
-    func createRepository() -> RestaurantRepository {
-        RestaurantRepository(
-            placesClient: createPlacesClient(),
-            favoritesStore: createFavoritesStore()
-        )
-    }
-
-    // MARK: - ViewModels (Week 2: Protocol-Based + Week 3: Event Tracking)
+    // MARK: - ViewModels
 
     @MainActor
     func createDiscoveryViewModel() -> DiscoveryViewModel {
         DiscoveryViewModel(
             interactor: createDiscoveryInteractor(),
             eventLogger: createEventLogger()
-        )
-    }
-
-    // MARK: - Legacy ViewModel Factory (for backward compatibility)
-
-    @MainActor
-    func createLegacyDiscoveryViewModel() -> DiscoveryViewModel {
-        DiscoveryViewModel(
-            repository: createRepository(),
-            locationManager: createLocationManager(),
-            favoritesStore: createFavoritesStore()
         )
     }
 }

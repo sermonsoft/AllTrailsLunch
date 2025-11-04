@@ -1,2 +1,0 @@
-Target dependency graph (1 target)
-Target 'AllTrailsLunchApp' in project 'AllTrailsLunchApp' (no dependencies)

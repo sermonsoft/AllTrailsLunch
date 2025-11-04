@@ -272,14 +272,8 @@ struct ViewModeToggleButton: View {
 }
 
 #Preview {
-    DiscoveryView(viewModel: DiscoveryViewModel(
-        repository: RestaurantRepository(
-            placesClient: PlacesClient(apiKey: "test"),
-            favoritesStore: FavoritesStore()
-        ),
-        locationManager: LocationManager(),
-        favoritesStore: FavoritesStore()
-    ))
-    .environmentObject(FavoritesStore())
+    let config = AppConfiguration.shared
+    return DiscoveryView(viewModel: config.createDiscoveryViewModel())
+        .environmentObject(config.createFavoritesStore())
 }
 

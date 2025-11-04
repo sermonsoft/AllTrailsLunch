@@ -1,1 +1,0 @@
-@rpath/AllTrailsLunchApp.debug.dylib
