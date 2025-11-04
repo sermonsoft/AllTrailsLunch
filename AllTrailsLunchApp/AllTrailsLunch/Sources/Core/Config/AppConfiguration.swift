@@ -186,6 +186,18 @@ struct AppConfiguration {
         UserDefaultsFavoritesService()
     }
 
+    func createEventLogger() -> EventLogger {
+        // Use ConsoleEventLogger for development, FirebaseEventLogger for production
+        switch environment {
+        case .mock, .development:
+            return ConsoleEventLogger(isEnabled: true)
+        case .staging:
+            return ConsoleEventLogger(isEnabled: true) // Or FirebaseEventLogger for staging
+        case .production, .store:
+            return FirebaseEventLogger(isEnabled: true)
+        }
+    }
+
     // MARK: - Managers
 
     @MainActor
@@ -243,11 +255,14 @@ struct AppConfiguration {
         )
     }
 
-    // MARK: - ViewModels (Week 2: Protocol-Based)
+    // MARK: - ViewModels (Week 2: Protocol-Based + Week 3: Event Tracking)
 
     @MainActor
     func createDiscoveryViewModel() -> DiscoveryViewModel {
-        DiscoveryViewModel(interactor: createDiscoveryInteractor())
+        DiscoveryViewModel(
+            interactor: createDiscoveryInteractor(),
+            eventLogger: createEventLogger()
+        )
     }
 
     // MARK: - Legacy ViewModel Factory (for backward compatibility)

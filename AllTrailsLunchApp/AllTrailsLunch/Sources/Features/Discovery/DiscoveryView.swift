@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct DiscoveryView: View {
-    @ObservedObject var viewModel: DiscoveryViewModel
+    @Bindable var viewModel: DiscoveryViewModel
     @EnvironmentObject var favoritesStore: FavoritesStore
 
     var body: some View {
