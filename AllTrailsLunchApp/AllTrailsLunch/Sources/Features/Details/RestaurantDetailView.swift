@@ -176,6 +176,21 @@ struct RestaurantDetailView: View {
                         .background(DesignSystem.Colors.searchBackground)
                         .cornerRadius(DesignSystem.CornerRadius.md)
                     }
+
+                    // Show offline message if details failed to load
+                    #if DEV
+                    if !isLoadingDetails && placeDetail == nil && NetworkSimulator.shared.shouldBlockRequest() {
+                        HStack(spacing: DesignSystem.Spacing.sm) {
+                            Image(systemName: "wifi.slash")
+                                .font(.system(size: DesignSystem.IconSize.sm))
+                                .foregroundColor(.orange)
+                            Text("Additional contact info unavailable offline")
+                                .font(DesignSystem.Typography.caption)
+                                .foregroundColor(DesignSystem.Colors.textSecondary)
+                        }
+                        .padding(.vertical, DesignSystem.Spacing.sm)
+                    }
+                    #endif
                 }
                 .padding(DesignSystem.Spacing.lg)
                 .cardStyle()
@@ -239,7 +254,18 @@ struct RestaurantDetailView: View {
             let manager = AppConfiguration.shared.createRestaurantManager()
             placeDetail = try await manager.getPlaceDetails(placeId: place.id)
         } catch {
-            print("❌ Failed to load place details: \(error.localizedDescription)")
+            // Check if this is a network simulation error (offline mode)
+            #if DEV
+            if NetworkSimulator.shared.shouldBlockRequest() {
+                print("⚠️ RestaurantDetailView: Skipping place details - network is offline")
+                return
+            }
+            #endif
+
+            // Only log real errors
+            if !(error is CancellationError) {
+                print("❌ Failed to load place details: \(error.localizedDescription)")
+            }
         }
     }
 
