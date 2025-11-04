@@ -78,7 +78,8 @@ struct DiscoveryView: View {
                 places: viewModel.results,
                 isLoading: viewModel.isLoading,
                 onToggleFavorite: viewModel.toggleFavorite,
-                onLoadMore: { await viewModel.loadNextPage() }
+                onLoadMore: { await viewModel.loadNextPage() },
+                onRefresh: { await viewModel.refresh() }
             )
         case .map:
             MapResultsView(
@@ -114,6 +115,7 @@ struct DiscoveryView: View {
 struct SearchBar: View {
     @Binding var text: String
     let onSearch: (String) -> Void
+    @FocusState private var isFocused: Bool
 
     var body: some View {
         HStack(spacing: DesignSystem.Spacing.sm) {
@@ -122,18 +124,26 @@ struct SearchBar: View {
             clearButton
         }
         .searchBarStyle()
+        .overlay(
+            RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.md)
+                .stroke(isFocused ? DesignSystem.Colors.primary : Color.clear, lineWidth: 2)
+        )
+        .animation(.easeInOut(duration: 0.2), value: isFocused)
     }
 
     private var searchIcon: some View {
         Image(systemName: "magnifyingglass")
             .font(.system(size: DesignSystem.IconSize.md))
-            .foregroundColor(DesignSystem.Colors.textSecondary)
+            .foregroundColor(isFocused ? DesignSystem.Colors.primary : DesignSystem.Colors.textSecondary)
+            .scaleEffect(isFocused ? 1.1 : 1.0)
+            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isFocused)
     }
 
     private var searchTextField: some View {
         TextField("Search restaurants", text: $text)
             .font(DesignSystem.Typography.body)
             .foregroundColor(DesignSystem.Colors.textPrimary)
+            .focused($isFocused)
             .onChange(of: text) { _, newValue in
                 onSearch(newValue)
             }
@@ -142,11 +152,16 @@ struct SearchBar: View {
     @ViewBuilder
     private var clearButton: some View {
         if !text.isEmpty {
-            Button(action: { text = "" }) {
+            Button(action: {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    text = ""
+                }
+            }) {
                 Image(systemName: "xmark.circle.fill")
                     .font(.system(size: DesignSystem.IconSize.md))
                     .foregroundColor(DesignSystem.Colors.textTertiary)
             }
+            .transition(.scale.combined(with: .opacity))
         }
     }
 }
@@ -154,6 +169,8 @@ struct SearchBar: View {
 // MARK: - Empty State Component
 
 struct EmptyStateView: View {
+    @State private var isAnimating = false
+
     var body: some View {
         VStack(spacing: DesignSystem.Spacing.lg) {
             emptyIcon
@@ -162,12 +179,21 @@ struct EmptyStateView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(DesignSystem.Colors.background)
+        .opacity(isAnimating ? 1.0 : 0.0)
+        .offset(y: isAnimating ? 0 : 20)
+        .onAppear {
+            withAnimation(.easeOut(duration: 0.5)) {
+                isAnimating = true
+            }
+        }
     }
 
     private var emptyIcon: some View {
         Image(systemName: "fork.knife.circle")
             .font(.system(size: 64))
             .foregroundColor(DesignSystem.Colors.textTertiary)
+            .scaleEffect(isAnimating ? 1.0 : 0.8)
+            .animation(.spring(response: 0.6, dampingFraction: 0.7).delay(0.1), value: isAnimating)
     }
 
     private var titleText: some View {
@@ -189,6 +215,7 @@ struct EmptyStateView: View {
 
 struct ErrorView: View {
     let error: PlacesError
+    @State private var isAnimating = false
 
     var body: some View {
         VStack(spacing: DesignSystem.Spacing.lg) {
@@ -199,12 +226,21 @@ struct ErrorView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(DesignSystem.Colors.background)
+        .opacity(isAnimating ? 1.0 : 0.0)
+        .offset(y: isAnimating ? 0 : 20)
+        .onAppear {
+            withAnimation(.easeOut(duration: 0.5)) {
+                isAnimating = true
+            }
+        }
     }
 
     private var errorIcon: some View {
         Image(systemName: "exclamationmark.triangle.fill")
             .font(.system(size: 64))
             .foregroundColor(DesignSystem.Colors.error)
+            .rotationEffect(.degrees(isAnimating ? 0 : -10))
+            .animation(.spring(response: 0.6, dampingFraction: 0.6).delay(0.1), value: isAnimating)
     }
 
     private var titleText: some View {

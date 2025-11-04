@@ -12,6 +12,21 @@ struct ListResultsView: View {
     let isLoading: Bool
     let onToggleFavorite: (Place) -> Void
     let onLoadMore: () async -> Void
+    let onRefresh: (() async -> Void)?
+
+    init(
+        places: [Place],
+        isLoading: Bool,
+        onToggleFavorite: @escaping (Place) -> Void,
+        onLoadMore: @escaping () async -> Void,
+        onRefresh: (() async -> Void)? = nil
+    ) {
+        self.places = places
+        self.isLoading = isLoading
+        self.onToggleFavorite = onToggleFavorite
+        self.onLoadMore = onLoadMore
+        self.onRefresh = onRefresh
+    }
 
     var body: some View {
         ScrollView {
@@ -22,12 +37,17 @@ struct ListResultsView: View {
             .padding(DesignSystem.Spacing.lg)
         }
         .background(DesignSystem.Colors.background)
+        .refreshable {
+            if let onRefresh = onRefresh {
+                await onRefresh()
+            }
+        }
     }
 
     // MARK: - Subviews
 
     private var restaurantList: some View {
-        ForEach(places) { place in
+        ForEach(Array(places.enumerated()), id: \.element.id) { index, place in
             NavigationLink(destination: RestaurantDetailView(place: place)) {
                 RestaurantRow(
                     place: place,
@@ -35,6 +55,11 @@ struct ListResultsView: View {
                 )
             }
             .buttonStyle(.plain)
+            .transition(.asymmetric(
+                insertion: .opacity.combined(with: .move(edge: .trailing)),
+                removal: .opacity
+            ))
+            .animation(.spring(response: 0.4, dampingFraction: 0.8).delay(Double(index) * 0.05), value: places.count)
         }
     }
 
@@ -53,6 +78,7 @@ struct RestaurantRow: View {
     let place: Place
     let onToggleFavorite: () -> Void
     @EnvironmentObject var favoritesStore: FavoritesStore
+    @State private var isBookmarkAnimating = false
 
     var body: some View {
         HStack(alignment: .top, spacing: DesignSystem.Spacing.md) {
@@ -156,18 +182,33 @@ struct RestaurantRow: View {
     // MARK: - Bookmark Button
 
     private var bookmarkButton: some View {
-        Button(action: onToggleFavorite) {
+        Button(action: handleBookmarkTap) {
             Image(place.isFavorite ? "bookmark-saved" : "bookmark-resting", bundle: nil)
                 .resizable()
                 .renderingMode(.template)
                 .frame(width: DesignSystem.IconSize.md, height: DesignSystem.IconSize.md)
                 .foregroundColor(bookmarkColor)
+                .scaleEffect(isBookmarkAnimating ? 1.3 : 1.0)
+                .animation(.spring(response: 0.3, dampingFraction: 0.5), value: isBookmarkAnimating)
         }
         .buttonStyle(.plain)
     }
 
     private var bookmarkColor: Color {
         place.isFavorite ? DesignSystem.Colors.primary : DesignSystem.Colors.textTertiary
+    }
+
+    private func handleBookmarkTap() {
+        // Trigger animation
+        isBookmarkAnimating = true
+
+        // Call the toggle action
+        onToggleFavorite()
+
+        // Reset animation after delay
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            isBookmarkAnimating = false
+        }
     }
 }
 

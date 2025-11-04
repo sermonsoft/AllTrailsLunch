@@ -156,11 +156,11 @@ class DiscoveryViewModel {
     }
     
     // MARK: - Search Operations
-    
+
     func performSearch(_ query: String) {
         searchTask?.cancel()
         debounceTimer?.invalidate()
-        
+
         if query.isEmpty {
             debounceTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [weak self] _ in
                 Task { @MainActor in
@@ -173,6 +173,14 @@ class DiscoveryViewModel {
                     await self?.searchText(query)
                 }
             }
+        }
+    }
+
+    func refresh() async {
+        if searchText.isEmpty {
+            await searchNearby()
+        } else {
+            await searchText(searchText)
         }
     }
     

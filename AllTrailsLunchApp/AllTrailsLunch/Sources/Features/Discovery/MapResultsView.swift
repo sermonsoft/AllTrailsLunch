@@ -59,10 +59,21 @@ struct MapResultsView: View {
                 Spacer()
                     .frame(height: cardTopOffset)
                 selectedPlaceCard(selectedPlace)
-                    .transition(.scale.combined(with: .opacity))
+                    .transition(
+                        .asymmetric(
+                            insertion: .move(edge: .bottom).combined(with: .opacity),
+                            removal: .move(edge: .bottom).combined(with: .opacity)
+                        )
+                    )
+                    .shadow(
+                        color: Color.black.opacity(0.2),
+                        radius: 12,
+                        x: 0,
+                        y: 6
+                    )
                 Spacer()
             }
-            .animation(.spring(response: 0.3, dampingFraction: 0.7), value: selectedPlace.id)
+            .animation(.spring(response: 0.4, dampingFraction: 0.75), value: selectedPlace.id)
         }
     }
 
@@ -123,6 +134,13 @@ struct MapPinView: View {
             .aspectRatio(contentMode: .fit)
             .frame(width: pinSize, height: pinSize)
             .foregroundColor(pinColor)
+            .scaleEffect(isSelected ? 1.0 : 0.9)
+            .shadow(
+                color: isSelected ? Color.black.opacity(0.3) : Color.clear,
+                radius: isSelected ? 8 : 0,
+                x: 0,
+                y: isSelected ? 4 : 0
+            )
             .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isSelected)
     }
 

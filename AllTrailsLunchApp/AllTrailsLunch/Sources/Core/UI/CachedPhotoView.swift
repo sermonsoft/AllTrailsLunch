@@ -37,14 +37,16 @@ struct CachedPhotoView: View {
                 Image(uiImage: image)
                     .resizable()
                     .aspectRatio(contentMode: contentMode)
+                    .transition(.opacity.combined(with: .scale(scale: 0.95)))
             } else if isLoading {
-                ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color.gray.opacity(0.1))
+                Rectangle()
+                    .fill(Color.gray.opacity(0.1))
+                    .shimmer(isLoading: true)
             } else {
                 placeholderImage
             }
         }
+        .animation(.easeInOut(duration: 0.3), value: image != nil)
         .task {
             await loadPhoto()
         }

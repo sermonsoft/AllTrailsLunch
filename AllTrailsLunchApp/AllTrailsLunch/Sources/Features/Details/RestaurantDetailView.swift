@@ -11,10 +11,16 @@ struct RestaurantDetailView: View {
     let place: Place
     @EnvironmentObject var favoritesStore: FavoritesStore
     @State private var isFavorite: Bool = false
-    
+    @State private var isBookmarkAnimating = false
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: DesignSystem.Spacing.lg) {
+                // Photo Gallery
+                if !place.photoReferences.isEmpty {
+                    photoGallery
+                }
+
                 // Header Card
                 VStack(alignment: .leading, spacing: DesignSystem.Spacing.md) {
                     HStack(alignment: .top) {
@@ -32,12 +38,14 @@ struct RestaurantDetailView: View {
 
                         Spacer()
 
-                        Button(action: { toggleFavorite() }) {
+                        Button(action: { handleBookmarkTap() }) {
                             Image(isFavorite ? "bookmark-saved" : "bookmark-resting", bundle: nil)
                                 .resizable()
                                 .renderingMode(.template)
                                 .frame(width: DesignSystem.IconSize.lg, height: DesignSystem.IconSize.lg)
                                 .foregroundColor(isFavorite ? DesignSystem.Colors.favorite : DesignSystem.Colors.textTertiary)
+                                .scaleEffect(isBookmarkAnimating ? 1.3 : 1.0)
+                                .animation(.spring(response: 0.3, dampingFraction: 0.5), value: isBookmarkAnimating)
                         }
                     }
 
@@ -153,9 +161,45 @@ struct RestaurantDetailView: View {
         }
     }
     
+    // MARK: - Actions
+
+    private func handleBookmarkTap() {
+        isBookmarkAnimating = true
+        toggleFavorite()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            isBookmarkAnimating = false
+        }
+    }
+
     private func toggleFavorite() {
         isFavorite.toggle()
         favoritesStore.toggleFavorite(place.id)
+    }
+
+    // MARK: - Photo Gallery
+
+    private var photoGallery: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: DesignSystem.Spacing.md) {
+                ForEach(Array(place.photoReferences.prefix(5).enumerated()), id: \.offset) { index, photoRef in
+                    photoGalleryItem(photoRef: photoRef, index: index)
+                }
+            }
+            .padding(.horizontal, DesignSystem.Spacing.lg)
+        }
+    }
+
+    private func photoGalleryItem(photoRef: String, index: Int) -> some View {
+        CachedPhotoView(
+            photoReferences: [photoRef],
+            maxWidth: 300,
+            maxHeight: 200,
+            contentMode: .fill
+        )
+        .frame(width: 300, height: 200)
+        .clipShape(RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.lg))
+        .transition(.scale.combined(with: .opacity))
+        .animation(.spring(response: 0.4, dampingFraction: 0.8).delay(Double(index) * 0.05), value: place.id)
     }
 }
 
