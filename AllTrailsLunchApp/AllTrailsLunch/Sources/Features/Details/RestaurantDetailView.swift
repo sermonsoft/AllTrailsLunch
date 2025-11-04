@@ -12,6 +12,9 @@ struct RestaurantDetailView: View {
     @EnvironmentObject var favoritesStore: FavoritesStore
     @State private var isFavorite: Bool = false
     @State private var isBookmarkAnimating = false
+    @State private var placeDetail: PlaceDetail?
+    @State private var isLoadingDetails = false
+    @Environment(\.openURL) private var openURL
 
     var body: some View {
         ScrollView {
@@ -89,36 +92,66 @@ struct RestaurantDetailView: View {
                         .font(DesignSystem.Typography.h3)
                         .foregroundColor(DesignSystem.Colors.textPrimary)
 
-                    Button(action: {}) {
+                    if let phoneNumber = placeDetail?.phoneNumber {
+                        Button(action: { callRestaurant(phoneNumber: phoneNumber) }) {
+                            HStack(spacing: DesignSystem.Spacing.md) {
+                                Image(systemName: "phone.fill")
+                                    .font(.system(size: DesignSystem.IconSize.md))
+                                    .foregroundColor(DesignSystem.Colors.primary)
+                                Text("Call Restaurant")
+                                    .font(DesignSystem.Typography.body)
+                                    .foregroundColor(DesignSystem.Colors.textPrimary)
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .font(.system(size: DesignSystem.IconSize.sm))
+                                    .foregroundColor(DesignSystem.Colors.textTertiary)
+                            }
+                            .padding(DesignSystem.Spacing.md)
+                            .background(DesignSystem.Colors.searchBackground)
+                            .cornerRadius(DesignSystem.CornerRadius.md)
+                        }
+                    } else if isLoadingDetails {
                         HStack(spacing: DesignSystem.Spacing.md) {
                             Image(systemName: "phone.fill")
                                 .font(.system(size: DesignSystem.IconSize.md))
-                                .foregroundColor(DesignSystem.Colors.primary)
-                            Text("Call Restaurant")
-                                .font(DesignSystem.Typography.body)
-                                .foregroundColor(DesignSystem.Colors.textPrimary)
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .font(.system(size: DesignSystem.IconSize.sm))
                                 .foregroundColor(DesignSystem.Colors.textTertiary)
+                            Text("Loading...")
+                                .font(DesignSystem.Typography.body)
+                                .foregroundColor(DesignSystem.Colors.textTertiary)
+                            Spacer()
                         }
                         .padding(DesignSystem.Spacing.md)
                         .background(DesignSystem.Colors.searchBackground)
                         .cornerRadius(DesignSystem.CornerRadius.md)
                     }
 
-                    Button(action: {}) {
+                    if let website = placeDetail?.website {
+                        Button(action: { openWebsite(url: website) }) {
+                            HStack(spacing: DesignSystem.Spacing.md) {
+                                Image(systemName: "globe")
+                                    .font(.system(size: DesignSystem.IconSize.md))
+                                    .foregroundColor(DesignSystem.Colors.primary)
+                                Text("Visit Website")
+                                    .font(DesignSystem.Typography.body)
+                                    .foregroundColor(DesignSystem.Colors.textPrimary)
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .font(.system(size: DesignSystem.IconSize.sm))
+                                    .foregroundColor(DesignSystem.Colors.textTertiary)
+                            }
+                            .padding(DesignSystem.Spacing.md)
+                            .background(DesignSystem.Colors.searchBackground)
+                            .cornerRadius(DesignSystem.CornerRadius.md)
+                        }
+                    } else if isLoadingDetails {
                         HStack(spacing: DesignSystem.Spacing.md) {
                             Image(systemName: "globe")
                                 .font(.system(size: DesignSystem.IconSize.md))
-                                .foregroundColor(DesignSystem.Colors.primary)
-                            Text("Visit Website")
-                                .font(DesignSystem.Typography.body)
-                                .foregroundColor(DesignSystem.Colors.textPrimary)
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .font(.system(size: DesignSystem.IconSize.sm))
                                 .foregroundColor(DesignSystem.Colors.textTertiary)
+                            Text("Loading...")
+                                .font(DesignSystem.Typography.body)
+                                .foregroundColor(DesignSystem.Colors.textTertiary)
+                            Spacer()
                         }
                         .padding(DesignSystem.Spacing.md)
                         .background(DesignSystem.Colors.searchBackground)
@@ -158,8 +191,9 @@ struct RestaurantDetailView: View {
         .background(DesignSystem.Colors.background)
         .navigationTitle("Details")
         .navigationBarTitleDisplayMode(.inline)
-        .onAppear {
+        .task {
             isFavorite = favoritesStore.isFavorite(place.id)
+            await loadPlaceDetails()
         }
     }
     
@@ -176,6 +210,31 @@ struct RestaurantDetailView: View {
     private func toggleFavorite() {
         isFavorite.toggle()
         favoritesStore.toggleFavorite(place.id)
+    }
+
+    private func loadPlaceDetails() async {
+        isLoadingDetails = true
+        defer { isLoadingDetails = false }
+
+        do {
+            let manager = AppConfiguration.shared.createRestaurantManager()
+            placeDetail = try await manager.getPlaceDetails(placeId: place.id)
+        } catch {
+            print("❌ Failed to load place details: \(error.localizedDescription)")
+        }
+    }
+
+    private func callRestaurant(phoneNumber: String) {
+        // Remove all non-numeric characters from phone number
+        let cleanedNumber = phoneNumber.components(separatedBy: CharacterSet.decimalDigits.inverted).joined()
+
+        if let url = URL(string: "tel://\(cleanedNumber)") {
+            openURL(url)
+        }
+    }
+
+    private func openWebsite(url: URL) {
+        openURL(url)
     }
 
     // MARK: - Hero Photo
