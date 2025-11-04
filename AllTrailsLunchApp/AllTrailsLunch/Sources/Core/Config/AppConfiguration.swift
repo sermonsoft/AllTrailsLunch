@@ -198,6 +198,14 @@ struct AppConfiguration {
         }
     }
 
+    func createPhotoLoaderService() -> PhotoLoaderService {
+        GooglePlacesPhotoLoader(apiKey: googlePlacesAPIKey)
+    }
+
+    func createPhotoCacheService() -> PhotoCacheService {
+        NSCachePhotoCache()
+    }
+
     // MARK: - Managers
 
     @MainActor
@@ -219,7 +227,15 @@ struct AppConfiguration {
         LocationManager()
     }
 
-    // MARK: - Interactors (Week 2: Protocol-Based Services)
+    @MainActor
+    func createPhotoManager() -> PhotoManager {
+        PhotoManager(
+            loader: createPhotoLoaderService(),
+            cache: createPhotoCacheService()
+        )
+    }
+
+    // MARK: - Interactors (Protocol-Based Services)
 
     @MainActor
     func createCoreInteractor() -> CoreInteractor {

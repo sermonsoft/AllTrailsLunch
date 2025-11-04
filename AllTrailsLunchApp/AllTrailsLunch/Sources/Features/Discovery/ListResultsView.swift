@@ -68,12 +68,15 @@ struct RestaurantRow: View {
     // MARK: - Image
 
     private var restaurantImage: some View {
-        Image("placeholder-image", bundle: nil)
-            .resizable()
-            .aspectRatio(contentMode: .fill)
-            .frame(width: 80, height: 80)
-            .clipped()
-            .cornerRadius(DesignSystem.CornerRadius.sm)
+        CachedPhotoView(
+            photoReferences: place.photoReferences,
+            maxWidth: 160, // 2x for retina
+            maxHeight: 160,
+            contentMode: .fill
+        )
+        .frame(width: 80, height: 80)
+        .clipped()
+        .cornerRadius(DesignSystem.CornerRadius.sm)
     }
 
     // MARK: - Info Section

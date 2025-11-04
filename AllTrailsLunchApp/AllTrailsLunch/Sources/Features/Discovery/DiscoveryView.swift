@@ -10,6 +10,12 @@ import SwiftUI
 struct DiscoveryView: View {
     @Bindable var viewModel: DiscoveryViewModel
     @EnvironmentObject var favoritesStore: FavoritesStore
+    @State private var photoManager: PhotoManager
+
+    init(viewModel: DiscoveryViewModel, photoManager: PhotoManager? = nil) {
+        self.viewModel = viewModel
+        self._photoManager = State(initialValue: photoManager ?? AppConfiguration.shared.createPhotoManager())
+    }
 
     var body: some View {
         NavigationStack {
@@ -22,6 +28,7 @@ struct DiscoveryView: View {
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarBackground(Color.white, for: .navigationBar)
             .background(DesignSystem.Colors.background)
+            .photoManager(photoManager)
         }
     }
 
@@ -273,7 +280,10 @@ struct ViewModeToggleButton: View {
 
 #Preview {
     let config = AppConfiguration.shared
-    return DiscoveryView(viewModel: config.createDiscoveryViewModel())
-        .environmentObject(config.createFavoritesStore())
+    return DiscoveryView(
+        viewModel: config.createDiscoveryViewModel(),
+        photoManager: config.createPhotoManager()
+    )
+    .environmentObject(config.createFavoritesStore())
 }
 
