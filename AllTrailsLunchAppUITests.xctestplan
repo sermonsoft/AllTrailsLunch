@@ -1,0 +1,29 @@
+{
+  "configurations" : [
+    {
+      "id" : "FE36C3D9-E3D2-4E98-92DF-B1F379551E3A",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:AllTrailsLunchApp.xcodeproj",
+      "identifier" : "D763B6222EB7D76300F8564C",
+      "name" : "AllTrailsLunchApp"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:AllTrailsLunchApp.xcodeproj",
+        "identifier" : "D763B63C2EB7D76400F8564C",
+        "name" : "AllTrailsLunchAppUITests"
+      }
+    }
+  ],
+  "version" : 1
+}

@@ -45,6 +45,20 @@
                ReferencedContainer = "container:AllTrailsLunchApp.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "D763B63C2EB7D76400F8564C"
+               BuildableName = "AllTrailsLunchAppUITests.xctest"
+               BlueprintName = "AllTrailsLunchAppUITests"
+               ReferencedContainer = "container:AllTrailsLunchApp.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
