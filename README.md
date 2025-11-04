@@ -71,11 +71,15 @@ Moreover, AllTrails is committed to preserving and protecting our natural enviro
 
 ## 📚 Documentation
 
-### Available Documentation
-- **[QUICK_START.md](QUICK_START.md)** - Quick reference guide
-- **[ARCHITECTURE_IMPROVEMENTS_COMPLETE.md](ARCHITECTURE_IMPROVEMENTS_COMPLETE.md)** - Complete architecture overview
-- **[WEEK_1_IMPLEMENTATION_SUMMARY.md](WEEK_1_IMPLEMENTATION_SUMMARY.md)** - Manager + Service Layer details
-- **[WEEK_3_IMPLEMENTATION_SUMMARY.md](WEEK_3_IMPLEMENTATION_SUMMARY.md)** - Event Tracking + @Observable details
+**📖 [Complete Documentation →](Documentation/)**
+
+### Quick Links
+- **[Quick Start Guide](Documentation/QUICK_START.md)** - Get started in 5 minutes
+- **[Architecture Guide](Documentation/ARCHITECTURE.md)** - Complete architecture documentation
+  - Architecture evolution (Weeks 1-3)
+  - Implementation details
+  - Testing strategy
+  - Best practices
 
 ## 🏗️ Architecture
 
@@ -322,9 +326,9 @@ Comprehensive error types with user-friendly messages:
 ## 📞 Support
 
 For questions or issues:
-1. Check [QUICK_START.md](QUICK_START.md) for common tasks
-2. Review [SETUP_GUIDE.md](SETUP_GUIDE.md) for setup issues
-3. See [PROJECT_SUMMARY.md](PROJECT_SUMMARY.md) for architecture details
+1. Check **[Documentation](Documentation/)** for comprehensive guides
+2. Review **[Quick Start Guide](Documentation/QUICK_START.md)** for common tasks
+3. See **[Architecture Guide](Documentation/ARCHITECTURE.md)** for design details
 4. Check code comments for implementation details
 
 ## ✅ Status
