@@ -1,0 +1,25 @@
+{
+  "configurations" : [
+    {
+      "id" : "8CC0607B-6EF6-49A9-9782-C86CCF689DBE",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:AllTrailsLunchApp.xcodeproj",
+        "identifier" : "D763B6322EB7D76400F8564C",
+        "name" : "AllTrailsLunchAppTests"
+      }
+    }
+  ],
+  "version" : 1
+}

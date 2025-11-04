@@ -7,7 +7,7 @@
 
 import XCTest
 import CoreLocation
-@testable import AllTrailsLunch
+@testable import AllTrailsLunchApp
 
 @MainActor
 final class RestaurantManagerTests: XCTestCase {

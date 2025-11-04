@@ -24,6 +24,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		D70641DF2EBA8605002E2BE5 /* AllTrailsLunchAppTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = AllTrailsLunchAppTests.xctestplan; sourceTree = "<group>"; };
 		D763B6232EB7D76300F8564C /* AllTrailsLunchApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AllTrailsLunchApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D763B6332EB7D76400F8564C /* AllTrailsLunchAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AllTrailsLunchAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D763B63D2EB7D76400F8564C /* AllTrailsLunchAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AllTrailsLunchAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -75,6 +76,7 @@
 		D763B61A2EB7D76300F8564C = {
 			isa = PBXGroup;
 			children = (
+				D70641DF2EBA8605002E2BE5 /* AllTrailsLunchAppTests.xctestplan */,
 				D763B6252EB7D76300F8564C /* AllTrailsLunchApp */,
 				D763B6362EB7D76400F8564C /* AllTrailsLunchAppTests */,
 				D763B6402EB7D76400F8564C /* AllTrailsLunchAppUITests */,

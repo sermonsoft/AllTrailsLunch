@@ -6,7 +6,7 @@
 ///
 
 import XCTest
-@testable import AllTrailsLunch
+@testable import AllTrailsLunchApp
 
 @MainActor
 final class FavoritesManagerTests: XCTestCase {
