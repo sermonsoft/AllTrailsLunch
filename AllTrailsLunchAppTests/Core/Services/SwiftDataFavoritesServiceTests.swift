@@ -84,7 +84,7 @@ final class SwiftDataFavoritesServiceTests: XCTestCase {
         XCTAssertEqual(favorite.longitude, place.longitude)
         XCTAssertEqual(favorite.rating, place.rating)
         XCTAssertEqual(favorite.priceLevel, place.priceLevel)
-        XCTAssertEqual(favorite.photoReferences, place.photoReferences)
+        XCTAssertEqual(favorite.photoReferences ?? [], place.photoReferences)
     }
     
     func testRemoveFavorite_RemovesFromFavorites() throws {
@@ -183,7 +183,7 @@ final class SwiftDataFavoritesServiceTests: XCTestCase {
         XCTAssertEqual(favorite.address, "456 New St")
         XCTAssertEqual(favorite.rating, 4.8)
         XCTAssertEqual(favorite.priceLevel, 3)
-        XCTAssertEqual(favorite.photoReferences.count, 3)
+        XCTAssertEqual(favorite.photoReferences?.count, 3)
     }
     
     func testAddFavorite_WithExistingPlace_UpdatesData() throws {

@@ -19,9 +19,9 @@ final class FavoritePlace {
     var priceLevel: Int?
     var latitude: Double
     var longitude: Double
-    var photoReferences: [String]
+    var photoReferences: [String]?
     var addedAt: Date
-    
+
     init(
         placeId: String,
         name: String,
@@ -30,7 +30,7 @@ final class FavoritePlace {
         priceLevel: Int? = nil,
         latitude: Double,
         longitude: Double,
-        photoReferences: [String] = [],
+        photoReferences: [String]? = nil,
         addedAt: Date = Date()
     ) {
         self.placeId = placeId
