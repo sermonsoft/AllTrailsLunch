@@ -11,6 +11,7 @@ struct RestaurantDetailView: View {
     let place: Place
     let onToggleFavorite: ((Place) -> Void)?
     @State private var isBookmarkAnimating = false
+    @State private var isFavorite = false
     @State private var placeDetail: PlaceDetail?
     @State private var isLoadingDetails = false
     @State private var showHoursDetails = false
@@ -19,6 +20,8 @@ struct RestaurantDetailView: View {
     init(place: Place, onToggleFavorite: ((Place) -> Void)? = nil) {
         self.place = place
         self.onToggleFavorite = onToggleFavorite
+        // Initialize the state with the place's favorite status
+        _isFavorite = State(initialValue: place.isFavorite)
     }
 
     var body: some View {
@@ -48,11 +51,11 @@ struct RestaurantDetailView: View {
                         Spacer()
 
                         Button(action: { handleBookmarkTap() }) {
-                            Image(place.isFavorite ? "bookmark-saved" : "bookmark-resting", bundle: nil)
+                            Image(isFavorite ? "bookmark-saved" : "bookmark-resting", bundle: nil)
                                 .resizable()
                                 .renderingMode(.template)
                                 .frame(width: DesignSystem.IconSize.lg, height: DesignSystem.IconSize.lg)
-                                .foregroundColor(place.isFavorite ? DesignSystem.Colors.favorite : DesignSystem.Colors.textTertiary)
+                                .foregroundColor(isFavorite ? DesignSystem.Colors.favorite : DesignSystem.Colors.textTertiary)
                                 .scaleEffect(isBookmarkAnimating ? 1.3 : 1.0)
                                 .animation(.spring(response: 0.3, dampingFraction: 0.5), value: isBookmarkAnimating)
                         }
@@ -296,7 +299,13 @@ struct RestaurantDetailView: View {
 
     private func handleBookmarkTap() {
         isBookmarkAnimating = true
+
+        // Toggle local state immediately for instant UI feedback
+        isFavorite.toggle()
+
+        // Call the callback to update the data source
         onToggleFavorite?(place)
+
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             isBookmarkAnimating = false
         }
