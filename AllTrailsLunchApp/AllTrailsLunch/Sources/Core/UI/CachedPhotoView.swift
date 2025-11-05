@@ -47,7 +47,7 @@ struct CachedPhotoView: View {
             }
         }
         .animation(.easeInOut(duration: 0.3), value: image != nil)
-        .task {
+        .task(id: photoReferences.first) {
             await loadPhoto()
         }
     }
@@ -74,6 +74,10 @@ struct CachedPhotoView: View {
     }
     
     private func loadPhoto() async {
+        // Reset state when loading new photo
+        image = nil
+        isLoading = true
+
         guard let photoManager = photoManager else {
             print("⚠️ CachedPhotoView: photoManager is nil!")
             isLoading = false

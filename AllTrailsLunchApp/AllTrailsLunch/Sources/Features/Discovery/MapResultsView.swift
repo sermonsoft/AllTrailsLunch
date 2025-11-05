@@ -85,6 +85,7 @@ struct MapResultsView: View {
                 place: place,
                 onToggleFavorite: { onToggleFavorite(place) }
             )
+            .id(place.id) // Force view refresh when place changes
         }
         .buttonStyle(.plain)
         .padding(.horizontal, DesignSystem.Spacing.lg)
