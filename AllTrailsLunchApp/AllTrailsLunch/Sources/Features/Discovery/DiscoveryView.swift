@@ -155,7 +155,8 @@ struct DiscoveryView: View {
         case .map:
             MapResultsView(
                 places: viewModel.results,
-                onToggleFavorite: viewModel.toggleFavorite
+                onToggleFavorite: viewModel.toggleFavorite,
+                isSearchActive: !viewModel.searchText.isEmpty
             )
         }
     }

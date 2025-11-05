@@ -13,6 +13,7 @@ struct MapResultsView: View {
 
     let places: [Place]
     let onToggleFavorite: (Place) -> Void
+    let isSearchActive: Bool
 
     @State private var position: MapCameraPosition = .automatic
     @State private var selectedPlace: Place?
@@ -41,7 +42,8 @@ struct MapResultsView: View {
                 Annotation("", coordinate: place.coordinate) {
                     MapPinView(
                         place: place,
-                        isSelected: selectedPlace?.id == place.id
+                        isSelected: selectedPlace?.id == place.id,
+                        isSearchResult: isSearchActive
                     )
                 }
                 .tag(place)
@@ -117,6 +119,7 @@ struct MapPinView: View {
 
     let place: Place
     let isSelected: Bool
+    let isSearchResult: Bool
 
     @EnvironmentObject var favoritesStore: FavoritesStore
 
@@ -159,7 +162,11 @@ struct MapPinView: View {
             return DesignSystem.Colors.primary
         } else if place.isFavorite {
             return DesignSystem.Colors.favorite
+        } else if isSearchResult {
+            // Search results use a distinct blue color
+            return Color.blue
         } else {
+            // Nearby results use the default accent color
             return DesignSystem.Colors.accent
         }
     }
@@ -181,7 +188,8 @@ struct MapPinView: View {
                 isFavorite: false
             )
         ],
-        onToggleFavorite: { _ in }
+        onToggleFavorite: { _ in },
+        isSearchActive: false
     )
     .environmentObject(FavoritesStore())
 }
