@@ -40,12 +40,41 @@ class FavoritesManager {
             try? service.addFavorite(placeId)
         }
     }
-    
+
+    /// Toggle favorite status for a place with full place data (for SwiftData)
+    func toggleFavorite(_ place: Place) {
+        if favoriteIds.contains(place.id) {
+            favoriteIds.remove(place.id)
+            try? service.removeFavorite(place.id)
+        } else {
+            favoriteIds.insert(place.id)
+            // Try to use SwiftData service's enhanced method if available
+            if let swiftDataService = service as? SwiftDataFavoritesService {
+                try? swiftDataService.addFavorite(place)
+            } else {
+                try? service.addFavorite(place.id)
+            }
+        }
+    }
+
     /// Add a place to favorites
     func addFavorite(_ placeId: String) {
         guard !favoriteIds.contains(placeId) else { return }
         favoriteIds.insert(placeId)
         try? service.addFavorite(placeId)
+    }
+
+    /// Add a place to favorites with full place data (for SwiftData)
+    func addFavorite(_ place: Place) {
+        guard !favoriteIds.contains(place.id) else { return }
+        favoriteIds.insert(place.id)
+
+        // Try to use SwiftData service's enhanced method if available
+        if let swiftDataService = service as? SwiftDataFavoritesService {
+            try? swiftDataService.addFavorite(place)
+        } else {
+            try? service.addFavorite(place.id)
+        }
     }
     
     /// Remove a place from favorites

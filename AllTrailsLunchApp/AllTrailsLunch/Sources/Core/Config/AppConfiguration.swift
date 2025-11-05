@@ -182,8 +182,11 @@ struct AppConfiguration {
         GooglePlacesService(client: createPlacesClient())
     }
 
+    @MainActor
     func createFavoritesService() -> FavoritesService {
-        UserDefaultsFavoritesService()
+        // Use SwiftData for better persistence and querying
+        let modelContext = SwiftDataStorageManager.shared.mainContext
+        return SwiftDataFavoritesService(modelContext: modelContext)
     }
 
     func createEventLogger() -> EventLogger {
