@@ -13,6 +13,7 @@ struct RestaurantDetailView: View {
     @State private var isBookmarkAnimating = false
     @State private var placeDetail: PlaceDetail?
     @State private var isLoadingDetails = false
+    @State private var showHoursDetails = false
     @Environment(\.openURL) private var openURL
 
     init(place: Place, onToggleFavorite: ((Place) -> Void)? = nil) {
@@ -205,18 +206,75 @@ struct RestaurantDetailView: View {
                         .font(DesignSystem.Typography.h3)
                         .foregroundColor(DesignSystem.Colors.textPrimary)
 
-                    HStack {
-                        Image(systemName: "clock.fill")
-                            .font(.system(size: DesignSystem.IconSize.md))
-                            .foregroundColor(DesignSystem.Colors.success)
-                        Text("Open now")
-                            .font(DesignSystem.Typography.body)
-                            .foregroundColor(DesignSystem.Colors.success)
-                        Spacer()
+                    if let openingHours = placeDetail?.openingHours {
+                        Button(action: {
+                            withAnimation(.easeInOut(duration: 0.3)) {
+                                showHoursDetails.toggle()
+                            }
+                        }) {
+                            VStack(alignment: .leading, spacing: DesignSystem.Spacing.sm) {
+                                HStack {
+                                    Image(systemName: "clock.fill")
+                                        .font(.system(size: DesignSystem.IconSize.md))
+                                        .foregroundColor(openingHours.openNow == true ? DesignSystem.Colors.success : .red)
+                                    Text(openingHours.openNow == true ? "Open now" : "Closed")
+                                        .font(DesignSystem.Typography.body)
+                                        .foregroundColor(openingHours.openNow == true ? DesignSystem.Colors.success : .red)
+                                    Spacer()
+                                    Image(systemName: showHoursDetails ? "chevron.up" : "chevron.down")
+                                        .font(.system(size: DesignSystem.IconSize.sm))
+                                        .foregroundColor(DesignSystem.Colors.textTertiary)
+                                }
+
+                                if showHoursDetails, let weekdayText = openingHours.weekdayText {
+                                    Divider()
+                                        .padding(.vertical, DesignSystem.Spacing.xs)
+
+                                    VStack(alignment: .leading, spacing: DesignSystem.Spacing.sm) {
+                                        ForEach(weekdayText, id: \.self) { dayHours in
+                                            HStack(alignment: .top, spacing: DesignSystem.Spacing.sm) {
+                                                Text(dayHours)
+                                                    .font(DesignSystem.Typography.caption)
+                                                    .foregroundColor(DesignSystem.Colors.textSecondary)
+                                                    .fixedSize(horizontal: false, vertical: true)
+                                                Spacer()
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            .padding(DesignSystem.Spacing.md)
+                            .background(DesignSystem.Colors.searchBackground)
+                            .cornerRadius(DesignSystem.CornerRadius.md)
+                        }
+                        .buttonStyle(.plain)
+                    } else if isLoadingDetails {
+                        HStack {
+                            Image(systemName: "clock.fill")
+                                .font(.system(size: DesignSystem.IconSize.md))
+                                .foregroundColor(DesignSystem.Colors.textTertiary)
+                            Text("Loading...")
+                                .font(DesignSystem.Typography.body)
+                                .foregroundColor(DesignSystem.Colors.textTertiary)
+                            Spacer()
+                        }
+                        .padding(DesignSystem.Spacing.md)
+                        .background(DesignSystem.Colors.searchBackground)
+                        .cornerRadius(DesignSystem.CornerRadius.md)
+                    } else {
+                        HStack {
+                            Image(systemName: "clock.fill")
+                                .font(.system(size: DesignSystem.IconSize.md))
+                                .foregroundColor(DesignSystem.Colors.textTertiary)
+                            Text("Hours not available")
+                                .font(DesignSystem.Typography.body)
+                                .foregroundColor(DesignSystem.Colors.textTertiary)
+                            Spacer()
+                        }
+                        .padding(DesignSystem.Spacing.md)
+                        .background(DesignSystem.Colors.searchBackground)
+                        .cornerRadius(DesignSystem.CornerRadius.md)
                     }
-                    .padding(DesignSystem.Spacing.md)
-                    .background(DesignSystem.Colors.searchBackground)
-                    .cornerRadius(DesignSystem.CornerRadius.md)
                 }
                 .padding(DesignSystem.Spacing.lg)
                 .cardStyle()
