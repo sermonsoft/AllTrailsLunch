@@ -9,12 +9,16 @@ import SwiftUI
 
 struct RestaurantDetailView: View {
     let place: Place
-    @EnvironmentObject var favoritesStore: FavoritesStore
-    @State private var isFavorite: Bool = false
+    let onToggleFavorite: ((Place) -> Void)?
     @State private var isBookmarkAnimating = false
     @State private var placeDetail: PlaceDetail?
     @State private var isLoadingDetails = false
     @Environment(\.openURL) private var openURL
+
+    init(place: Place, onToggleFavorite: ((Place) -> Void)? = nil) {
+        self.place = place
+        self.onToggleFavorite = onToggleFavorite
+    }
 
     var body: some View {
         ScrollView {
@@ -43,11 +47,11 @@ struct RestaurantDetailView: View {
                         Spacer()
 
                         Button(action: { handleBookmarkTap() }) {
-                            Image(isFavorite ? "bookmark-saved" : "bookmark-resting", bundle: nil)
+                            Image(place.isFavorite ? "bookmark-saved" : "bookmark-resting", bundle: nil)
                                 .resizable()
                                 .renderingMode(.template)
                                 .frame(width: DesignSystem.IconSize.lg, height: DesignSystem.IconSize.lg)
-                                .foregroundColor(isFavorite ? DesignSystem.Colors.favorite : DesignSystem.Colors.textTertiary)
+                                .foregroundColor(place.isFavorite ? DesignSystem.Colors.favorite : DesignSystem.Colors.textTertiary)
                                 .scaleEffect(isBookmarkAnimating ? 1.3 : 1.0)
                                 .animation(.spring(response: 0.3, dampingFraction: 0.5), value: isBookmarkAnimating)
                         }
@@ -226,7 +230,6 @@ struct RestaurantDetailView: View {
         .navigationTitle("Details")
         .navigationBarTitleDisplayMode(.inline)
         .task {
-            isFavorite = favoritesStore.isFavorite(place.id)
             await loadPlaceDetails()
         }
     }
@@ -235,15 +238,10 @@ struct RestaurantDetailView: View {
 
     private func handleBookmarkTap() {
         isBookmarkAnimating = true
-        toggleFavorite()
+        onToggleFavorite?(place)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             isBookmarkAnimating = false
         }
-    }
-
-    private func toggleFavorite() {
-        isFavorite.toggle()
-        favoritesStore.toggleFavorite(place.id)
     }
 
     private func loadPlaceDetails() async {
@@ -309,19 +307,21 @@ struct RestaurantDetailView: View {
 
 #Preview {
     NavigationStack {
-        RestaurantDetailView(place: Place(
-            id: "1",
-            name: "Test Restaurant",
-            rating: 4.5,
-            userRatingsTotal: 120,
-            priceLevel: 2,
-            latitude: 0,
-            longitude: 0,
-            address: "123 Main St",
-            photoReferences: [],
-            isFavorite: false
-        ))
-        .environmentObject(FavoritesStore())
+        RestaurantDetailView(
+            place: Place(
+                id: "1",
+                name: "Test Restaurant",
+                rating: 4.5,
+                userRatingsTotal: 120,
+                priceLevel: 2,
+                latitude: 0,
+                longitude: 0,
+                address: "123 Main St",
+                photoReferences: [],
+                isFavorite: false
+            ),
+            onToggleFavorite: { _ in }
+        )
     }
 }
 

@@ -51,7 +51,7 @@ struct ListResultsView: View {
     private var restaurantList: some View {
         ForEach(Array(places.enumerated()), id: \.element.id) { index, place in
             NavigationLink(destination:
-                RestaurantDetailView(place: place)
+                RestaurantDetailView(place: place, onToggleFavorite: onToggleFavorite)
                     .photoManager(photoManager ?? AppConfiguration.shared.createPhotoManager())
             ) {
                 RestaurantRow(

@@ -78,7 +78,7 @@ struct MapResultsView: View {
     }
 
     private func selectedPlaceCard(_ place: Place) -> some View {
-        NavigationLink(destination: RestaurantDetailView(place: place)) {
+        NavigationLink(destination: RestaurantDetailView(place: place, onToggleFavorite: onToggleFavorite)) {
             RestaurantRow(
                 place: place,
                 onToggleFavorite: { onToggleFavorite(place) }
