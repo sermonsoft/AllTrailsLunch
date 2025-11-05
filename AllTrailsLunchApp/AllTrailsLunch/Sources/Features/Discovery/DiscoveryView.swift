@@ -35,12 +35,31 @@ struct DiscoveryView: View {
                         floatingToggleButton
                     }
                 }
-                .toolbar { logoToolbarItem }
+                .toolbar {
+                    logoToolbarItem
+                    savedSearchesToolbarItem
+                }
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbarBackground(.visible, for: .navigationBar)
                 .toolbarBackground(Color.white, for: .navigationBar)
                 .background(DesignSystem.Colors.background)
                 .photoManager(photoManager)
+                .sheet(isPresented: $viewModel.showSavedSearchesSheet) {
+                    SavedSearchesView(savedSearchService: viewModel.savedSearchService) { savedSearch in
+                        Task {
+                            await viewModel.loadSavedSearch(savedSearch)
+                        }
+                    }
+                }
+                .sheet(isPresented: $viewModel.showSaveSearchSheet) {
+                    SaveSearchSheet(
+                        query: viewModel.searchText,
+                        location: viewModel.userLocation.map { (latitude: $0.latitude, longitude: $0.longitude) },
+                        filters: viewModel.filters,
+                        savedSearchService: viewModel.savedSearchService,
+                        onSave: {}
+                    )
+                }
 
                 // Network Simulator (Development only)
                 #if DEV
@@ -60,13 +79,47 @@ struct DiscoveryView: View {
     }
 
     private var searchBar: some View {
-        SearchBar(text: $viewModel.searchText) { query in
-            viewModel.performSearch(query)
+        HStack(spacing: DesignSystem.Spacing.sm) {
+            SearchBar(text: $viewModel.searchText) { query in
+                viewModel.performSearch(query)
+            }
+
+            // Filter button
+            Button {
+                viewModel.showFilterSheet = true
+            } label: {
+                ZStack(alignment: .topTrailing) {
+                    Image(systemName: "line.3.horizontal.decrease.circle")
+                        .font(.title2)
+                        .foregroundStyle(viewModel.filters.hasActiveFilters ? DesignSystem.Colors.primary : .gray)
+
+                    // Badge for active filter count
+                    if viewModel.filters.hasActiveFilters {
+                        Circle()
+                            .fill(DesignSystem.Colors.primary)
+                            .frame(width: 16, height: 16)
+                            .overlay {
+                                Text("\(viewModel.filters.activeFilterCount)")
+                                    .font(.caption2)
+                                    .fontWeight(.bold)
+                                    .foregroundStyle(.white)
+                            }
+                            .offset(x: 6, y: -6)
+                    }
+                }
+            }
+            .padding(.trailing, DesignSystem.Spacing.sm)
         }
         .padding(.horizontal, DesignSystem.Spacing.lg)
         .padding(.top, DesignSystem.Spacing.md)
         .padding(.bottom, DesignSystem.Spacing.sm)
         .background(Color.white)
+        .sheet(isPresented: $viewModel.showFilterSheet) {
+            FilterSheet(filters: Binding(
+                get: { viewModel.filters },
+                set: { viewModel.applyFilters($0) }
+            ))
+        }
     }
 
     @ViewBuilder
@@ -124,6 +177,27 @@ struct DiscoveryView: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(height: 24)
+        }
+    }
+
+    @ToolbarContentBuilder
+    private var savedSearchesToolbarItem: some ToolbarContent {
+        ToolbarItemGroup(placement: .topBarTrailing) {
+            // Save current search button
+            Button {
+                viewModel.showSaveSearchSheet = true
+            } label: {
+                Image(systemName: "bookmark.circle")
+                    .font(.title3)
+            }
+
+            // View saved searches button
+            Button {
+                viewModel.showSavedSearchesSheet = true
+            } label: {
+                Image(systemName: "clock.arrow.circlepath")
+                    .font(.title3)
+            }
         }
     }
 }

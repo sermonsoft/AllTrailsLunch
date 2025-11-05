@@ -29,6 +29,10 @@ extension DiscoveryViewModel {
         case locationPermissionGranted
         case locationPermissionDenied
         case searchError(error: String)
+        case filtersApplied(filterCount: Int)
+        case filtersCleared
+        case searchSaved(name: String)
+        case savedSearchLoaded(name: String)
 
         var eventName: String {
             switch self {
@@ -54,6 +58,14 @@ extension DiscoveryViewModel {
                 return "location_permission_denied"
             case .searchError:
                 return "search_error"
+            case .filtersApplied:
+                return "filters_applied"
+            case .filtersCleared:
+                return "filters_cleared"
+            case .searchSaved:
+                return "search_saved"
+            case .savedSearchLoaded:
+                return "saved_search_loaded"
             }
         }
 
@@ -73,6 +85,10 @@ extension DiscoveryViewModel {
                 return EventCategory.search
             case .locationPermissionRequested, .locationPermissionGranted, .locationPermissionDenied:
                 return EventCategory.location
+            case .filtersApplied, .filtersCleared:
+                return EventCategory.search
+            case .searchSaved, .savedSearchLoaded:
+                return EventCategory.search
             }
         }
 
@@ -96,6 +112,14 @@ extension DiscoveryViewModel {
                 return [:]
             case .searchError(let error):
                 return ["error": error]
+            case .filtersApplied(let filterCount):
+                return ["filter_count": filterCount]
+            case .filtersCleared:
+                return [:]
+            case .searchSaved(let name):
+                return ["search_name": name]
+            case .savedSearchLoaded(let name):
+                return ["search_name": name]
             }
         }
     }
@@ -117,16 +141,33 @@ class DiscoveryViewModel {
     var error: PlacesError?
     var userLocation: CLLocationCoordinate2D?
     var nextPageToken: String?
+    var filters: SearchFilters = .default
+    var showFilterSheet: Bool = false
+    var showSavedSearchesSheet: Bool = false
+    var showSaveSearchSheet: Bool = false
 
     private let interactor: DiscoveryInteractor
     private let eventLogger: EventLogger
+    private let filterPreferences: FilterPreferencesService
+    let savedSearchService: SavedSearchService
     private var searchTask: Task<Void, Never>?
     private var debounceTimer: Timer?
     private var currentPage: Int = 0
+    private var unfilteredResults: [Place] = [] // Store unfiltered results for client-side filtering
 
-    init(interactor: DiscoveryInteractor, eventLogger: EventLogger) {
+    init(
+        interactor: DiscoveryInteractor,
+        eventLogger: EventLogger,
+        filterPreferences: FilterPreferencesService = FilterPreferencesService(),
+        savedSearchService: SavedSearchService? = nil
+    ) {
         self.interactor = interactor
         self.eventLogger = eventLogger
+        self.filterPreferences = filterPreferences
+        self.savedSearchService = savedSearchService ?? SavedSearchService(modelContext: SwiftDataStorageManager.shared.mainContext)
+
+        // Load saved filters
+        self.filters = filterPreferences.loadFilters()
 
         // Log screen view
         eventLogger.log(Event.screenViewed)
@@ -200,11 +241,11 @@ class DiscoveryViewModel {
                 radius: 1500,
                 pageToken: nil
             )
-            self.results = places
+            storeAndFilterResults(places)
             self.nextPageToken = nextToken
 
             // Log successful search
-            eventLogger.log(Event.nearbySearchPerformed(resultCount: places.count))
+            eventLogger.log(Event.nearbySearchPerformed(resultCount: results.count))
         } catch let error as PlacesError {
             self.error = error
             eventLogger.log(Event.searchError(error: error.localizedDescription))
@@ -227,11 +268,11 @@ class DiscoveryViewModel {
                 location: userLocation,
                 pageToken: nil
             )
-            self.results = places
+            storeAndFilterResults(places)
             self.nextPageToken = nextToken
 
             // Log successful search
-            eventLogger.log(Event.searchPerformed(query: query, resultCount: places.count))
+            eventLogger.log(Event.searchPerformed(query: query, resultCount: results.count))
         } catch let error as PlacesError {
             self.error = error
             eventLogger.log(Event.searchError(error: error.localizedDescription))
@@ -289,6 +330,86 @@ class DiscoveryViewModel {
 
     func didSelectPlace(_ place: Place) {
         eventLogger.log(Event.placeSelected(placeId: place.id, placeName: place.name))
+    }
+
+    // MARK: - Filters
+
+    func applyFilters(_ newFilters: SearchFilters) {
+        filters = newFilters
+        filterPreferences.saveFilters(newFilters)
+
+        // Apply filters to current results
+        applyFiltersToResults()
+
+        // Log filter application
+        if newFilters.hasActiveFilters {
+            eventLogger.log(Event.filtersApplied(filterCount: newFilters.activeFilterCount))
+        } else {
+            eventLogger.log(Event.filtersCleared)
+        }
+    }
+
+    func clearFilters() {
+        filters = .default
+        filterPreferences.clearFilters()
+        applyFiltersToResults()
+        eventLogger.log(Event.filtersCleared)
+    }
+
+    private func applyFiltersToResults() {
+        // If we have unfiltered results, apply filters
+        if !unfilteredResults.isEmpty {
+            results = filters.apply(
+                to: unfilteredResults,
+                userLocation: userLocation.map { (latitude: $0.latitude, longitude: $0.longitude) }
+            )
+        }
+    }
+
+    private func storeAndFilterResults(_ places: [Place]) {
+        // Store unfiltered results
+        unfilteredResults = places
+
+        // Apply filters
+        results = filters.apply(
+            to: places,
+            userLocation: userLocation.map { (latitude: $0.latitude, longitude: $0.longitude) }
+        )
+    }
+
+    // MARK: - Saved Searches
+
+    func loadSavedSearch(_ savedSearch: SavedSearch) async {
+        // Apply filters from saved search
+        filters = savedSearch.filters
+        filterPreferences.saveFilters(filters)
+
+        // Set search text
+        searchText = savedSearch.query
+
+        // Log event
+        eventLogger.log(Event.savedSearchLoaded(name: savedSearch.displayName))
+
+        // Perform search
+        if savedSearch.query.isEmpty {
+            await searchNearby()
+        } else {
+            await searchText(savedSearch.query)
+        }
+    }
+
+    func saveCurrentSearch(name: String) throws {
+        let savedSearch = SavedSearch(
+            name: name,
+            query: searchText,
+            location: userLocation.map { (latitude: $0.latitude, longitude: $0.longitude) },
+            filters: filters
+        )
+
+        try savedSearchService.saveSearch(savedSearch)
+
+        // Log event
+        eventLogger.log(Event.searchSaved(name: name))
     }
 }
 

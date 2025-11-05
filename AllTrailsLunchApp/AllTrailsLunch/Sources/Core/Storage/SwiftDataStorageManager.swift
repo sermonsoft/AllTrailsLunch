@@ -25,15 +25,16 @@ final class SwiftDataStorageManager {
     
     private init() {
         let schema = Schema([
-            FavoritePlace.self
+            FavoritePlace.self,
+            SavedSearch.self
         ])
-        
+
         let configuration = ModelConfiguration(
             schema: schema,
             isStoredInMemoryOnly: false,
             allowsSave: true
         )
-        
+
         do {
             container = try ModelContainer(for: schema, configurations: [configuration])
             print("✅ SwiftData container initialized successfully")
