@@ -3,7 +3,6 @@
 /// AllTrailsLunch
 ///
 /// Service protocols for Places API operations.
-/// Inspired by VIPER architecture from lesson_151_starter_project.
 ///
 
 import Foundation

@@ -38,12 +38,13 @@ struct MapResultsView: View {
 
     private var mapView: some View {
         Map(position: $position, selection: $selectedPlace) {
-            ForEach(places) { place in
+            ForEach(Array(places.enumerated()), id: \.element.id) { index, place in
                 Annotation("", coordinate: place.coordinate) {
                     MapPinView(
                         place: place,
                         isSelected: selectedPlace?.id == place.id,
-                        isSearchResult: isSearchActive
+                        isSearchResult: isSearchActive,
+                        appearanceDelay: Double(index) * 0.05 // Stagger animation
                     )
                 }
                 .tag(place)
@@ -121,8 +122,10 @@ struct MapPinView: View {
     let place: Place
     let isSelected: Bool
     let isSearchResult: Bool
+    let appearanceDelay: Double
 
     @EnvironmentObject var favoritesStore: FavoritesStore
+    @State private var hasAppeared = false
 
     // MARK: - Constants
 
@@ -146,6 +149,24 @@ struct MapPinView: View {
                 y: isSelected ? 4 : 0
             )
             .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isSelected)
+            // Appear/Disappear animations
+            .scaleEffect(hasAppeared ? 1.0 : 0.3)
+            .opacity(hasAppeared ? 1.0 : 0.0)
+            .offset(y: hasAppeared ? 0 : -20)
+            .onAppear {
+                withAnimation(
+                    .spring(response: 0.6, dampingFraction: 0.7)
+                    .delay(appearanceDelay)
+                ) {
+                    hasAppeared = true
+                }
+            }
+            .transition(
+                .asymmetric(
+                    insertion: .scale.combined(with: .opacity).combined(with: .offset(y: -20)),
+                    removal: .scale.combined(with: .opacity)
+                )
+            )
     }
 
     // MARK: - Computed Properties
