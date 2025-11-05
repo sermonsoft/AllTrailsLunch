@@ -55,7 +55,7 @@ struct RestaurantDetailView: View {
                                 .resizable()
                                 .renderingMode(.template)
                                 .frame(width: DesignSystem.IconSize.lg, height: DesignSystem.IconSize.lg)
-                                .foregroundColor(isFavorite ? DesignSystem.Colors.favorite : DesignSystem.Colors.textTertiary)
+                                .foregroundColor(isFavorite ? DesignSystem.Colors.primary : DesignSystem.Colors.textTertiary)
                                 .scaleEffect(isBookmarkAnimating ? 1.3 : 1.0)
                                 .animation(.spring(response: 0.3, dampingFraction: 0.5), value: isBookmarkAnimating)
                         }
