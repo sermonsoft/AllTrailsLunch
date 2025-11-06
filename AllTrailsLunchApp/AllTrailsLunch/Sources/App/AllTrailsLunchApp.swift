@@ -10,19 +10,19 @@ import SwiftUI
 @main
 struct AllTrailsLunchApp: App {
     @State private var viewModel: DiscoveryViewModel
-    @State private var favoritesStore: FavoritesStore
+    @State private var interactor: CoreInteractor
     @State private var photoManager: PhotoManager
     @State private var networkMonitor: NetworkMonitor
 
     init() {
         let config = AppConfiguration.shared
-        let favoritesStore = config.createFavoritesStore()
+        let interactor = config.createDiscoveryInteractor() as! CoreInteractor
         let viewModel = config.createDiscoveryViewModel()
         let photoManager = config.createPhotoManager()
         let networkMonitor = config.createNetworkMonitor()
 
         _viewModel = State(wrappedValue: viewModel)
-        _favoritesStore = State(wrappedValue: favoritesStore)
+        _interactor = State(wrappedValue: interactor)
         _photoManager = State(wrappedValue: photoManager)
         _networkMonitor = State(wrappedValue: networkMonitor)
     }
@@ -34,7 +34,7 @@ struct AllTrailsLunchApp: App {
                 photoManager: photoManager,
                 networkMonitor: networkMonitor
             )
-            .environment(favoritesStore)
+            .environment(interactor.favoritesManager)
             .task {
                 await viewModel.initialize()
             }

@@ -14,9 +14,9 @@ import CoreLocation
 @MainActor
 class CoreInteractor: DiscoveryInteractor, DetailInteractor {
     // MARK: - Dependencies
-    
+
     private let restaurantManager: RestaurantManager
-    private let favoritesManager: FavoritesManager
+    let favoritesManager: FavoritesManager // Exposed for UI observation
     private let locationManager: LocationManager
     
     // MARK: - Initialization

@@ -150,7 +150,6 @@ class DiscoveryViewModel {
     private let eventLogger: EventLogger
     private let filterPreferences: FilterPreferencesService
     let savedSearchService: SavedSearchService
-    private var favoritesStore: FavoritesStore?
     private var searchTask: Task<Void, Never>?
     private var debounceTimer: Timer?
     private var currentPage: Int = 0
@@ -160,27 +159,18 @@ class DiscoveryViewModel {
         interactor: DiscoveryInteractor,
         eventLogger: EventLogger,
         filterPreferences: FilterPreferencesService = FilterPreferencesService(),
-        savedSearchService: SavedSearchService? = nil,
-        favoritesStore: FavoritesStore? = nil
+        savedSearchService: SavedSearchService? = nil
     ) {
         self.interactor = interactor
         self.eventLogger = eventLogger
         self.filterPreferences = filterPreferences
         self.savedSearchService = savedSearchService ?? SavedSearchService(modelContext: SwiftDataStorageManager.shared.mainContext)
-        self.favoritesStore = favoritesStore
 
         // Load saved filters
         self.filters = filterPreferences.loadFilters()
 
         // Log screen view
         eventLogger.log(Event.screenViewed)
-    }
-
-    // MARK: - Configuration
-
-    /// Set the favorites store after initialization (for dependency injection from the view)
-    func setFavoritesStore(_ store: FavoritesStore) {
-        self.favoritesStore = store
     }
     
     // MARK: - Initialization
@@ -325,11 +315,9 @@ class DiscoveryViewModel {
     // MARK: - Favorites
 
     func toggleFavorite(_ place: Place) {
-        // Update the interactor (FavoritesManager + SwiftData)
+        // Update via interactor (FavoritesManager + SwiftData)
+        // FavoritesManager is @Observable, so UI will react automatically
         interactor.toggleFavorite(place.id)
-
-        // Also update the FavoritesStore (UserDefaults) for UI reactivity
-        favoritesStore?.toggleFavorite(place.id)
 
         if let index = results.firstIndex(where: { $0.id == place.id }) {
             let isFavorite = interactor.isFavorite(place.id)

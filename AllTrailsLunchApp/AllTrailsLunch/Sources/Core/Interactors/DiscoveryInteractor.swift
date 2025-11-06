@@ -12,8 +12,13 @@ import CoreLocation
 /// Protocol for Discovery feature business logic
 @MainActor
 protocol DiscoveryInteractor {
+    // MARK: - Favorites Manager Access
+
+    /// Access to the observable FavoritesManager for UI reactivity
+    var favoritesManager: FavoritesManager { get }
+
     // MARK: - Location
-    
+
     /// Request location permission and get user's current location
     /// - Returns: User's current location coordinates
     /// - Throws: PlacesError if permission denied or location unavailable

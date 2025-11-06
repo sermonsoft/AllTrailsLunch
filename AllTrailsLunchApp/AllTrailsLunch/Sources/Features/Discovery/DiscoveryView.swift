@@ -9,7 +9,7 @@ import SwiftUI
 
 struct DiscoveryView: View {
     @Bindable var viewModel: DiscoveryViewModel
-    @Environment(FavoritesStore.self) var favoritesStore
+    @Environment(FavoritesManager.self) var favoritesManager
     @State private var photoManager: PhotoManager
     @State private var networkMonitor: NetworkMonitor
 
@@ -66,10 +66,6 @@ struct DiscoveryView: View {
                 NetworkSimulatorView()
                 #endif
             }
-        }
-        .onAppear {
-            // Set the favorites store for the view model
-            viewModel.setFavoritesStore(favoritesStore)
         }
     }
 
@@ -417,6 +413,6 @@ struct ViewModeToggleButton: View {
         viewModel: config.createDiscoveryViewModel(),
         photoManager: config.createPhotoManager()
     )
-    .environment(config.createFavoritesStore())
+    .environment(config.createFavoritesManager())
 }
 

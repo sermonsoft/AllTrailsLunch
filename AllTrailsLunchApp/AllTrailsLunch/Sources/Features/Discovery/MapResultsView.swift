@@ -124,7 +124,7 @@ struct MapPinView: View {
     let isSearchResult: Bool
     let appearanceDelay: Double
 
-    @Environment(FavoritesStore.self) var favoritesStore
+    @Environment(FavoritesManager.self) var favoritesManager
     @State private var hasAppeared = false
 
     // MARK: - Constants
@@ -182,7 +182,7 @@ struct MapPinView: View {
     private var pinColor: Color {
         if isSelected {
             return DesignSystem.Colors.primary
-        } else if favoritesStore.isFavorite(place.id) {
+        } else if favoritesManager.isFavorite(place.id) {
             return DesignSystem.Colors.favorite
         } else if isSearchResult {
             // Search results use a distinct blue color
@@ -213,5 +213,5 @@ struct MapPinView: View {
         onToggleFavorite: { _ in },
         isSearchActive: false
     )
-    .environment(FavoritesStore())
+    .environment(AppConfiguration.shared.createFavoritesManager())
 }

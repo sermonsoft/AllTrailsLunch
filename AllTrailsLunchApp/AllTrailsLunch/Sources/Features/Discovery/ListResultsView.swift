@@ -82,7 +82,7 @@ struct ListResultsView: View {
 struct RestaurantRow: View {
     let place: Place
     let onToggleFavorite: () -> Void
-    @Environment(FavoritesStore.self) var favoritesStore
+    @Environment(FavoritesManager.self) var favoritesManager
     @State private var isBookmarkAnimating = false
 
     var body: some View {
@@ -188,7 +188,7 @@ struct RestaurantRow: View {
 
     private var bookmarkButton: some View {
         Button(action: handleBookmarkTap) {
-            Image(place.isFavorite ? "bookmark-saved" : "bookmark-resting", bundle: nil)
+            Image(isFavorite ? "bookmark-saved" : "bookmark-resting", bundle: nil)
                 .resizable()
                 .renderingMode(.template)
                 .frame(width: DesignSystem.IconSize.md, height: DesignSystem.IconSize.md)
@@ -199,8 +199,12 @@ struct RestaurantRow: View {
         .buttonStyle(.plain)
     }
 
+    private var isFavorite: Bool {
+        favoritesManager.isFavorite(place.id)
+    }
+
     private var bookmarkColor: Color {
-        place.isFavorite ? DesignSystem.Colors.primary : DesignSystem.Colors.textTertiary
+        isFavorite ? DesignSystem.Colors.primary : DesignSystem.Colors.textTertiary
     }
 
     private func handleBookmarkTap() {
@@ -235,6 +239,6 @@ struct RestaurantRow: View {
             onToggleFavorite: {}
         )
     }
-    .environment(FavoritesStore())
+    .environment(AppConfiguration.shared.createFavoritesManager())
 }
 

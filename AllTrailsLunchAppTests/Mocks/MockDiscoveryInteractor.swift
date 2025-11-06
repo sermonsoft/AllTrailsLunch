@@ -11,9 +11,13 @@ import CoreLocation
 
 @MainActor
 final class MockDiscoveryInteractor: DiscoveryInteractor {
-    
+
+    // MARK: - FavoritesManager Access
+
+    let favoritesManager: FavoritesManager
+
     // MARK: - Mock Configuration
-    
+
     var shouldFailLocationPermission = false
     var shouldFailSearch = false
     var locationToReturn: CLLocationCoordinate2D?
@@ -21,6 +25,12 @@ final class MockDiscoveryInteractor: DiscoveryInteractor {
     var nextPageTokenToReturn: String?
     var errorToThrow: PlacesError?
     var placeDetailsToReturn: PlaceDetail?
+
+    // MARK: - Initialization
+
+    init(favoritesManager: FavoritesManager? = nil) {
+        self.favoritesManager = favoritesManager ?? AppConfiguration.shared.createFavoritesManager()
+    }
     
     // MARK: - Call Tracking
     
