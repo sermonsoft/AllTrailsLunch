@@ -15,6 +15,7 @@ struct MapResultsView: View {
     let onToggleFavorite: (Place) -> Void
     let isSearchActive: Bool
 
+    @Environment(FavoritesManager.self) var favoritesManager
     @State private var position: MapCameraPosition = .automatic
     @State private var selectedPlace: Place?
 
@@ -86,7 +87,8 @@ struct MapResultsView: View {
                 place: place,
                 onToggleFavorite: { onToggleFavorite(place) }
             )
-            .id(place.id) // Force view refresh when place changes
+            // Force view refresh when place or favorite status changes
+            .id("\(place.id)-\(favoritesManager.isFavorite(place.id))")
         }
         .buttonStyle(.plain)
         .padding(.horizontal, DesignSystem.Spacing.lg)
@@ -149,6 +151,8 @@ struct MapPinView: View {
                 y: isSelected ? 4 : 0
             )
             .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isSelected)
+            // Animate color changes when favorite status changes
+            .animation(.easeInOut(duration: 0.2), value: favoritesManager.favoriteIds)
             // Appear/Disappear animations
             .scaleEffect(hasAppeared ? 1.0 : 0.3)
             .opacity(hasAppeared ? 1.0 : 0.0)

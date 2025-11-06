@@ -195,6 +195,8 @@ struct RestaurantRow: View {
                 .foregroundColor(bookmarkColor)
                 .scaleEffect(isBookmarkAnimating ? 1.3 : 1.0)
                 .animation(.spring(response: 0.3, dampingFraction: 0.5), value: isBookmarkAnimating)
+                // Trigger re-render when favoriteIds changes
+                .animation(.easeInOut(duration: 0.2), value: favoritesManager.favoriteIds)
         }
         .buttonStyle(.plain)
     }
