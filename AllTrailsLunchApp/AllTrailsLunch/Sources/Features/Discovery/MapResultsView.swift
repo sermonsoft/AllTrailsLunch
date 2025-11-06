@@ -124,7 +124,7 @@ struct MapPinView: View {
     let isSearchResult: Bool
     let appearanceDelay: Double
 
-    @EnvironmentObject var favoritesStore: FavoritesStore
+    @Environment(FavoritesStore.self) var favoritesStore
     @State private var hasAppeared = false
 
     // MARK: - Constants
@@ -213,5 +213,5 @@ struct MapPinView: View {
         onToggleFavorite: { _ in },
         isSearchActive: false
     )
-    .environmentObject(FavoritesStore())
+    .environment(FavoritesStore())
 }

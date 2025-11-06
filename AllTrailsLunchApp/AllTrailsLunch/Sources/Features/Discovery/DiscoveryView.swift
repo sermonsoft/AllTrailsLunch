@@ -9,7 +9,7 @@ import SwiftUI
 
 struct DiscoveryView: View {
     @Bindable var viewModel: DiscoveryViewModel
-    @EnvironmentObject var favoritesStore: FavoritesStore
+    @Environment(FavoritesStore.self) var favoritesStore
     @State private var photoManager: PhotoManager
     @State private var networkMonitor: NetworkMonitor
 
@@ -413,6 +413,6 @@ struct ViewModeToggleButton: View {
         viewModel: config.createDiscoveryViewModel(),
         photoManager: config.createPhotoManager()
     )
-    .environmentObject(config.createFavoritesStore())
+    .environment(config.createFavoritesStore())
 }
 

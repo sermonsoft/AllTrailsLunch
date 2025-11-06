@@ -6,14 +6,16 @@
 ///
 
 import Foundation
+import Observation
 
 @MainActor
-class FavoritesStore: ObservableObject {
-    @Published private(set) var favoriteIds: Set<String> = []
-    
+@Observable
+class FavoritesStore {
+    private(set) var favoriteIds: Set<String> = []
+
     private let userDefaults: UserDefaults
     private let favoritesKey = "com.alltrailslunch.favorites"
-    
+
     init(userDefaults: UserDefaults = .standard) {
         self.userDefaults = userDefaults
         loadFavorites()

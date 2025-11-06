@@ -82,7 +82,7 @@ struct ListResultsView: View {
 struct RestaurantRow: View {
     let place: Place
     let onToggleFavorite: () -> Void
-    @EnvironmentObject var favoritesStore: FavoritesStore
+    @Environment(FavoritesStore.self) var favoritesStore
     @State private var isBookmarkAnimating = false
 
     var body: some View {
@@ -235,6 +235,6 @@ struct RestaurantRow: View {
             onToggleFavorite: {}
         )
     }
-    .environmentObject(FavoritesStore())
+    .environment(FavoritesStore())
 }
 

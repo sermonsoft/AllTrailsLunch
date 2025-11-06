@@ -10,7 +10,7 @@ import SwiftUI
 @main
 struct AllTrailsLunchApp: App {
     @State private var viewModel: DiscoveryViewModel
-    @StateObject private var favoritesStore: FavoritesStore
+    @State private var favoritesStore: FavoritesStore
     @State private var photoManager: PhotoManager
     @State private var networkMonitor: NetworkMonitor
 
@@ -22,7 +22,7 @@ struct AllTrailsLunchApp: App {
         let networkMonitor = config.createNetworkMonitor()
 
         _viewModel = State(wrappedValue: viewModel)
-        _favoritesStore = StateObject(wrappedValue: favoritesStore)
+        _favoritesStore = State(wrappedValue: favoritesStore)
         _photoManager = State(wrappedValue: photoManager)
         _networkMonitor = State(wrappedValue: networkMonitor)
     }
@@ -34,7 +34,7 @@ struct AllTrailsLunchApp: App {
                 photoManager: photoManager,
                 networkMonitor: networkMonitor
             )
-            .environmentObject(favoritesStore)
+            .environment(favoritesStore)
             .task {
                 await viewModel.initialize()
             }
