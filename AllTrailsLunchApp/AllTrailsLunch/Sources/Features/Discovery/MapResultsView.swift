@@ -16,6 +16,7 @@ struct MapResultsView: View {
     let isSearchActive: Bool
 
     @Environment(FavoritesManager.self) var favoritesManager
+    @Environment(\.photoManager) private var photoManager
     @State private var position: MapCameraPosition = .automatic
     @State private var selectedPlace: Place?
 
@@ -85,7 +86,10 @@ struct MapResultsView: View {
     }
 
     private func selectedPlaceCard(_ place: Place) -> some View {
-        NavigationLink(destination: RestaurantDetailView(place: place, onToggleFavorite: onToggleFavorite)) {
+        NavigationLink(destination:
+            RestaurantDetailView(place: place, onToggleFavorite: onToggleFavorite)
+                .photoManager(photoManager ?? AppConfiguration.shared.createPhotoManager())
+        ) {
             RestaurantRow(
                 place: place,
                 onToggleFavorite: { onToggleFavorite(place) }
