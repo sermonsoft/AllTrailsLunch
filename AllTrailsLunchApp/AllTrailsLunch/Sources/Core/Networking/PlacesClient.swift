@@ -1,9 +1,9 @@
-///
-/// `PlacesClient.swift`
-/// AllTrailsLunch
-///
-/// Core HTTP client for Google Places API with retry logic and error handling.
-///
+//
+//  PlacesClient.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 01/11/25.
+//
 
 import Foundation
 
@@ -26,7 +26,12 @@ class PlacesClient {
 
         for attempt in 0..<maxRetries {
             do {
+                // Use simulated network in development builds
+                #if DEV
+                let (data, response) = try await session.simulatedData(for: urlRequest)
+                #else
                 let (data, response) = try await session.data(for: urlRequest)
+                #endif
 
                 guard let httpResponse = response as? HTTPURLResponse else {
                     let error = PlacesError.invalidResponse("Invalid response type")

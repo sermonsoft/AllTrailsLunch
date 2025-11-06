@@ -1,9 +1,9 @@
-///
-/// `PlacesRequest.swift`
-/// AllTrailsLunch
-///
-/// Request builder for Google Places API calls.
-///
+//
+//  PlacesRequest.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 01/11/25.
+//
 
 import Foundation
 

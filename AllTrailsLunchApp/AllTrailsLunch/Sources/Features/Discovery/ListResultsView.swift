@@ -1,9 +1,9 @@
-///
-/// `ListResultsView.swift`
-/// AllTrailsLunch
-///
-/// List view for displaying restaurant results.
-///
+//
+//  ListResultsView.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 05/11/25.
+//
 
 import SwiftUI
 
@@ -12,6 +12,23 @@ struct ListResultsView: View {
     let isLoading: Bool
     let onToggleFavorite: (Place) -> Void
     let onLoadMore: () async -> Void
+    let onRefresh: (() async -> Void)?
+
+    @Environment(\.photoManager) private var photoManager
+
+    init(
+        places: [Place],
+        isLoading: Bool,
+        onToggleFavorite: @escaping (Place) -> Void,
+        onLoadMore: @escaping () async -> Void,
+        onRefresh: (() async -> Void)? = nil
+    ) {
+        self.places = places
+        self.isLoading = isLoading
+        self.onToggleFavorite = onToggleFavorite
+        self.onLoadMore = onLoadMore
+        self.onRefresh = onRefresh
+    }
 
     var body: some View {
         ScrollView {
@@ -22,19 +39,32 @@ struct ListResultsView: View {
             .padding(DesignSystem.Spacing.lg)
         }
         .background(DesignSystem.Colors.background)
+        .refreshable {
+            if let onRefresh = onRefresh {
+                await onRefresh()
+            }
+        }
     }
 
     // MARK: - Subviews
 
     private var restaurantList: some View {
-        ForEach(places) { place in
-            NavigationLink(destination: RestaurantDetailView(place: place)) {
+        ForEach(Array(places.enumerated()), id: \.element.id) { index, place in
+            NavigationLink(destination:
+                RestaurantDetailView(place: place, onToggleFavorite: onToggleFavorite)
+                    .photoManager(photoManager ?? AppConfiguration.shared.createPhotoManager())
+            ) {
                 RestaurantRow(
                     place: place,
                     onToggleFavorite: { onToggleFavorite(place) }
                 )
             }
             .buttonStyle(.plain)
+            .transition(.asymmetric(
+                insertion: .opacity.combined(with: .move(edge: .trailing)),
+                removal: .opacity
+            ))
+            .animation(.spring(response: 0.4, dampingFraction: 0.8).delay(Double(index) * 0.05), value: places.count)
         }
     }
 
@@ -52,14 +82,19 @@ struct ListResultsView: View {
 struct RestaurantRow: View {
     let place: Place
     let onToggleFavorite: () -> Void
-    @EnvironmentObject var favoritesStore: FavoritesStore
+    @Environment(FavoritesManager.self) private var favoritesManager
+    @State private var isBookmarkAnimating = false
 
     var body: some View {
-        HStack(alignment: .top, spacing: DesignSystem.Spacing.md) {
+        // CRITICAL: Access favoriteIds at the TOP of body to establish observation
+        let favoriteIds = favoritesManager.favoriteIds
+        let isFavorite = favoriteIds.contains(place.id)
+
+        return HStack(alignment: .top, spacing: DesignSystem.Spacing.md) {
             restaurantImage
             restaurantInfo
             Spacer(minLength: DesignSystem.Spacing.sm)
-            bookmarkButton
+            bookmarkButtonView(isFavorite: isFavorite)
         }
         .padding(DesignSystem.Spacing.md)
         .cardStyle()
@@ -68,12 +103,15 @@ struct RestaurantRow: View {
     // MARK: - Image
 
     private var restaurantImage: some View {
-        Image("placeholder-image", bundle: nil)
-            .resizable()
-            .aspectRatio(contentMode: .fill)
-            .frame(width: 80, height: 80)
-            .clipped()
-            .cornerRadius(DesignSystem.CornerRadius.sm)
+        CachedPhotoView(
+            photoReferences: place.photoReferences,
+            maxWidth: 160, // 2x for retina
+            maxHeight: 160,
+            contentMode: .fill
+        )
+        .frame(width: 80, height: 80)
+        .clipped()
+        .cornerRadius(DesignSystem.CornerRadius.sm)
     }
 
     // MARK: - Info Section
@@ -152,19 +190,30 @@ struct RestaurantRow: View {
 
     // MARK: - Bookmark Button
 
-    private var bookmarkButton: some View {
-        Button(action: onToggleFavorite) {
-            Image(place.isFavorite ? "bookmark-saved" : "bookmark-resting", bundle: nil)
+    private func bookmarkButtonView(isFavorite: Bool) -> some View {
+        Button(action: handleBookmarkTap) {
+            Image(isFavorite ? "bookmark-saved" : "bookmark-resting", bundle: nil)
                 .resizable()
                 .renderingMode(.template)
                 .frame(width: DesignSystem.IconSize.md, height: DesignSystem.IconSize.md)
-                .foregroundColor(bookmarkColor)
+                .foregroundColor(isFavorite ? DesignSystem.Colors.primary : DesignSystem.Colors.textTertiary)
+                .scaleEffect(isBookmarkAnimating ? 1.3 : 1.0)
+                .animation(.spring(response: 0.3, dampingFraction: 0.5), value: isBookmarkAnimating)
         }
         .buttonStyle(.plain)
     }
 
-    private var bookmarkColor: Color {
-        place.isFavorite ? DesignSystem.Colors.primary : DesignSystem.Colors.textTertiary
+    private func handleBookmarkTap() {
+        // Trigger animation
+        isBookmarkAnimating = true
+
+        // Call the toggle action
+        onToggleFavorite()
+
+        // Reset animation after delay
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            isBookmarkAnimating = false
+        }
     }
 }
 
@@ -186,6 +235,6 @@ struct RestaurantRow: View {
             onToggleFavorite: {}
         )
     }
-    .environmentObject(FavoritesStore())
+    .environment(AppConfiguration.shared.createFavoritesManager())
 }
 

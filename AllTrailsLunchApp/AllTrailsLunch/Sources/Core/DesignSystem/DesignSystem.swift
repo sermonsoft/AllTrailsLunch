@@ -1,9 +1,9 @@
-///
-/// `DesignSystem.swift`
-/// AllTrailsLunch
-///
-/// Design system constants based on Figma specifications.
-///
+//
+//  DesignSystem.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 31/10/25.
+//
 
 import SwiftUI
 

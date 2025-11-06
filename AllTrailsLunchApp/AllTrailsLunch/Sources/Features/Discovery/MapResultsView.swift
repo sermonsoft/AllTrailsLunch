@@ -1,9 +1,9 @@
-///
-/// `MapResultsView.swift`
-/// AllTrailsLunch
-///
-/// Map view for displaying restaurant locations.
-///
+//
+//  MapResultsView.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 05/11/25.
+//
 
 import SwiftUI
 import MapKit
@@ -13,7 +13,9 @@ struct MapResultsView: View {
 
     let places: [Place]
     let onToggleFavorite: (Place) -> Void
+    let isSearchActive: Bool
 
+    @Environment(FavoritesManager.self) var favoritesManager
     @State private var position: MapCameraPosition = .automatic
     @State private var selectedPlace: Place?
 
@@ -37,11 +39,13 @@ struct MapResultsView: View {
 
     private var mapView: some View {
         Map(position: $position, selection: $selectedPlace) {
-            ForEach(places) { place in
+            ForEach(Array(places.enumerated()), id: \.element.id) { index, place in
                 Annotation("", coordinate: place.coordinate) {
                     MapPinView(
                         place: place,
-                        isSelected: selectedPlace?.id == place.id
+                        isSelected: selectedPlace?.id == place.id,
+                        isSearchResult: isSearchActive,
+                        appearanceDelay: Double(index) * 0.05 // Stagger animation
                     )
                 }
                 .tag(place)
@@ -54,24 +58,40 @@ struct MapResultsView: View {
 
     @ViewBuilder
     private var selectedPlaceCallout: some View {
-        if let selectedPlace = selectedPlace {
+        if let selectedPlace = selectedPlace,
+           let currentPlace = places.first(where: { $0.id == selectedPlace.id }) {
             VStack {
                 Spacer()
                     .frame(height: cardTopOffset)
-                selectedPlaceCard(selectedPlace)
-                    .transition(.scale.combined(with: .opacity))
+                selectedPlaceCard(currentPlace)
+                    .transition(
+                        .asymmetric(
+                            insertion: .move(edge: .bottom).combined(with: .opacity),
+                            removal: .move(edge: .bottom).combined(with: .opacity)
+                        )
+                    )
+                    .shadow(
+                        color: Color.black.opacity(0.2),
+                        radius: 12,
+                        x: 0,
+                        y: 6
+                    )
                 Spacer()
             }
-            .animation(.spring(response: 0.3, dampingFraction: 0.7), value: selectedPlace.id)
+            .animation(.spring(response: 0.4, dampingFraction: 0.75), value: selectedPlace.id)
+            // Re-render when places array changes (e.g., favorite status updated)
+            .animation(.easeInOut(duration: 0.2), value: places.map { $0.isFavorite })
         }
     }
 
     private func selectedPlaceCard(_ place: Place) -> some View {
-        NavigationLink(destination: RestaurantDetailView(place: place)) {
+        NavigationLink(destination: RestaurantDetailView(place: place, onToggleFavorite: onToggleFavorite)) {
             RestaurantRow(
                 place: place,
                 onToggleFavorite: { onToggleFavorite(place) }
             )
+            // Force view refresh when place or favorite status changes
+            .id("\(place.id)-\(favoritesManager.isFavorite(place.id))")
         }
         .buttonStyle(.plain)
         .padding(.horizontal, DesignSystem.Spacing.lg)
@@ -106,8 +126,11 @@ struct MapPinView: View {
 
     let place: Place
     let isSelected: Bool
+    let isSearchResult: Bool
+    let appearanceDelay: Double
 
-    @EnvironmentObject var favoritesStore: FavoritesStore
+    @Environment(FavoritesManager.self) var favoritesManager
+    @State private var hasAppeared = false
 
     // MARK: - Constants
 
@@ -123,7 +146,34 @@ struct MapPinView: View {
             .aspectRatio(contentMode: .fit)
             .frame(width: pinSize, height: pinSize)
             .foregroundColor(pinColor)
+            .scaleEffect(isSelected ? 1.0 : 0.9)
+            .shadow(
+                color: isSelected ? Color.black.opacity(0.3) : Color.clear,
+                radius: isSelected ? 8 : 0,
+                x: 0,
+                y: isSelected ? 4 : 0
+            )
             .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isSelected)
+            // Animate color changes when favorite status changes
+            .animation(.easeInOut(duration: 0.2), value: favoritesManager.favoriteIds)
+            // Appear/Disappear animations
+            .scaleEffect(hasAppeared ? 1.0 : 0.3)
+            .opacity(hasAppeared ? 1.0 : 0.0)
+            .offset(y: hasAppeared ? 0 : -20)
+            .onAppear {
+                withAnimation(
+                    .spring(response: 0.6, dampingFraction: 0.7)
+                    .delay(appearanceDelay)
+                ) {
+                    hasAppeared = true
+                }
+            }
+            .transition(
+                .asymmetric(
+                    insertion: .scale.combined(with: .opacity).combined(with: .offset(y: -20)),
+                    removal: .scale.combined(with: .opacity)
+                )
+            )
     }
 
     // MARK: - Computed Properties
@@ -139,9 +189,13 @@ struct MapPinView: View {
     private var pinColor: Color {
         if isSelected {
             return DesignSystem.Colors.primary
-        } else if place.isFavorite {
+        } else if favoritesManager.isFavorite(place.id) {
             return DesignSystem.Colors.favorite
+        } else if isSearchResult {
+            // Search results use a distinct blue color
+            return Color.blue
         } else {
+            // Nearby results use the default accent color
             return DesignSystem.Colors.accent
         }
     }
@@ -163,7 +217,8 @@ struct MapPinView: View {
                 isFavorite: false
             )
         ],
-        onToggleFavorite: { _ in }
+        onToggleFavorite: { _ in },
+        isSearchActive: false
     )
-    .environmentObject(FavoritesStore())
+    .environment(AppConfiguration.shared.createFavoritesManager())
 }

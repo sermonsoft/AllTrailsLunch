@@ -1,13 +1,17 @@
-///
-/// `Place.swift`
-/// AllTrailsLunch
-///
-/// Domain model for a restaurant place.
-///
+//
+//  Place.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 31/10/25.
+//
 
 import Foundation
 import CoreLocation
 
+/// Domain model representing a restaurant/place.
+///
+/// This is the app's internal representation of a place, converted from PlaceDTO.
+/// Includes favorite status and computed properties for UI display.
 struct Place: Identifiable, Equatable, Hashable {
     let id: String
     let name: String

@@ -1,10 +1,9 @@
-///
-/// `AppConfiguration.swift`
-/// AllTrailsLunch
-///
-/// Application configuration and dependency injection.
-/// Supports multiple build environments: MOCK, DEV, STAGING, PRD, STORE
-///
+//
+//  AppConfiguration.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 31/10/25.
+//
 
 import Foundation
 
@@ -172,8 +171,61 @@ struct AppConfiguration {
 
     // MARK: - Dependency Injection
 
+    // MARK: - Low-Level Services
+
     func createPlacesClient() -> PlacesClient {
         PlacesClient(apiKey: googlePlacesAPIKey)
+    }
+
+    func createRemotePlacesService() -> RemotePlacesService {
+        GooglePlacesService(client: createPlacesClient())
+    }
+
+    @MainActor
+    func createFavoritesService() -> FavoritesService {
+        // Use SwiftData for better persistence and querying
+        let modelContext = SwiftDataStorageManager.shared.mainContext
+        return SwiftDataFavoritesService(modelContext: modelContext)
+    }
+
+    func createEventLogger() -> EventLogger {
+        // Use ConsoleEventLogger for development, FirebaseEventLogger for production
+        switch environment {
+        case .mock, .development:
+            return ConsoleEventLogger(isEnabled: true)
+        case .staging:
+            return ConsoleEventLogger(isEnabled: true) // Or FirebaseEventLogger for staging
+        case .production, .store:
+            return FirebaseEventLogger(isEnabled: true)
+        }
+    }
+
+    func createPhotoLoaderService() -> PhotoLoaderService {
+        GooglePlacesPhotoLoader(apiKey: googlePlacesAPIKey)
+    }
+
+    func createPhotoCacheService() -> PhotoCacheService {
+        NSCachePhotoCache()
+    }
+
+    func createPlacesCacheService() -> LocalPlacesCache {
+        FileBasedPlacesCache()
+    }
+
+    // MARK: - Managers
+
+    @MainActor
+    func createFavoritesManager() -> FavoritesManager {
+        FavoritesManager(service: createFavoritesService())
+    }
+
+    @MainActor
+    func createRestaurantManager() -> RestaurantManager {
+        RestaurantManager(
+            remote: createRemotePlacesService(),
+            cache: createPlacesCacheService(),
+            favorites: createFavoritesManager()
+        )
     }
 
     @MainActor
@@ -182,24 +234,53 @@ struct AppConfiguration {
     }
 
     @MainActor
-    func createFavoritesStore() -> FavoritesStore {
-        FavoritesStore()
-    }
-
-    @MainActor
-    func createRepository() -> RestaurantRepository {
-        RestaurantRepository(
-            placesClient: createPlacesClient(),
-            favoritesStore: createFavoritesStore()
+    func createPhotoManager() -> PhotoManager {
+        PhotoManager(
+            loader: createPhotoLoaderService(),
+            cache: createPhotoCacheService()
         )
     }
 
     @MainActor
+    func createNetworkMonitor() -> NetworkMonitor {
+        NetworkMonitor()
+    }
+
+    // MARK: - Interactors (Protocol-Based Services)
+
+    @MainActor
+    func createCoreInteractor() -> CoreInteractor {
+        CoreInteractor(
+            restaurantManager: createRestaurantManager(),
+            favoritesManager: createFavoritesManager(),
+            locationManager: createLocationManager()
+        )
+    }
+
+    @MainActor
+    func createDiscoveryInteractor() -> DiscoveryInteractor {
+        createCoreInteractor()
+    }
+
+    @MainActor
+    func createDetailInteractor() -> DetailInteractor {
+        createCoreInteractor()
+    }
+
+    // MARK: - Legacy Support (for backward compatibility with views)
+
+    @MainActor
+    func createFavoritesStore() -> FavoritesStore {
+        FavoritesStore()
+    }
+
+    // MARK: - ViewModels
+
+    @MainActor
     func createDiscoveryViewModel() -> DiscoveryViewModel {
         DiscoveryViewModel(
-            repository: createRepository(),
-            locationManager: createLocationManager(),
-            favoritesStore: createFavoritesStore()
+            interactor: createDiscoveryInteractor(),
+            eventLogger: createEventLogger()
         )
     }
 }

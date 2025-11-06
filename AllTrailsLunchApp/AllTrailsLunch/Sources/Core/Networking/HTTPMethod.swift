@@ -1,9 +1,9 @@
-///
-/// `HTTPMethod.swift`
-/// AllTrailsLunch
-///
-/// Defines HTTP methods for API requests.
-///
+//
+//  HTTPMethod.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 31/10/25.
+//
 
 import Foundation
 
