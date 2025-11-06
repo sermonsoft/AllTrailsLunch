@@ -82,15 +82,19 @@ struct ListResultsView: View {
 struct RestaurantRow: View {
     let place: Place
     let onToggleFavorite: () -> Void
-    @Environment(FavoritesManager.self) var favoritesManager
+    @Environment(FavoritesManager.self) private var favoritesManager
     @State private var isBookmarkAnimating = false
 
     var body: some View {
-        HStack(alignment: .top, spacing: DesignSystem.Spacing.md) {
+        // CRITICAL: Access favoriteIds at the TOP of body to establish observation
+        let favoriteIds = favoritesManager.favoriteIds
+        let isFavorite = favoriteIds.contains(place.id)
+
+        return HStack(alignment: .top, spacing: DesignSystem.Spacing.md) {
             restaurantImage
             restaurantInfo
             Spacer(minLength: DesignSystem.Spacing.sm)
-            bookmarkButton
+            bookmarkButtonView(isFavorite: isFavorite)
         }
         .padding(DesignSystem.Spacing.md)
         .cardStyle()
@@ -186,27 +190,17 @@ struct RestaurantRow: View {
 
     // MARK: - Bookmark Button
 
-    private var bookmarkButton: some View {
+    private func bookmarkButtonView(isFavorite: Bool) -> some View {
         Button(action: handleBookmarkTap) {
             Image(isFavorite ? "bookmark-saved" : "bookmark-resting", bundle: nil)
                 .resizable()
                 .renderingMode(.template)
                 .frame(width: DesignSystem.IconSize.md, height: DesignSystem.IconSize.md)
-                .foregroundColor(bookmarkColor)
+                .foregroundColor(isFavorite ? DesignSystem.Colors.primary : DesignSystem.Colors.textTertiary)
                 .scaleEffect(isBookmarkAnimating ? 1.3 : 1.0)
                 .animation(.spring(response: 0.3, dampingFraction: 0.5), value: isBookmarkAnimating)
-                // Trigger re-render when favoriteIds changes
-                .animation(.easeInOut(duration: 0.2), value: favoritesManager.favoriteIds)
         }
         .buttonStyle(.plain)
-    }
-
-    private var isFavorite: Bool {
-        favoritesManager.isFavorite(place.id)
-    }
-
-    private var bookmarkColor: Color {
-        isFavorite ? DesignSystem.Colors.primary : DesignSystem.Colors.textTertiary
     }
 
     private func handleBookmarkTap() {

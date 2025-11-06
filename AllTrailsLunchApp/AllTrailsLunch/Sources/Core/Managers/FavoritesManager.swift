@@ -7,6 +7,7 @@
 ///
 
 import Foundation
+import Observation
 
 /// Manager for favorites with observable state.
 /// Uses the new @Observable macro instead of @Published for better performance.

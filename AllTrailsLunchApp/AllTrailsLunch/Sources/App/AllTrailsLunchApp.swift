@@ -16,8 +16,14 @@ struct AllTrailsLunchApp: App {
 
     init() {
         let config = AppConfiguration.shared
+
+        // CRITICAL: Create interactor FIRST, then pass it to viewModel
+        // This ensures they share the same FavoritesManager instance
         let interactor = config.createDiscoveryInteractor() as! CoreInteractor
-        let viewModel = config.createDiscoveryViewModel()
+        let viewModel = DiscoveryViewModel(
+            interactor: interactor,
+            eventLogger: config.createEventLogger()
+        )
         let photoManager = config.createPhotoManager()
         let networkMonitor = config.createNetworkMonitor()
 

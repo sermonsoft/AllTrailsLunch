@@ -58,11 +58,12 @@ struct MapResultsView: View {
 
     @ViewBuilder
     private var selectedPlaceCallout: some View {
-        if let selectedPlace = selectedPlace {
+        if let selectedPlace = selectedPlace,
+           let currentPlace = places.first(where: { $0.id == selectedPlace.id }) {
             VStack {
                 Spacer()
                     .frame(height: cardTopOffset)
-                selectedPlaceCard(selectedPlace)
+                selectedPlaceCard(currentPlace)
                     .transition(
                         .asymmetric(
                             insertion: .move(edge: .bottom).combined(with: .opacity),
@@ -78,6 +79,8 @@ struct MapResultsView: View {
                 Spacer()
             }
             .animation(.spring(response: 0.4, dampingFraction: 0.75), value: selectedPlace.id)
+            // Re-render when places array changes (e.g., favorite status updated)
+            .animation(.easeInOut(duration: 0.2), value: places.map { $0.isFavorite })
         }
     }
 
