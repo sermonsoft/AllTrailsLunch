@@ -182,7 +182,7 @@ struct MapPinView: View {
     private var pinColor: Color {
         if isSelected {
             return DesignSystem.Colors.primary
-        } else if place.isFavorite {
+        } else if favoritesStore.isFavorite(place.id) {
             return DesignSystem.Colors.favorite
         } else if isSearchResult {
             // Search results use a distinct blue color

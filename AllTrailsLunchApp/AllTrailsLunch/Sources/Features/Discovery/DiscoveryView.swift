@@ -67,6 +67,10 @@ struct DiscoveryView: View {
                 #endif
             }
         }
+        .onAppear {
+            // Set the favorites store for the view model
+            viewModel.setFavoritesStore(favoritesStore)
+        }
     }
 
     // MARK: - Content View
