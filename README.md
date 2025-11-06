@@ -558,10 +558,24 @@ xcodebuild test -scheme AllTrailsLunchAppUITests \
 
 ### Runtime Issues
 
-**Problem**: "Invalid API Key" in Production scheme
+**Problem**: "Invalid API Key" or API quota exceeded
 ```
-Solution: Development scheme uses mock data (no API key needed).
-For Production scheme, add API key to AppConfiguration.swift
+Solution 1: Use "Mock" scheme for offline testing
+The Mock scheme uses local JSON data, no API key needed.
+Select "Mock" scheme in Xcode and run.
+
+Solution 2: Development scheme includes a working API key
+The Development scheme has an embedded Google Places API key.
+If you see quota errors, the key may have hit its daily limit.
+You can set your own key via environment variable:
+  export GOOGLE_PLACES_API_KEY=your_key_here
+```
+
+**Problem**: App shows "No restaurants found"
+```
+Solution: Check that location services are enabled
+Settings → Privacy & Security → Location Services → AllTrailsLunchApp → While Using
+Or use the Mock scheme which doesn't require location/network.
 ```
 
 ---
@@ -623,7 +637,7 @@ This project is a take-home assignment submission for AllTrails.
 - CoreLocation
 - SwiftData
 
-**Author**: [Your Name]
+**Author**: Tri Le
 **Date**: January 2025
 **Xcode**: 16.2
 **Swift**: 5.9

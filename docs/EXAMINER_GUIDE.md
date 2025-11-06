@@ -27,12 +27,14 @@ cd AllTrailsLunchApp
 open AllTrailsLunchApp.xcodeproj
 
 # In Xcode:
-# 1. Select "Development" scheme
+# 1. Select "Development" scheme (has embedded API key) or "Mock" scheme (offline)
 # 2. Select "iPhone 16 Pro" simulator
 # 3. Press ⌘R to build and run
 ```
 
-**Expected**: App launches with sample restaurant data (no API key needed)
+**Expected**: App launches with restaurant data
+- **Development scheme**: Real data from Google Places API (embedded key included)
+- **Mock scheme**: Sample data from local JSON (no network needed)
 
 ### Step 2: Run Tests (2 min)
 

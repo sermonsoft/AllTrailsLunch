@@ -17,17 +17,21 @@ open AllTrailsLunchApp.xcodeproj
 
 In Xcode:
 1. Click the scheme selector (top-left, next to Run/Stop buttons)
-2. Select **"Development"** scheme
+2. Select **"Development"** scheme (has embedded API key) or **"Mock"** scheme (offline mode)
 3. Select **"iPhone 16 Pro"** simulator (or any iPhone with iOS 18.2+)
+
+**Scheme Options**:
+- **Development**: Uses real Google Places API (embedded key included)
+- **Mock**: Uses local JSON data (no network/API needed)
 
 ### Step 3: Build & Run (1 minute)
 
 Press `⌘R` or click the **Run** button.
 
-**Expected Result**: 
+**Expected Result**:
 - ✅ App launches successfully
-- ✅ Shows list of sample restaurants
-- ✅ No API key needed (uses mock data)
+- ✅ Shows list of restaurants (real data in Development, sample data in Mock)
+- ✅ Development scheme includes working API key
 
 ### Step 4: Run Tests (2 minutes)
 
@@ -225,11 +229,15 @@ xcodebuild test -scheme AllTrailsLunchAppTests \
 
 ### App Crashes
 
-**Problem**: "Invalid API Key" error
+**Problem**: "Invalid API Key" or API quota exceeded
 
 ```
-Solution: Use "Development" scheme (not "Production")
-Development scheme uses mock data, no API key needed.
+Solution 1: Use "Mock" scheme for offline testing
+The Mock scheme uses local JSON data, no API key needed.
+
+Solution 2: Development scheme includes a working API key
+If you see quota errors, the embedded key may have hit its daily limit.
+You can set your own key: export GOOGLE_PLACES_API_KEY=your_key_here
 ```
 
 ---

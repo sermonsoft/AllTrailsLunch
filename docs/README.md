@@ -227,10 +227,15 @@ xcodebuild test -scheme AllTrailsLunchAppTests \
 
 ### Runtime Issues
 
-**Problem**: "Invalid API Key"
+**Problem**: "Invalid API Key" or API quota exceeded
 ```
-Solution: Use "Development" scheme (not "Production")
-Development scheme uses mock data, no API key needed.
+Solution 1: Use "Mock" scheme for offline testing
+The Mock scheme uses local JSON data, no API key needed.
+Select "Mock" scheme in Xcode and run.
+
+Solution 2: Development scheme includes a working API key
+The Development scheme has an embedded Google Places API key.
+If you see quota errors, the key may have hit its daily limit.
 ```
 
 ---
