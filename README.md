@@ -9,6 +9,7 @@
 
 | Section | Description | Time to Review |
 |---------|-------------|----------------|
+| **[📁 docs/](docs/)** | **Complete examiner documentation** | **Start here!** |
 | [🚀 Quick Start](#-quick-start-for-examiners) | Build and run in 2 minutes | 2 min |
 | [✨ Features](#-features-implemented) | What's been built | 3 min |
 | [🧪 Testing](#-testing-coverage) | Test suite overview | 5 min |
@@ -16,6 +17,15 @@
 | [📁 Code Structure](#-project-structure) | Where to find things | 5 min |
 
 **Total Review Time**: ~25 minutes
+
+### 📚 Examiner Documentation
+
+For comprehensive review guides, see the **[docs/](docs/)** folder:
+
+- **[docs/EXAMINER_GUIDE.md](docs/EXAMINER_GUIDE.md)** - Complete review guide with grading rubric
+- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** - Detailed architecture documentation
+- **[docs/TESTING.md](docs/TESTING.md)** - Testing strategy and coverage
+- **[docs/CODE_EXAMPLES.md](docs/CODE_EXAMPLES.md)** - Key implementation examples
 
 ---
 
@@ -246,19 +256,25 @@ AllTrailsLunchApp/
 │       │   └── Shared/             # Shared components
 │       └── Utilities/              # Helper utilities
 │
-├── AllTrailsLunchAppTests/         # Test suite
+├── AllTrailsLunchAppTests/         # Test suite (86 tests)
 │   ├── Core/                       # Core tests
 │   ├── Features/                   # Feature tests
-│   ├── Integration/                # Integration tests
+│   ├── Integration/                # Integration tests (22 tests)
 │   ├── Mocks/                      # Mock objects
 │   ├── Fixtures/                   # Test data
-│   └── Performance/                # Performance tests
+│   └── Performance/                # Performance tests (13 tests)
 │
 ├── AllTrailsLunchAppUITests/       # UI tests
 │
-└── Documentation/                  # Documentation
-    ├── ARCHITECTURE.md             # Architecture guide
-    └── QUICK_START.md              # Quick start guide
+├── docs/                           # 📁 Examiner documentation
+│   ├── README.md                   # Documentation index
+│   ├── EXAMINER_GUIDE.md           # Review guide with grading rubric
+│   ├── ARCHITECTURE.md             # Architecture patterns & design
+│   ├── TESTING.md                  # Testing strategy & coverage
+│   └── CODE_EXAMPLES.md            # Implementation examples
+│
+├── GETTING_STARTED.md              # Quick start guide (2 min)
+└── README.md                       # This file
 ```
 
 ### Key Files for Review (Examiner Checklist)
@@ -483,18 +499,21 @@ do {
 
 ## 🎓 Additional Documentation
 
-### For Examiners
+### 📁 Examiner Documentation (Start Here!)
 
 | Document | Purpose | Time |
 |----------|---------|------|
-| **[ARCHITECTURE.md](Documentation/ARCHITECTURE.md)** | Complete architecture guide | 15 min |
-| **[QUICK_START.md](Documentation/QUICK_START.md)** | Setup and usage guide | 5 min |
-| **Code Comments** | Inline documentation | N/A |
+| **[docs/EXAMINER_GUIDE.md](docs/EXAMINER_GUIDE.md)** | Complete review guide with grading rubric | 5 min |
+| **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** | Detailed architecture patterns & design | 15 min |
+| **[docs/TESTING.md](docs/TESTING.md)** | Testing strategy and coverage details | 10 min |
+| **[docs/CODE_EXAMPLES.md](docs/CODE_EXAMPLES.md)** | Key implementation examples | 10 min |
+| **[GETTING_STARTED.md](GETTING_STARTED.md)** | Quick start guide (2 minutes) | 2 min |
 
 ### External Resources
 - [Google Places API Docs](https://developers.google.com/maps/documentation/places/web-service/overview)
 - [SwiftUI Documentation](https://developer.apple.com/documentation/swiftui)
 - [MapKit Documentation](https://developer.apple.com/documentation/mapkit)
+- [Observable Macro](https://developer.apple.com/documentation/observation)
 
 ---
 
