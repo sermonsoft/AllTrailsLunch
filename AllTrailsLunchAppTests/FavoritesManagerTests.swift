@@ -167,40 +167,54 @@ final class FavoritesManagerTests: XCTestCase {
 
 class MockFavoritesService: FavoritesService {
     var favoriteIds: Set<String> = []
-    
+
     var addFavoriteCallCount = 0
     var removeFavoriteCallCount = 0
     var clearAllFavoritesCallCount = 0
-    
+
     var lastAddedPlaceId: String?
     var lastRemovedPlaceId: String?
-    
+
+    var shouldThrowError = false
+
     func getFavoriteIds() -> Set<String> {
         return favoriteIds
     }
-    
+
     func saveFavoriteIds(_ ids: Set<String>) throws {
+        if shouldThrowError {
+            throw NSError(domain: "MockFavoritesService", code: 1, userInfo: nil)
+        }
         favoriteIds = ids
     }
-    
+
     func isFavorite(_ placeId: String) -> Bool {
         favoriteIds.contains(placeId)
     }
-    
+
     func addFavorite(_ placeId: String) throws {
         addFavoriteCallCount += 1
         lastAddedPlaceId = placeId
+        if shouldThrowError {
+            throw NSError(domain: "MockFavoritesService", code: 1, userInfo: nil)
+        }
         favoriteIds.insert(placeId)
     }
-    
+
     func removeFavorite(_ placeId: String) throws {
         removeFavoriteCallCount += 1
         lastRemovedPlaceId = placeId
+        if shouldThrowError {
+            throw NSError(domain: "MockFavoritesService", code: 1, userInfo: nil)
+        }
         favoriteIds.remove(placeId)
     }
-    
+
     func clearAllFavorites() throws {
         clearAllFavoritesCallCount += 1
+        if shouldThrowError {
+            throw NSError(domain: "MockFavoritesService", code: 1, userInfo: nil)
+        }
         favoriteIds.removeAll()
     }
 }
