@@ -1,10 +1,9 @@
-///
-/// `AppConfiguration.swift`
-/// AllTrailsLunch
-///
-/// Application configuration and dependency injection.
-/// Supports multiple build environments: MOCK, DEV, STAGING, PRD, STORE
-///
+//
+//  AppConfiguration.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 31/10/25.
+//
 
 import Foundation
 

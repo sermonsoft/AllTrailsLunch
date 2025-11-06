@@ -1,9 +1,9 @@
-///
-/// `SaveSearchSheet.swift`
-/// AllTrailsLunch
-///
-/// Sheet for saving a search.
-///
+//
+//  SaveSearchSheet.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 06/11/25.
+//
 
 import SwiftUI
 

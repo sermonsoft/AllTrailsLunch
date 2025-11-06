@@ -1,9 +1,9 @@
-///
-/// `PhotoService.swift`
-/// AllTrailsLunch
-///
-/// Protocol-based photo loading and caching services.
-///
+//
+//  PhotoService.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 02/11/25.
+//
 
 import Foundation
 import UIKit

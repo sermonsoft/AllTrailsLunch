@@ -1,9 +1,9 @@
-///
-/// `SavedSearch.swift`
-/// AllTrailsLunch
-///
-/// SwiftData model for saved searches.
-///
+//
+//  SavedSearch.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 04/11/25.
+//
 
 import Foundation
 import SwiftData

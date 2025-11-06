@@ -1,9 +1,9 @@
-///
-/// `PlacesClient.swift`
-/// AllTrailsLunch
-///
-/// Core HTTP client for Google Places API with retry logic and error handling.
-///
+//
+//  PlacesClient.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 01/11/25.
+//
 
 import Foundation
 

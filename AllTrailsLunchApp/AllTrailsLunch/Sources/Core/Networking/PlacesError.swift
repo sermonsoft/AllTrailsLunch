@@ -1,9 +1,9 @@
-///
-/// `PlacesError.swift`
-/// AllTrailsLunch
-///
-/// Defines all possible errors that can occur during Google Places API communication.
-///
+//
+//  PlacesError.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 31/10/25.
+//
 
 import Foundation
 

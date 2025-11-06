@@ -1,14 +1,15 @@
-///
-/// `DiscoveryViewModel.swift`
-/// AllTrailsLunch
-///
-/// ViewModel for the discovery screen with search and filtering.
-///
+//
+//  DiscoveryViewModel.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 04/11/25.
+//
 
 import Foundation
 import CoreLocation
 import Observation
 
+/// View mode for displaying restaurant results
 enum ViewMode {
     case list
     case map
@@ -125,6 +126,16 @@ extension DiscoveryViewModel {
     }
 }
 
+/// ViewModel for the Discovery screen.
+///
+/// Manages the state and business logic for restaurant discovery, including:
+/// - Location-based and text-based search
+/// - View mode switching (list/map)
+/// - Search filters and saved searches
+/// - Pagination and infinite scrolling
+/// - Integration with FavoritesManager for bookmark state
+///
+/// Uses @Observable macro for modern SwiftUI state management.
 @MainActor
 @Observable
 class DiscoveryViewModel {

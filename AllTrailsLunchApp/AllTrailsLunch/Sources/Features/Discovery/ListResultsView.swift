@@ -1,9 +1,9 @@
-///
-/// `ListResultsView.swift`
-/// AllTrailsLunch
-///
-/// List view for displaying restaurant results.
-///
+//
+//  ListResultsView.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 05/11/25.
+//
 
 import SwiftUI
 

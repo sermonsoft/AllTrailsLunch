@@ -1,9 +1,9 @@
-///
-/// `LocationManager.swift`
-/// AllTrailsLunch
-///
-/// Wrapper around CLLocationManager with async/await support.
-///
+//
+//  LocationManager.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 02/11/25.
+//
 
 import Foundation
 import CoreLocation

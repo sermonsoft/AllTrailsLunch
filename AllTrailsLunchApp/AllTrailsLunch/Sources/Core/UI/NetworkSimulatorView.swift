@@ -1,10 +1,9 @@
-///
-/// `NetworkSimulatorView.swift`
-/// AllTrailsLunch
-///
-/// Debug UI for testing network simulation.
-/// Only available in development builds.
-///
+//
+//  NetworkSimulatorView.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 05/11/25.
+//
 
 import SwiftUI
 

@@ -1,9 +1,9 @@
-///
-/// `MockDiscoveryInteractor.swift`
-/// AllTrailsLunchAppTests
-///
-/// Mock implementation of DiscoveryInteractor for testing.
-///
+//
+//  MockDiscoveryInteractor.swift
+//  AllTrailsLunchAppTests
+//
+//  Created by Tri Le on 03/11/25.
+//
 
 import Foundation
 import CoreLocation

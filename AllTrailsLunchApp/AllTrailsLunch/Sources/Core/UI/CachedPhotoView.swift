@@ -1,9 +1,9 @@
-///
-/// `CachedPhotoView.swift`
-/// AllTrailsLunch
-///
-/// SwiftUI view for displaying photos with automatic caching.
-///
+//
+//  CachedPhotoView.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 05/11/25.
+//
 
 import SwiftUI
 

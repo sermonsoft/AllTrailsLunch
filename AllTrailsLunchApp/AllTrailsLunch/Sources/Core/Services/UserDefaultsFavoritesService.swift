@@ -1,10 +1,9 @@
-///
-/// `UserDefaultsFavoritesService.swift`
-/// AllTrailsLunch
-///
-/// UserDefaults implementation of FavoritesService.
-/// Provides persistence for favorite restaurant IDs.
-///
+//
+//  UserDefaultsFavoritesService.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 01/11/25.
+//
 
 import Foundation
 

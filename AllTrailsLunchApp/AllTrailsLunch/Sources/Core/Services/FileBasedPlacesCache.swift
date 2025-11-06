@@ -1,9 +1,9 @@
-///
-/// `FileBasedPlacesCache.swift`
-/// AllTrailsLunch
-///
-/// File-based implementation of LocalPlacesCache for offline support.
-///
+//
+//  FileBasedPlacesCache.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 01/11/25.
+//
 
 import Foundation
 import CoreLocation

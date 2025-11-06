@@ -1,10 +1,9 @@
-///
-/// `EventLogger.swift`
-/// AllTrailsLunch
-///
-/// Service for logging analytics events.
-/// Protocol-based design allows for easy testing and multiple implementations.
-///
+//
+//  EventLogger.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 03/11/25.
+//
 
 import Foundation
 import os.log

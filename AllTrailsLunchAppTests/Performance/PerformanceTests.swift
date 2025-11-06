@@ -1,9 +1,9 @@
-///
-/// `PerformanceTests.swift`
-/// AllTrailsLunchAppTests
-///
-/// Performance and stress tests for the AllTrailsLunch app.
-///
+//
+//  PerformanceTests.swift
+//  AllTrailsLunchAppTests
+//
+//  Created by Tri Le on 06/11/25.
+//
 
 import XCTest
 import CoreLocation

@@ -1,10 +1,9 @@
-///
-/// `NetworkSimulator.swift`
-/// AllTrailsLunch
-///
-/// Network simulation utility for testing offline mode.
-/// Only available in development builds.
-///
+//
+//  NetworkSimulator.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 03/11/25.
+//
 
 import Foundation
 import Observation

@@ -1,10 +1,9 @@
-///
-/// `FavoritesManager.swift`
-/// AllTrailsLunch
-///
-/// High-level manager for favorites operations.
-/// Uses @Observable macro for modern SwiftUI state management.
-///
+//
+//  FavoritesManager.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 02/11/25.
+//
 
 import Foundation
 import Observation

@@ -1,9 +1,9 @@
-///
-/// `RestaurantDetailView.swift`
-/// AllTrailsLunch
-///
-/// Detail view for a restaurant.
-///
+//
+//  RestaurantDetailView.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 05/11/25.
+//
 
 import SwiftUI
 

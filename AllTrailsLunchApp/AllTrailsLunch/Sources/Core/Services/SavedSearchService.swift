@@ -1,9 +1,9 @@
-///
-/// `SavedSearchService.swift`
-/// AllTrailsLunch
-///
-/// Service for managing saved searches with SwiftData.
-///
+//
+//  SavedSearchService.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 04/11/25.
+//
 
 import Foundation
 import SwiftData

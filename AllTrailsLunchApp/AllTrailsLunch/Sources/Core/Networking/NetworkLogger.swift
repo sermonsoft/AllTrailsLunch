@@ -1,10 +1,9 @@
-///
-/// `NetworkLogger.swift`
-/// AllTrailsLunch
-///
-/// Comprehensive logging system for API requests and responses.
-/// Ensures ordered logging per request to avoid mixing between different API calls.
-///
+//
+//  NetworkLogger.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 01/11/25.
+//
 
 import Foundation
 

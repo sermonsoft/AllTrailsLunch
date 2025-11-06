@@ -1,9 +1,9 @@
-///
-/// `FavoritesManagerTests.swift`
-/// AllTrailsLunchTests
-///
-/// Unit tests for FavoritesManager with mock service.
-///
+//
+//  FavoritesManagerTests.swift
+//  AllTrailsLunchAppTests
+//
+//  Created by Tri Le on 02/11/25.
+//
 
 import XCTest
 @testable import AllTrailsLunchApp

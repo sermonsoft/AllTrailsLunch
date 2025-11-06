@@ -1,9 +1,9 @@
-///
-/// `FilterSheet.swift`
-/// AllTrailsLunch
-///
-/// Filter sheet for restaurant search.
-///
+//
+//  FilterSheet.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 05/11/25.
+//
 
 import SwiftUI
 

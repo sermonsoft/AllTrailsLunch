@@ -1,9 +1,9 @@
-///
-/// `DiscoveryViewModelTests.swift`
-/// AllTrailsLunchAppTests
-///
-/// Comprehensive unit tests for DiscoveryViewModel.
-///
+//
+//  DiscoveryViewModelTests.swift
+//  AllTrailsLunchAppTests
+//
+//  Created by Tri Le on 04/11/25.
+//
 
 import XCTest
 import CoreLocation

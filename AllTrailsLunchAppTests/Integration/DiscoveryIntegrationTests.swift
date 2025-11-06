@@ -1,9 +1,9 @@
-///
-/// `DiscoveryIntegrationTests.swift`
-/// AllTrailsLunchAppTests
-///
-/// Integration tests for the complete discovery flow.
-///
+//
+//  DiscoveryIntegrationTests.swift
+//  AllTrailsLunchAppTests
+//
+//  Created by Tri Le on 06/11/25.
+//
 
 import XCTest
 import CoreLocation

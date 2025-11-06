@@ -1,8 +1,8 @@
 //
 //  AllTrailsLunchAppUITestsLaunchTests.swift
-//  AllTrailsLunchAppUITests
+//  AllTrailsLunchAppTests
 //
-//  Created by Tri Le on 11/2/25.
+//  Created by Tri Le on 06/11/25.
 //
 
 import XCTest

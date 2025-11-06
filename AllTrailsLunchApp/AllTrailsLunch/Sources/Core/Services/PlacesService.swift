@@ -1,9 +1,9 @@
-///
-/// `PlacesService.swift`
-/// AllTrailsLunch
-///
-/// Service protocols for Places API operations.
-///
+//
+//  PlacesService.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 01/11/25.
+//
 
 import Foundation
 import CoreLocation

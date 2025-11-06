@@ -1,9 +1,9 @@
-///
-/// `ShimmerView.swift`
-/// AllTrailsLunch
-///
-/// Shimmer loading effect for placeholder content.
-///
+//
+//  ShimmerView.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 05/11/25.
+//
 
 import SwiftUI
 

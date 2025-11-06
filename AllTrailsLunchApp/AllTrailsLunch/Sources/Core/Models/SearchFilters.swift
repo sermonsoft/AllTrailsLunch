@@ -1,9 +1,9 @@
-///
-/// `SearchFilters.swift`
-/// AllTrailsLunch
-///
-/// Model for restaurant search filters.
-///
+//
+//  SearchFilters.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 31/10/25.
+//
 
 import Foundation
 

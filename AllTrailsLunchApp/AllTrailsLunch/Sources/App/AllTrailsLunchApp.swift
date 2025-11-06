@@ -1,12 +1,19 @@
-///
-/// `AllTrailsLunchApp.swift`
-/// AllTrailsLunch
-///
-/// Main application entry point.
-///
+//
+//  AllTrailsLunchApp.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 06/11/25.
+//
 
 import SwiftUI
 
+/// Main app entry point for AllTrails Lunch.
+///
+/// Configures the app with:
+/// - Dependency injection for core services
+/// - Shared FavoritesManager instance across components
+/// - Environment objects for SwiftUI views
+/// - Network monitoring and photo management
 @main
 struct AllTrailsLunchApp: App {
     @State private var viewModel: DiscoveryViewModel

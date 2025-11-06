@@ -1,12 +1,21 @@
-///
-/// `DiscoveryView.swift`
-/// AllTrailsLunch
-///
-/// Main discovery screen with search and list/map toggle.
-///
+//
+//  DiscoveryView.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 06/11/25.
+//
 
 import SwiftUI
 
+/// Main discovery screen for browsing and searching restaurants.
+///
+/// Features:
+/// - Location-based restaurant search
+/// - Text search with filters
+/// - List and map view modes
+/// - Bookmark/favorite functionality
+/// - Saved searches
+/// - Offline indicator
 struct DiscoveryView: View {
     @Bindable var viewModel: DiscoveryViewModel
     @Environment(FavoritesManager.self) var favoritesManager

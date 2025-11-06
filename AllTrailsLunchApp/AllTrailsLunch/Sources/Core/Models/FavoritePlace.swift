@@ -1,9 +1,9 @@
-///
-/// `FavoritePlace.swift`
-/// AllTrailsLunch
-///
-/// SwiftData model for persisting favorite places.
-///
+//
+//  FavoritePlace.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 31/10/25.
+//
 
 import Foundation
 import SwiftData

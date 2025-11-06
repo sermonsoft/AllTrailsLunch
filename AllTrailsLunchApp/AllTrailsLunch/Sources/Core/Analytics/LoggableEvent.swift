@@ -1,10 +1,9 @@
-///
-/// `LoggableEvent.swift`
-/// AllTrailsLunch
-///
-/// Protocol for type-safe event tracking.
-/// All analytics events should conform to this protocol.
-///
+//
+//  LoggableEvent.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 03/11/25.
+//
 
 import Foundation
 

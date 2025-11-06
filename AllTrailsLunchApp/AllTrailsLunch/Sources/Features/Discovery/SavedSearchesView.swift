@@ -1,9 +1,9 @@
-///
-/// `SavedSearchesView.swift`
-/// AllTrailsLunch
-///
-/// View for managing saved searches.
-///
+//
+//  SavedSearchesView.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 06/11/25.
+//
 
 import SwiftUI
 

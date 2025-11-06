@@ -1,9 +1,9 @@
-///
-/// `MockEventLogger.swift`
-/// AllTrailsLunchAppTests
-///
-/// Mock implementation of EventLogger for testing.
-///
+//
+//  MockEventLogger.swift
+//  AllTrailsLunchAppTests
+//
+//  Created by Tri Le on 03/11/25.
+//
 
 import Foundation
 @testable import AllTrailsLunchApp

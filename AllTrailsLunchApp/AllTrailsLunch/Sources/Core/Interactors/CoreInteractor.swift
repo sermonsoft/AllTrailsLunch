@@ -1,10 +1,9 @@
-///
-/// `CoreInteractor.swift`
-/// AllTrailsLunch
-///
-/// Core implementation of all Interactor protocols.
-/// This class combines business logic from multiple managers and services.
-///
+//
+//  CoreInteractor.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 03/11/25.
+//
 
 import Foundation
 import CoreLocation

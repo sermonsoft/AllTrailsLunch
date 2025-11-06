@@ -1,10 +1,9 @@
-///
-/// `SwiftDataFavoritesService.swift`
-/// AllTrailsLunch
-///
-/// SwiftData-based implementation of FavoritesService.
-/// Provides better persistence, querying, and data management than UserDefaults.
-///
+//
+//  SwiftDataFavoritesService.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 01/11/25.
+//
 
 import Foundation
 import SwiftData

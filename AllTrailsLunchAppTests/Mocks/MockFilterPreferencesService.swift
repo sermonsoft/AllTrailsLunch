@@ -1,9 +1,9 @@
-///
-/// `MockFilterPreferencesService.swift`
-/// AllTrailsLunchAppTests
-///
-/// Mock implementation of FilterPreferencesService for testing.
-///
+//
+//  MockFilterPreferencesService.swift
+//  AllTrailsLunchAppTests
+//
+//  Created by Tri Le on 04/11/25.
+//
 
 import Foundation
 @testable import AllTrailsLunchApp

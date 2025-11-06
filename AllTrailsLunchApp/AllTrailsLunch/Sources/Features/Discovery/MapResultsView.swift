@@ -1,9 +1,9 @@
-///
-/// `MapResultsView.swift`
-/// AllTrailsLunch
-///
-/// Map view for displaying restaurant locations.
-///
+//
+//  MapResultsView.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 05/11/25.
+//
 
 import SwiftUI
 import MapKit

@@ -1,9 +1,9 @@
-///
-/// `RestaurantManagerTests.swift`
-/// AllTrailsLunchTests
-///
-/// Unit tests for RestaurantManager with mock services.
-///
+//
+//  RestaurantManagerTests.swift
+//  AllTrailsLunchAppTests
+//
+//  Created by Tri Le on 02/11/25.
+//
 
 import XCTest
 import CoreLocation

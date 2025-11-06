@@ -1,9 +1,9 @@
-///
-/// `DiscoveryUITests.swift`
-/// AllTrailsLunchAppUITests
-///
-/// UI tests for critical user flows in the Discovery feature.
-///
+//
+//  DiscoveryUITests.swift
+//  AllTrailsLunchAppTests
+//
+//  Created by Tri Le on 06/11/25.
+//
 
 import XCTest
 

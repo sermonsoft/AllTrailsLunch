@@ -2,7 +2,7 @@
 //  SwiftDataFavoritesServiceTests.swift
 //  AllTrailsLunchAppTests
 //
-//  Created by AllTrails on 2025-11-04.
+//  Created by Tri Le on 04/11/25.
 //
 
 import XCTest

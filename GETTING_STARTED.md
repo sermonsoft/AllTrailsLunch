@@ -1,4 +1,4 @@
-# Getting Started - For Examiners
+# Getting Started
 
 > **Quick Start Guide**: Build, run, and test this project in under 5 minutes.
 
@@ -242,7 +242,7 @@ You can set your own key: export GOOGLE_PLACES_API_KEY=your_key_here
 
 ---
 
-## ✅ Examiner Checklist
+## ✅ Review Checklist
 
 ### Code Review (30 minutes)
 

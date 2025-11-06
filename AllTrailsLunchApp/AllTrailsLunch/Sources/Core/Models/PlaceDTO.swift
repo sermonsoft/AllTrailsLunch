@@ -1,9 +1,9 @@
-///
-/// `PlaceDTO.swift`
-/// AllTrailsLunch
-///
-/// Data Transfer Objects for Google Places API responses.
-///
+//
+//  PlaceDTO.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 31/10/25.
+//
 
 import Foundation
 

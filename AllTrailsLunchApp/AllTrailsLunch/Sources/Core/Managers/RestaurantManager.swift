@@ -1,11 +1,9 @@
-///
-/// `RestaurantManager.swift`
-/// AllTrailsLunch
-///
-/// High-level manager for restaurant operations.
-/// Combines remote service, caching, and favorites.
-/// Inspired by VIPER architecture from lesson_151_starter_project.
-///
+//
+//  RestaurantManager.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 02/11/25.
+//
 
 import Foundation
 import CoreLocation

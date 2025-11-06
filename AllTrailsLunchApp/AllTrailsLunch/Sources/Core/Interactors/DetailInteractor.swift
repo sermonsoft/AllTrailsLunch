@@ -1,10 +1,9 @@
-///
-/// `DetailInteractor.swift`
-/// AllTrailsLunch
-///
-/// Protocol defining business logic for the Detail feature.
-/// This allows ViewModels to depend on abstractions instead of concrete types.
-///
+//
+//  DetailInteractor.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 03/11/25.
+//
 
 import Foundation
 

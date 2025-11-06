@@ -1,9 +1,9 @@
-///
-/// `PhotoManager.swift`
-/// AllTrailsLunch
-///
-/// Manager for loading and caching restaurant photos from Google Places API.
-///
+//
+//  PhotoManager.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 02/11/25.
+//
 
 import Foundation
 import UIKit

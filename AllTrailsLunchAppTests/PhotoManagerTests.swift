@@ -1,9 +1,9 @@
-///
-/// `PhotoManagerTests.swift`
-/// AllTrailsLunchAppTests
-///
-/// Unit tests for PhotoManager and photo caching services.
-///
+//
+//  PhotoManagerTests.swift
+//  AllTrailsLunchAppTests
+//
+//  Created by Tri Le on 02/11/25.
+//
 
 import XCTest
 @testable import AllTrailsLunchApp

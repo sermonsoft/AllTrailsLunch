@@ -1,10 +1,9 @@
-///
-/// `GooglePlacesService.swift`
-/// AllTrailsLunch
-///
-/// Implementation of RemotePlacesService using Google Places API.
-/// Wraps PlacesClient to conform to protocol.
-///
+//
+//  GooglePlacesService.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 01/11/25.
+//
 
 import Foundation
 

@@ -1,9 +1,9 @@
-///
-/// `TestFixtures.swift`
-/// AllTrailsLunchAppTests
-///
-/// Reusable test fixtures and mock data for testing.
-///
+//
+//  TestFixtures.swift
+//  AllTrailsLunchAppTests
+//
+//  Created by Tri Le on 04/11/25.
+//
 
 import Foundation
 import CoreLocation

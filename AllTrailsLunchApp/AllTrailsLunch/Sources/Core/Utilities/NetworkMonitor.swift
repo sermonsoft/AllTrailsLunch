@@ -1,9 +1,9 @@
-///
-/// `NetworkMonitor.swift`
-/// AllTrailsLunch
-///
-/// Monitors network connectivity status.
-///
+//
+//  NetworkMonitor.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 03/11/25.
+//
 
 import Foundation
 import Network

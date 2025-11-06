@@ -1,9 +1,9 @@
-///
-/// `MockSavedSearchService.swift`
-/// AllTrailsLunchAppTests
-///
-/// Mock implementation of SavedSearchService for testing.
-///
+//
+//  MockSavedSearchService.swift
+//  AllTrailsLunchAppTests
+//
+//  Created by Tri Le on 04/11/25.
+//
 
 import Foundation
 import SwiftData

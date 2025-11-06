@@ -1,9 +1,9 @@
-///
-/// `FavoritesStore.swift`
-/// AllTrailsLunch
-///
-/// Manages favorite restaurants with UserDefaults persistence.
-///
+//
+//  FavoritesStore.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 02/11/25.
+//
 
 import Foundation
 import Observation

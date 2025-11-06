@@ -1,9 +1,9 @@
-///
-/// `OfflineIndicatorView.swift`
-/// AllTrailsLunch
-///
-/// Banner that shows when the device is offline.
-///
+//
+//  OfflineIndicatorView.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 05/11/25.
+//
 
 import SwiftUI
 

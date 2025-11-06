@@ -1,9 +1,9 @@
-// BookmarkToggleIntegrationTests.swift
-// AllTrailsLunchApp
 //
-// Integration tests verifying bookmark toggle functionality across the app.
-// Ensures FavoritesManager singleton pattern maintains state consistency
-// between ViewModel, CoreInteractor, and UI components.
+//  BookmarkToggleIntegrationTests.swift
+//  AllTrailsLunchAppTests
+//
+//  Created by Tri Le on 06/11/25.
+//
 
 import XCTest
 import SwiftUI

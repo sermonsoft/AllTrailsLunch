@@ -1,6 +1,6 @@
-# Documentation for Examiners
+# Documentation
 
-> **Welcome!** This folder contains comprehensive documentation to help you review and grade this AllTrails take-home assignment.
+> **Welcome!** This folder contains comprehensive documentation for the AllTrails Lunch app.
 
 ---
 
@@ -25,8 +25,6 @@
 ---
 
 ## ⚡ Quick Review Path (30 minutes)
-
-### For Busy Examiners
 
 If you only have 30 minutes, follow this path:
 
@@ -66,8 +64,6 @@ If you only have 30 minutes, follow this path:
 ---
 
 ## 📖 Comprehensive Review Path (60 minutes)
-
-### For Thorough Evaluation
 
 If you have more time for a detailed review:
 
@@ -240,7 +236,7 @@ If you see quota errors, the key may have hit its daily limit.
 
 ---
 
-## ✅ Examiner Checklist
+## ✅ Review Checklist
 
 ### Before You Start
 

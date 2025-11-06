@@ -1,16 +1,16 @@
 # AllTrails Lunch - Restaurant Discovery App
 ## Take-Home Assignment Submission
 
-> **For Examiners**: This is a production-ready iOS restaurant discovery app built with SwiftUI, demonstrating clean architecture, comprehensive testing, and modern Swift best practices.
+> A production-ready iOS restaurant discovery app built with SwiftUI, demonstrating clean architecture, comprehensive testing, and modern Swift best practices.
 
 ---
 
-## 📋 Quick Navigation for Examiners
+## 📋 Quick Navigation
 
 | Section | Description | Time to Review |
 |---------|-------------|----------------|
-| **[📁 docs/](docs/)** | **Complete examiner documentation** | **Start here!** |
-| [🚀 Quick Start](#-quick-start-for-examiners) | Build and run in 2 minutes | 2 min |
+| **[📁 docs/](docs/)** | **Complete documentation** | **Start here!** |
+| [🚀 Quick Start](#-quick-start) | Build and run in 2 minutes | 2 min |
 | [✨ Features](#-features-implemented) | What's been built | 3 min |
 | [🧪 Testing](#-testing-coverage) | Test suite overview | 5 min |
 | [🏗️ Architecture](#-architecture-overview) | Design decisions | 10 min |
@@ -18,9 +18,9 @@
 
 **Total Review Time**: ~25 minutes
 
-### 📚 Examiner Documentation
+### 📚 Documentation
 
-For comprehensive review guides, see the **[docs/](docs/)** folder:
+For comprehensive guides, see the **[docs/](docs/)** folder:
 
 - **[docs/EXAMINER_GUIDE.md](docs/EXAMINER_GUIDE.md)** - Complete review guide with grading rubric
 - **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** - Detailed architecture documentation
@@ -29,7 +29,7 @@ For comprehensive review guides, see the **[docs/](docs/)** folder:
 
 ---
 
-## 🚀 Quick Start for Examiners
+## 🚀 Quick Start
 
 ### Prerequisites
 - **Xcode**: 16.2 or later
@@ -106,7 +106,7 @@ xcodebuild test -scheme AllTrailsLunchAppTests \
 | **Performance Tests** | 13 | ✅ All Pass | Search, Memory, Concurrency |
 | **Total Tests** | **86** | ✅ **All Pass** | Comprehensive coverage |
 
-### Key Test Files (Examiner Review)
+### Key Test Files
 
 1. **`BookmarkToggleIntegrationTests.swift`** (13 tests)
    - Verifies FavoritesManager singleton pattern
@@ -196,7 +196,7 @@ This app uses a **VIPER-inspired clean architecture** with 5 distinct layers, en
 └─────────────────────────────────────────────────────────┘
 ```
 
-### Key Components (Examiner Review)
+### Key Components
 
 | Component | File | Responsibility | Lines |
 |-----------|------|----------------|-------|
@@ -266,7 +266,7 @@ AllTrailsLunchApp/
 │
 ├── AllTrailsLunchAppUITests/       # UI tests
 │
-├── docs/                           # 📁 Examiner documentation
+├── docs/                           # 📁 Documentation
 │   ├── README.md                   # Documentation index
 │   ├── EXAMINER_GUIDE.md           # Review guide with grading rubric
 │   ├── ARCHITECTURE.md             # Architecture patterns & design
@@ -277,7 +277,7 @@ AllTrailsLunchApp/
 └── README.md                       # This file
 ```
 
-### Key Files for Review (Examiner Checklist)
+### Key Files for Review
 
 #### 1. Architecture & Design (15 min)
 - [ ] `Core/Interactors/CoreInteractor.swift` - Business logic
@@ -499,7 +499,7 @@ do {
 
 ## 🎓 Additional Documentation
 
-### 📁 Examiner Documentation (Start Here!)
+### 📁 Documentation (Start Here!)
 
 | Document | Purpose | Time |
 |----------|---------|------|
@@ -517,7 +517,7 @@ do {
 
 ---
 
-## 🆘 Troubleshooting for Examiners
+## 🆘 Troubleshooting
 
 ### Build Issues
 
@@ -582,7 +582,7 @@ Or use the Mock scheme which doesn't require location/network.
 
 ## ✅ Submission Checklist
 
-### For Examiners to Verify
+### Verification Checklist
 
 - [x] **Builds Successfully**: Development scheme compiles without errors
 - [x] **Tests Pass**: All 13 integration tests + unit tests pass
@@ -644,7 +644,7 @@ This project is a take-home assignment submission for AllTrails.
 
 ---
 
-## 🎯 Summary for Examiners
+## 🎯 Summary
 
 This is a **production-ready iOS restaurant discovery app** demonstrating:
 

@@ -1,10 +1,9 @@
-///
-/// `SwiftDataStorageManager.swift`
-/// AllTrailsLunch
-///
-/// Centralized SwiftData storage manager.
-/// Manages the ModelContainer and provides access to ModelContext.
-///
+//
+//  SwiftDataStorageManager.swift
+//  AllTrailsLunch
+//
+//  Created by Tri Le on 01/11/25.
+//
 
 import Foundation
 import SwiftData
