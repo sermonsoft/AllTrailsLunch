@@ -1,12 +1,12 @@
 reporter: "xcode" # reporter type (xcode, json, csv, checkstyle, junit, html, emoji)
 
 included:
-    - InfluxerPOC
+    - AllTrailsLunchApp
 
 excluded: # paths to ignore during linting. Takes precedence over `included`.
     - Carthage
     - Pods
-    - InfluxerPOC/R.generated
+    - AllTrailsLunchApp/R.generated
 
 disabled_rules: # rule identifiers to exclude from running
     - trailing_whitespace
