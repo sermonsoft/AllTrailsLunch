@@ -11,23 +11,28 @@ import SwiftUI
 
 struct OfflineIndicatorView: View {
     let isOffline: Bool
+    let isShowingCachedData: Bool
 
     var body: some View {
-        if isOffline {
+        if isOffline || isShowingCachedData {
             VStack(spacing: 0) {
                 HStack(spacing: DesignSystem.Spacing.sm) {
-                    Image(systemName: "wifi.slash")
+                    Image(systemName: isShowingCachedData ? "arrow.clockwise.circle.fill" : "wifi.slash")
                         .font(.system(size: DesignSystem.IconSize.sm))
                         .foregroundColor(.white)
 
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("You're offline")
+                        Text(isShowingCachedData ? "Showing cached data" : "You're offline")
                             .font(DesignSystem.Typography.captionBold)
                             .foregroundColor(.white)
 
                         #if DEV
                         if NetworkSimulator.shared.isSimulationEnabled {
-                            Text("Network simulation active • Showing cached data")
+                            Text("Network simulation active")
+                                .font(.system(size: 11))
+                                .foregroundColor(.white.opacity(0.9))
+                        } else if isShowingCachedData {
+                            Text("Data loaded from offline cache")
                                 .font(.system(size: 11))
                                 .foregroundColor(.white.opacity(0.9))
                         } else {
@@ -36,9 +41,15 @@ struct OfflineIndicatorView: View {
                                 .foregroundColor(.white.opacity(0.9))
                         }
                         #else
-                        Text("Showing cached results")
-                            .font(.system(size: 11))
-                            .foregroundColor(.white.opacity(0.9))
+                        if isShowingCachedData {
+                            Text("Data loaded from offline cache")
+                                .font(.system(size: 11))
+                                .foregroundColor(.white.opacity(0.9))
+                        } else {
+                            Text("Showing cached results")
+                                .font(.system(size: 11))
+                                .foregroundColor(.white.opacity(0.9))
+                        }
                         #endif
                     }
                 }
@@ -54,9 +65,16 @@ struct OfflineIndicatorView: View {
 
 // MARK: - Preview
 
-#Preview {
+#Preview("Offline") {
     VStack(spacing: 0) {
-        OfflineIndicatorView(isOffline: true)
+        OfflineIndicatorView(isOffline: true, isShowingCachedData: false)
+        Spacer()
+    }
+}
+
+#Preview("Cached Data") {
+    VStack(spacing: 0) {
+        OfflineIndicatorView(isOffline: false, isShowingCachedData: true)
         Spacer()
     }
 }

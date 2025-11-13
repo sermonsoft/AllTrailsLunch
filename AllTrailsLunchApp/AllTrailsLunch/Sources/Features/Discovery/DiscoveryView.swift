@@ -36,8 +36,12 @@ struct DiscoveryView: View {
         NavigationStack {
             ZStack {
                 VStack(spacing: 0) {
-                    OfflineIndicatorView(isOffline: !networkMonitor.isConnected)
-                        .animation(.easeInOut, value: networkMonitor.isConnected)
+                    OfflineIndicatorView(
+                        isOffline: !networkMonitor.isConnected,
+                        isShowingCachedData: viewModel.isShowingCachedData
+                    )
+                    .animation(.easeInOut, value: networkMonitor.isConnected)
+                    .animation(.easeInOut, value: viewModel.isShowingCachedData)
 
                     ZStack {
                         contentView

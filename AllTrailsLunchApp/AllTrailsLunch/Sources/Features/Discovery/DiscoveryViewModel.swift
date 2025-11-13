@@ -156,6 +156,7 @@ class DiscoveryViewModel {
     var showFilterSheet: Bool = false
     var showSavedSearchesSheet: Bool = false
     var showSaveSearchSheet: Bool = false
+    var isShowingCachedData: Bool = false // Track if current results are from cache
 
     private let interactor: DiscoveryInteractor
     private let eventLogger: EventLogger
@@ -247,21 +248,24 @@ class DiscoveryViewModel {
         currentPage = 0
 
         do {
-            let (places, nextToken) = try await interactor.searchNearby(
+            let (places, nextToken, isFromCache) = try await interactor.searchNearby(
                 location: location,
                 radius: 1500,
                 pageToken: nil
             )
             storeAndFilterResults(places)
             self.nextPageToken = nextToken
+            self.isShowingCachedData = isFromCache
 
             // Log successful search
             eventLogger.log(Event.nearbySearchPerformed(resultCount: results.count))
         } catch let error as PlacesError {
             self.error = error
+            self.isShowingCachedData = false
             eventLogger.log(Event.searchError(error: error.localizedDescription))
         } catch {
             self.error = .unknown(error.localizedDescription)
+            self.isShowingCachedData = false
             eventLogger.log(Event.searchError(error: error.localizedDescription))
         }
 
@@ -274,21 +278,24 @@ class DiscoveryViewModel {
         currentPage = 0
 
         do {
-            let (places, nextToken) = try await interactor.searchText(
+            let (places, nextToken, isFromCache) = try await interactor.searchText(
                 query: query,
                 location: userLocation,
                 pageToken: nil
             )
             storeAndFilterResults(places)
             self.nextPageToken = nextToken
+            self.isShowingCachedData = isFromCache
 
             // Log successful search
             eventLogger.log(Event.searchPerformed(query: query, resultCount: results.count))
         } catch let error as PlacesError {
             self.error = error
+            self.isShowingCachedData = false
             eventLogger.log(Event.searchError(error: error.localizedDescription))
         } catch {
             self.error = .unknown(error.localizedDescription)
+            self.isShowingCachedData = false
             eventLogger.log(Event.searchError(error: error.localizedDescription))
         }
 
@@ -302,13 +309,14 @@ class DiscoveryViewModel {
         currentPage += 1
 
         do {
-            let (places, nextToken) = try await interactor.searchText(
+            let (places, nextToken, _) = try await interactor.searchText(
                 query: searchText,
                 location: userLocation,
                 pageToken: nextPageToken
             )
             self.results.append(contentsOf: places)
             self.nextPageToken = nextToken
+            // Pagination always loads from network, so don't update cache flag
 
             // Log pagination
             eventLogger.log(Event.loadMoreResults(pageNumber: currentPage))
