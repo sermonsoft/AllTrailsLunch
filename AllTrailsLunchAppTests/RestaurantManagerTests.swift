@@ -43,20 +43,21 @@ final class RestaurantManagerTests: XCTestCase {
         let location = CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194)
         let dto1 = createPlaceDTO(id: "place1", name: "Restaurant 1")
         let dto2 = createPlaceDTO(id: "place2", name: "Restaurant 2")
-        
+
         mockRemoteService.nearbySearchResult = ([dto1, dto2], nil)
         mockFavoritesService.favoriteIds = ["place1"]
         mockFavoritesManager = FavoritesManager(service: mockFavoritesService)
         sut = RestaurantManager(remote: mockRemoteService, cache: nil, favorites: mockFavoritesManager)
-        
+
         // When
-        let (places, nextToken) = try await sut.searchNearby(location: location, radius: 1500)
-        
+        let (places, nextToken, isFromCache) = try await sut.searchNearby(location: location, radius: 1500)
+
         // Then
         XCTAssertEqual(places.count, 2)
         XCTAssertTrue(places[0].isFavorite)
         XCTAssertFalse(places[1].isFavorite)
         XCTAssertNil(nextToken)
+        XCTAssertFalse(isFromCache)
         XCTAssertEqual(mockRemoteService.searchNearbyCallCount, 1)
     }
     
@@ -80,10 +81,10 @@ final class RestaurantManagerTests: XCTestCase {
         let location = CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194)
         let dto = createPlaceDTO(id: "place1", name: "Restaurant 1")
         mockRemoteService.nearbySearchResult = ([dto], "next_token_123")
-        
+
         // When
-        let (_, nextToken) = try await sut.searchNearby(location: location)
-        
+        let (_, nextToken, _) = try await sut.searchNearby(location: location)
+
         // Then
         XCTAssertEqual(nextToken, "next_token_123")
     }
@@ -94,19 +95,20 @@ final class RestaurantManagerTests: XCTestCase {
         // Given
         let dto1 = createPlaceDTO(id: "place1", name: "Pizza Place")
         let dto2 = createPlaceDTO(id: "place2", name: "Burger Joint")
-        
+
         mockRemoteService.textSearchResult = ([dto1, dto2], nil)
         mockFavoritesService.favoriteIds = ["place2"]
         mockFavoritesManager = FavoritesManager(service: mockFavoritesService)
         sut = RestaurantManager(remote: mockRemoteService, cache: nil, favorites: mockFavoritesManager)
-        
+
         // When
-        let (places, _) = try await sut.searchText(query: "pizza")
-        
+        let (places, _, isFromCache) = try await sut.searchText(query: "pizza")
+
         // Then
         XCTAssertEqual(places.count, 2)
         XCTAssertFalse(places[0].isFavorite)
         XCTAssertTrue(places[1].isFavorite)
+        XCTAssertFalse(isFromCache)
     }
     
     func testSearchText_PassesCorrectParameters() async throws {

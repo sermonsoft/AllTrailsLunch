@@ -148,13 +148,26 @@ struct AppConfiguration {
     // MARK: - API Key Loading
 
     private static func loadAPIKey() -> String {
-        // Try to load from environment variable first
+        // 1. Try environment variable first (for CI/CD and testing)
         if let key = ProcessInfo.processInfo.environment["GOOGLE_PLACES_API_KEY"] {
             return key
         }
 
-        // Fallback to embedded key - in production, this should be loaded from xcconfig
+        // 2. Try Info.plist (loaded from xcconfig at build time)
+        if let key = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_PLACES_API_KEY") as? String,
+           !key.isEmpty,
+           key != "$(GOOGLE_PLACES_API_KEY)" { // Ensure it's not the placeholder
+            return key
+        }
+
+        // 3. Fail fast in production - don't use hardcoded keys
+        #if DEBUG
+        // Only allow fallback in debug builds for development convenience
+        print("⚠️ WARNING: Using hardcoded API key. Configure Secrets.xcconfig for production.")
         return "AIzaSyAvAaPcSL1SNPUguENa_p2P-SuRaxGUduw"
+        #else
+        fatalError("❌ GOOGLE_PLACES_API_KEY not configured. Please set up Config/Secrets.xcconfig")
+        #endif
     }
 
     // MARK: - Logging

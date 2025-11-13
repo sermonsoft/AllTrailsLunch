@@ -40,19 +40,19 @@ class CoreInteractor: DiscoveryInteractor, DetailInteractor {
         location: CLLocationCoordinate2D,
         radius: Int = 1500,
         pageToken: String? = nil
-    ) async throws -> (places: [Place], nextPageToken: String?) {
+    ) async throws -> (places: [Place], nextPageToken: String?, isFromCache: Bool) {
         return try await restaurantManager.searchNearby(
             location: location,
             radius: radius,
             pageToken: pageToken
         )
     }
-    
+
     func searchText(
         query: String,
         location: CLLocationCoordinate2D? = nil,
         pageToken: String? = nil
-    ) async throws -> (places: [Place], nextPageToken: String?) {
+    ) async throws -> (places: [Place], nextPageToken: String?, isFromCache: Bool) {
         return try await restaurantManager.searchText(
             query: query,
             location: location,

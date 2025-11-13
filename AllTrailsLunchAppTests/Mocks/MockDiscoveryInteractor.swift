@@ -68,7 +68,7 @@ final class MockDiscoveryInteractor: DiscoveryInteractor {
         location: CLLocationCoordinate2D,
         radius: Int,
         pageToken: String?
-    ) async throws -> (places: [Place], nextPageToken: String?) {
+    ) async throws -> (places: [Place], nextPageToken: String?, isFromCache: Bool) {
         searchNearbyCallCount += 1
         lastSearchNearbyLocation = location
         lastSearchNearbyRadius = Double(radius)
@@ -78,14 +78,14 @@ final class MockDiscoveryInteractor: DiscoveryInteractor {
             throw errorToThrow ?? PlacesError.networkUnavailable
         }
 
-        return (placesToReturn, nextPageTokenToReturn)
+        return (placesToReturn, nextPageTokenToReturn, false)
     }
 
     func searchText(
         query: String,
         location: CLLocationCoordinate2D?,
         pageToken: String?
-    ) async throws -> (places: [Place], nextPageToken: String?) {
+    ) async throws -> (places: [Place], nextPageToken: String?, isFromCache: Bool) {
         searchTextCallCount += 1
         lastSearchTextQuery = query
         lastSearchTextLocation = location
@@ -95,7 +95,7 @@ final class MockDiscoveryInteractor: DiscoveryInteractor {
             throw errorToThrow ?? PlacesError.networkUnavailable
         }
 
-        return (placesToReturn, nextPageTokenToReturn)
+        return (placesToReturn, nextPageTokenToReturn, false)
     }
 
     func getPlaceDetails(placeId: String) async throws -> PlaceDetail {

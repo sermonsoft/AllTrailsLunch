@@ -30,26 +30,26 @@ protocol DiscoveryInteractor {
     ///   - location: User's current location
     ///   - radius: Search radius in meters (default: 1500)
     ///   - pageToken: Optional pagination token for next page
-    /// - Returns: Tuple of places and optional next page token
+    /// - Returns: Tuple of places, optional next page token, and cache flag
     /// - Throws: PlacesError if search fails
     func searchNearby(
         location: CLLocationCoordinate2D,
         radius: Int,
         pageToken: String?
-    ) async throws -> (places: [Place], nextPageToken: String?)
-    
+    ) async throws -> (places: [Place], nextPageToken: String?, isFromCache: Bool)
+
     /// Search for restaurants by text query
     /// - Parameters:
     ///   - query: Search query text
     ///   - location: Optional user location for biased results
     ///   - pageToken: Optional pagination token for next page
-    /// - Returns: Tuple of places and optional next page token
+    /// - Returns: Tuple of places, optional next page token, and cache flag
     /// - Throws: PlacesError if search fails
     func searchText(
         query: String,
         location: CLLocationCoordinate2D?,
         pageToken: String?
-    ) async throws -> (places: [Place], nextPageToken: String?)
+    ) async throws -> (places: [Place], nextPageToken: String?, isFromCache: Bool)
     
     // MARK: - Favorites
     

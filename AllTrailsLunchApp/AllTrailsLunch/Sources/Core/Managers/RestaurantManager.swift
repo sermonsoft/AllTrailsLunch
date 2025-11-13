@@ -34,10 +34,11 @@ class RestaurantManager {
         location: CLLocationCoordinate2D,
         radius: Int = 1500,
         pageToken: String? = nil
-    ) async throws -> (places: [Place], nextPageToken: String?) {
+    ) async throws -> (places: [Place], nextPageToken: String?, isFromCache: Bool) {
         // Only use cache for first page
         guard pageToken == nil else {
-            return try await fetchNearbyFromRemote(location: location, radius: radius, pageToken: pageToken)
+            let result = try await fetchNearbyFromRemote(location: location, radius: radius, pageToken: pageToken)
+            return (result.places, result.nextPageToken, false)
         }
 
         do {
@@ -47,12 +48,12 @@ class RestaurantManager {
             // Cache successful results
             try? cache?.cachePlaces(result.places, location: location, radius: radius)
 
-            return result
+            return (result.places, result.nextPageToken, false)
         } catch {
             // If network fails, try to load from cache
             if let cached = try? cache?.getCachedPlaces(location: location, radius: radius) {
                 print("⚠️ RestaurantManager: Network failed, using cached data")
-                return (cached, nil)
+                return (cached, nil, true)
             }
 
             // No cache available, rethrow error
@@ -86,21 +87,22 @@ class RestaurantManager {
         query: String,
         location: CLLocationCoordinate2D? = nil,
         pageToken: String? = nil
-    ) async throws -> (places: [Place], nextPageToken: String?) {
+    ) async throws -> (places: [Place], nextPageToken: String?, isFromCache: Bool) {
         let (dtos, nextToken) = try await remote.searchText(
             query: query,
             latitude: location?.latitude,
             longitude: location?.longitude,
             pageToken: pageToken
         )
-        
+
         // Convert DTOs to domain models
         let places = dtos.map { Place(from: $0) }
-        
+
         // Apply favorite status
         let placesWithFavorites = favorites.applyFavoriteStatus(to: places)
-        
-        return (placesWithFavorites, nextToken)
+
+        // Text search doesn't use cache fallback, so always false
+        return (placesWithFavorites, nextToken, false)
     }
     
     /// Get detailed information about a place

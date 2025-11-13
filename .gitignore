@@ -41,3 +41,7 @@ fastlane/test_output
 
 # SwiftPM specific
 .swiftpm/xcode/
+
+# Secrets and API Keys
+Config/Secrets.xcconfig
+**/Secrets.xcconfig
