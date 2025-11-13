@@ -38,6 +38,8 @@ If you don't have a Google Places API key:
 
 **Option A: Using xcconfig in Xcode (Recommended)**
 
+Follow Apple's official guide: **[Adding a Build Configuration File to Your Project](https://developer.apple.com/documentation/xcode/adding-a-build-configuration-file-to-your-project)**
+
 1. Open `AllTrailsLunchApp.xcodeproj` in Xcode
 2. Select the project in the navigator
 3. Select the **AllTrailsLunchApp** target
@@ -174,6 +176,7 @@ git commit -m "chore: remove exposed API key from Git"
 
 ## 📚 Additional Resources
 
+- **[Apple: Adding a Build Configuration File to Your Project](https://developer.apple.com/documentation/xcode/adding-a-build-configuration-file-to-your-project)** - Official Apple documentation
 - [Google Places API Documentation](https://developers.google.com/maps/documentation/places/web-service)
 - [Xcode Build Configuration Files](https://nshipster.com/xcconfig/)
 - [iOS Security Best Practices](https://developer.apple.com/documentation/security)

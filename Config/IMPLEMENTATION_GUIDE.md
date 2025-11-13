@@ -4,6 +4,8 @@
 
 This guide explains how the **xcconfig-based API key management** works in the AllTrailsLunchApp project.
 
+**📖 Official Apple Documentation**: [Adding a Build Configuration File to Your Project](https://developer.apple.com/documentation/xcode/adding-a-build-configuration-file-to-your-project)
+
 ---
 
 ## 📁 File Structure
@@ -249,6 +251,21 @@ to be configured. Run ./Config/setup.sh to set up.
 4. ⏳ **TODO**: Add Info.plist entry (manual step in Xcode)
 5. ⏳ **TODO**: Link xcconfig to Xcode project configurations
 
+### Linking xcconfig to Xcode Project (Optional)
+
+For full integration, follow Apple's official guide:
+**[Adding a Build Configuration File to Your Project](https://developer.apple.com/documentation/xcode/adding-a-build-configuration-file-to-your-project)**
+
+**Steps**:
+1. Open Xcode project
+2. Select project in navigator
+3. Select target → Info tab
+4. Under "Configurations", set xcconfig for each configuration:
+   - Debug → `Secrets.xcconfig`
+   - Release → `Secrets.xcconfig`
+
+**Note**: This is optional because the current implementation uses environment variables and DEBUG fallback.
+
 ### For Production
 
 1. **Backend Proxy**: Move API key to backend service
@@ -261,7 +278,11 @@ to be configured. Run ./Config/setup.sh to set up.
 
 ## 📚 References
 
-- [Xcode Build Configuration Files](https://nshipster.com/xcconfig/)
-- [iOS Security Best Practices](https://developer.apple.com/documentation/security)
-- [Google Places API Security](https://developers.google.com/maps/api-security-best-practices)
+### Official Documentation
+- **[Apple: Adding a Build Configuration File to Your Project](https://developer.apple.com/documentation/xcode/adding-a-build-configuration-file-to-your-project)** - Official Apple guide on xcconfig files
+- [iOS Security Best Practices](https://developer.apple.com/documentation/security) - Apple security documentation
+
+### Third-Party Resources
+- [Xcode Build Configuration Files](https://nshipster.com/xcconfig/) - NSHipster guide
+- [Google Places API Security](https://developers.google.com/maps/api-security-best-practices) - Google security best practices
 
