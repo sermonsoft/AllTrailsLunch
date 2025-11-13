@@ -31,9 +31,22 @@
 		D763B63D2EB7D76400F8564C /* AllTrailsLunchAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AllTrailsLunchAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		D7AC55DA2EC6714F00735350 /* Exceptions for "AllTrailsLunchApp" folder in "AllTrailsLunchApp" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = D763B6222EB7D76300F8564C /* AllTrailsLunchApp */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		D763B6252EB7D76300F8564C /* AllTrailsLunchApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				D7AC55DA2EC6714F00735350 /* Exceptions for "AllTrailsLunchApp" folder in "AllTrailsLunchApp" target */,
+			);
 			path = AllTrailsLunchApp;
 			sourceTree = "<group>";
 		};
@@ -347,6 +360,7 @@
 				DEVELOPMENT_TEAM = D568Z8S8MN;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AllTrailsLunchApp/Info.plist;
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "AllTrails Lunch needs your location to find nearby restaurants.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -477,6 +491,7 @@
 				DEVELOPMENT_TEAM = D568Z8S8MN;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AllTrailsLunchApp/Info.plist;
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "AllTrails Lunch needs your location to find nearby restaurants.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -600,6 +615,7 @@
 				DEVELOPMENT_TEAM = D568Z8S8MN;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AllTrailsLunchApp/Info.plist;
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "AllTrails Lunch needs your location to find nearby restaurants.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -723,6 +739,7 @@
 				DEVELOPMENT_TEAM = D568Z8S8MN;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AllTrailsLunchApp/Info.plist;
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "AllTrails Lunch needs your location to find nearby restaurants.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -853,6 +870,7 @@
 				DEVELOPMENT_TEAM = D568Z8S8MN;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AllTrailsLunchApp/Info.plist;
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "AllTrails Lunch needs your location to find nearby restaurants.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

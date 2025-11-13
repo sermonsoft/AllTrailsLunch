@@ -36,7 +36,7 @@ For comprehensive guides, see the **[docs/](docs/)** folder:
 - **iOS**: 18.2+ (Simulator or Device)
 - **Time**: 2 minutes
 
-### Build & Run (3 Steps)
+### Option 1: Quick Start with Mock Data (No Setup Required)
 
 1. **Open Project**
    ```bash
@@ -52,6 +52,31 @@ For comprehensive guides, see the **[docs/](docs/)** folder:
    - Press `⌘R` or click Run
    - App launches with sample restaurant data
    - No API key needed for initial testing
+
+### Option 2: Full Setup with Real API (5 Minutes)
+
+1. **Configure API Key**
+   ```bash
+   # Run the setup script
+   ./Config/setup.sh
+
+   # Or manually copy the template
+   cp Config/Secrets.template.xcconfig Config/Secrets.xcconfig
+   # Then edit Config/Secrets.xcconfig with your Google Places API key
+   ```
+
+2. **Get Google Places API Key** (if you don't have one)
+   - Go to [Google Cloud Console](https://console.cloud.google.com/)
+   - Create a project and enable Places API
+   - Create credentials → API Key
+   - Copy the key to `Config/Secrets.xcconfig`
+
+3. **Build & Run**
+   - Open `AllTrailsLunchApp.xcodeproj`
+   - Press `⌘R`
+   - App will use real Google Places data
+
+📚 **For detailed setup instructions**, see [Config/README.md](Config/README.md)
 
 ### Run Tests (1 Command)
 
