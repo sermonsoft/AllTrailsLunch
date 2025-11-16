@@ -14,9 +14,13 @@ struct MapResultsView: View {
     let places: [Place]
     let onToggleFavorite: (Place) -> Void
     let isSearchActive: Bool
-    let favoritesManager: FavoritesManager
 
+    @Environment(\.dependencyContainer) private var container
     @Environment(\.photoManager) private var photoManager
+
+    private var favoritesManager: FavoritesManager {
+        container?.favoritesManager ?? AppConfiguration.shared.createFavoritesManager()
+    }
     @State private var position: MapCameraPosition = .automatic
     @State private var selectedPlace: Place?
 
@@ -46,8 +50,7 @@ struct MapResultsView: View {
                         place: place,
                         isSelected: selectedPlace?.id == place.id,
                         isSearchResult: isSearchActive,
-                        appearanceDelay: Double(index) * 0.05, // Stagger animation
-                        favoritesManager: favoritesManager
+                        appearanceDelay: Double(index) * 0.05 // Stagger animation
                     )
                 }
                 .tag(place)
@@ -93,8 +96,7 @@ struct MapResultsView: View {
         ) {
             RestaurantRow(
                 place: place,
-                onToggleFavorite: { onToggleFavorite(place) },
-                favoritesManager: favoritesManager
+                onToggleFavorite: { onToggleFavorite(place) }
             )
             // Force view refresh when place or favorite status changes
             .id("\(place.id)-\(favoritesManager.isFavorite(place.id))")
@@ -134,9 +136,13 @@ struct MapPinView: View {
     let isSelected: Bool
     let isSearchResult: Bool
     let appearanceDelay: Double
-    let favoritesManager: FavoritesManager
 
+    @Environment(\.dependencyContainer) private var container
     @State private var hasAppeared = false
+
+    private var favoritesManager: FavoritesManager {
+        container?.favoritesManager ?? AppConfiguration.shared.createFavoritesManager()
+    }
 
     // MARK: - Constants
 
@@ -208,7 +214,9 @@ struct MapPinView: View {
 }
 
 #Preview {
-    MapResultsView(
+    let container = AppConfiguration.shared.createDependencyContainer()
+
+    return MapResultsView(
         places: [
             Place(
                 id: "1",
@@ -224,7 +232,7 @@ struct MapPinView: View {
             )
         ],
         onToggleFavorite: { _ in },
-        isSearchActive: false,
-        favoritesManager: AppConfiguration.shared.createFavoritesManager()
+        isSearchActive: false
     )
+    .dependencyContainer(container)
 }

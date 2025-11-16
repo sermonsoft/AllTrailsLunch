@@ -322,4 +322,21 @@ final class AppConfiguration {
             eventLogger: createEventLogger()
         )
     }
+
+    // MARK: - Dependency Container
+
+    /// Creates a fully configured dependency container with all app dependencies.
+    /// This allows views to access managers directly without prop drilling.
+    @MainActor
+    func createDependencyContainer() -> DependencyContainer {
+        let container = DependencyContainer()
+
+        // Register shared managers (singletons)
+        container.register(FavoritesManager.self, service: createFavoritesManager())
+        container.register(PhotoManager.self, service: createPhotoManager())
+        container.register(NetworkMonitor.self, service: createNetworkMonitor())
+        container.register(EventLogger.self, service: createEventLogger())
+
+        return container
+    }
 }

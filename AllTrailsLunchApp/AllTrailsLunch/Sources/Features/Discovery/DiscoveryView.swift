@@ -18,17 +18,19 @@ import SwiftUI
 /// - Offline indicator
 struct DiscoveryView: View {
     @Bindable var viewModel: DiscoveryViewModel
-    @State private var photoManager: PhotoManager
-    @State private var networkMonitor: NetworkMonitor
+    @Environment(\.dependencyContainer) private var container
 
-    init(
-        viewModel: DiscoveryViewModel,
-        photoManager: PhotoManager? = nil,
-        networkMonitor: NetworkMonitor? = nil
-    ) {
-        self.viewModel = viewModel
-        self._photoManager = State(initialValue: photoManager ?? AppConfiguration.shared.createPhotoManager())
-        self._networkMonitor = State(initialValue: networkMonitor ?? AppConfiguration.shared.createNetworkMonitor())
+    // Access managers from dependency container
+    private var photoManager: PhotoManager {
+        container?.photoManager ?? AppConfiguration.shared.createPhotoManager()
+    }
+
+    private var networkMonitor: NetworkMonitor {
+        container?.networkMonitor ?? AppConfiguration.shared.createNetworkMonitor()
+    }
+
+    private var favoritesManager: FavoritesManager {
+        container?.favoritesManager ?? AppConfiguration.shared.createFavoritesManager()
     }
 
     var body: some View {
@@ -162,15 +164,13 @@ struct DiscoveryView: View {
                 isLoading: viewModel.isLoading,
                 onToggleFavorite: viewModel.toggleFavorite,
                 onLoadMore: { await viewModel.loadNextPage() },
-                onRefresh: { await viewModel.refresh() },
-                favoritesManager: viewModel.favoritesManager
+                onRefresh: { await viewModel.refresh() }
             )
         case .map:
             MapResultsView(
                 places: viewModel.results,
                 onToggleFavorite: viewModel.toggleFavorite,
-                isSearchActive: !viewModel.searchText.isEmpty,
-                favoritesManager: viewModel.favoritesManager
+                isSearchActive: !viewModel.searchText.isEmpty
             )
         }
     }
@@ -423,9 +423,9 @@ struct ViewModeToggleButton: View {
 
 #Preview {
     let config = AppConfiguration.shared
-    return DiscoveryView(
-        viewModel: config.createDiscoveryViewModel(),
-        photoManager: config.createPhotoManager()
-    )
+    let container = config.createDependencyContainer()
+
+    DiscoveryView(viewModel: config.createDiscoveryViewModel())
+        .dependencyContainer(container)
 }
 

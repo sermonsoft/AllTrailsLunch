@@ -13,24 +13,12 @@ struct ListResultsView: View {
     let onToggleFavorite: (Place) -> Void
     let onLoadMore: () async -> Void
     let onRefresh: (() async -> Void)?
-    let favoritesManager: FavoritesManager
 
+    @Environment(\.dependencyContainer) private var container
     @Environment(\.photoManager) private var photoManager
 
-    init(
-        places: [Place],
-        isLoading: Bool,
-        onToggleFavorite: @escaping (Place) -> Void,
-        onLoadMore: @escaping () async -> Void,
-        onRefresh: (() async -> Void)? = nil,
-        favoritesManager: FavoritesManager
-    ) {
-        self.places = places
-        self.isLoading = isLoading
-        self.onToggleFavorite = onToggleFavorite
-        self.onLoadMore = onLoadMore
-        self.onRefresh = onRefresh
-        self.favoritesManager = favoritesManager
+    private var favoritesManager: FavoritesManager {
+        container?.favoritesManager ?? AppConfiguration.shared.createFavoritesManager()
     }
 
     var body: some View {
@@ -59,8 +47,7 @@ struct ListResultsView: View {
             ) {
                 RestaurantRow(
                     place: place,
-                    onToggleFavorite: { onToggleFavorite(place) },
-                    favoritesManager: favoritesManager
+                    onToggleFavorite: { onToggleFavorite(place) }
                 )
             }
             .buttonStyle(.plain)
@@ -86,8 +73,12 @@ struct ListResultsView: View {
 struct RestaurantRow: View {
     let place: Place
     let onToggleFavorite: () -> Void
-    let favoritesManager: FavoritesManager
+    @Environment(\.dependencyContainer) private var container
     @State private var isBookmarkAnimating = false
+
+    private var favoritesManager: FavoritesManager {
+        container?.favoritesManager ?? AppConfiguration.shared.createFavoritesManager()
+    }
 
     var body: some View {
         // CRITICAL: Access favoriteIds at the TOP of body to establish observation
@@ -222,7 +213,9 @@ struct RestaurantRow: View {
 }
 
 #Preview {
-    List {
+    let container = AppConfiguration.shared.createDependencyContainer()
+
+    return List {
         RestaurantRow(
             place: Place(
                 id: "1",
@@ -236,9 +229,9 @@ struct RestaurantRow: View {
                 photoReferences: [],
                 isFavorite: false
             ),
-            onToggleFavorite: {},
-            favoritesManager: AppConfiguration.shared.createFavoritesManager()
+            onToggleFavorite: {}
         )
     }
+    .dependencyContainer(container)
 }
 
