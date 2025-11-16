@@ -17,7 +17,7 @@ import SwiftUI
 @main
 struct AllTrailsLunchApp: App {
     @State private var viewModel: DiscoveryViewModel
-    @State private var interactor: CoreInteractor
+    @State private var favoritesManager: FavoritesManager
     @State private var photoManager: PhotoManager
     @State private var networkMonitor: NetworkMonitor
 
@@ -26,7 +26,8 @@ struct AllTrailsLunchApp: App {
 
         // CRITICAL: Create interactor FIRST, then pass it to viewModel
         // This ensures they share the same FavoritesManager instance
-        let interactor = config.createDiscoveryInteractor() as! CoreInteractor
+        // The singleton pattern in AppConfiguration guarantees this
+        let interactor = config.createDiscoveryInteractor()
         let viewModel = DiscoveryViewModel(
             interactor: interactor,
             eventLogger: config.createEventLogger()
@@ -34,8 +35,11 @@ struct AllTrailsLunchApp: App {
         let photoManager = config.createPhotoManager()
         let networkMonitor = config.createNetworkMonitor()
 
+        // Access FavoritesManager from the interactor protocol
+        let favoritesManager = interactor.favoritesManager
+
         _viewModel = State(wrappedValue: viewModel)
-        _interactor = State(wrappedValue: interactor)
+        _favoritesManager = State(wrappedValue: favoritesManager)
         _photoManager = State(wrappedValue: photoManager)
         _networkMonitor = State(wrappedValue: networkMonitor)
     }
@@ -47,7 +51,7 @@ struct AllTrailsLunchApp: App {
                 photoManager: photoManager,
                 networkMonitor: networkMonitor
             )
-            .environment(interactor.favoritesManager)
+            .environment(favoritesManager)
             .task {
                 await viewModel.initialize()
             }

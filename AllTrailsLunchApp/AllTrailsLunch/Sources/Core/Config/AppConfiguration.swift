@@ -68,7 +68,7 @@ enum BuildEnvironment {
 
 // MARK: - App Configuration
 
-struct AppConfiguration {
+final class AppConfiguration {
     static let shared = AppConfiguration()
 
     // MARK: - Properties
@@ -76,6 +76,12 @@ struct AppConfiguration {
     let environment: BuildEnvironment
     let googlePlacesAPIKey: String
     let timeout: TimeInterval
+
+    // MARK: - Singleton Managers
+    // These are created once and reused to ensure shared state across the app
+
+    private var _favoritesManager: FavoritesManager?
+    private let favoritesManagerLock = NSLock()
 
     // MARK: - Initialization
 
@@ -229,7 +235,17 @@ struct AppConfiguration {
 
     @MainActor
     func createFavoritesManager() -> FavoritesManager {
-        FavoritesManager(service: createFavoritesService())
+        // Thread-safe singleton pattern
+        favoritesManagerLock.lock()
+        defer { favoritesManagerLock.unlock() }
+
+        if let existing = _favoritesManager {
+            return existing
+        }
+
+        let manager = FavoritesManager(service: createFavoritesService())
+        _favoritesManager = manager
+        return manager
     }
 
     @MainActor
@@ -263,9 +279,19 @@ struct AppConfiguration {
 
     @MainActor
     func createCoreInteractor() -> CoreInteractor {
-        CoreInteractor(
-            restaurantManager: createRestaurantManager(),
-            favoritesManager: createFavoritesManager(),
+        // CRITICAL: Create FavoritesManager FIRST to ensure it's shared
+        let favoritesManager = createFavoritesManager()
+
+        // Create RestaurantManager with the shared FavoritesManager
+        let restaurantManager = RestaurantManager(
+            remote: createRemotePlacesService(),
+            cache: createPlacesCacheService(),
+            favorites: favoritesManager
+        )
+
+        return CoreInteractor(
+            restaurantManager: restaurantManager,
+            favoritesManager: favoritesManager,
             locationManager: createLocationManager()
         )
     }
