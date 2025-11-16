@@ -14,8 +14,8 @@ struct MapResultsView: View {
     let places: [Place]
     let onToggleFavorite: (Place) -> Void
     let isSearchActive: Bool
+    let favoritesManager: FavoritesManager
 
-    @Environment(FavoritesManager.self) var favoritesManager
     @Environment(\.photoManager) private var photoManager
     @State private var position: MapCameraPosition = .automatic
     @State private var selectedPlace: Place?
@@ -46,7 +46,8 @@ struct MapResultsView: View {
                         place: place,
                         isSelected: selectedPlace?.id == place.id,
                         isSearchResult: isSearchActive,
-                        appearanceDelay: Double(index) * 0.05 // Stagger animation
+                        appearanceDelay: Double(index) * 0.05, // Stagger animation
+                        favoritesManager: favoritesManager
                     )
                 }
                 .tag(place)
@@ -92,7 +93,8 @@ struct MapResultsView: View {
         ) {
             RestaurantRow(
                 place: place,
-                onToggleFavorite: { onToggleFavorite(place) }
+                onToggleFavorite: { onToggleFavorite(place) },
+                favoritesManager: favoritesManager
             )
             // Force view refresh when place or favorite status changes
             .id("\(place.id)-\(favoritesManager.isFavorite(place.id))")
@@ -132,8 +134,8 @@ struct MapPinView: View {
     let isSelected: Bool
     let isSearchResult: Bool
     let appearanceDelay: Double
+    let favoritesManager: FavoritesManager
 
-    @Environment(FavoritesManager.self) var favoritesManager
     @State private var hasAppeared = false
 
     // MARK: - Constants
@@ -222,7 +224,7 @@ struct MapPinView: View {
             )
         ],
         onToggleFavorite: { _ in },
-        isSearchActive: false
+        isSearchActive: false,
+        favoritesManager: AppConfiguration.shared.createFavoritesManager()
     )
-    .environment(AppConfiguration.shared.createFavoritesManager())
 }

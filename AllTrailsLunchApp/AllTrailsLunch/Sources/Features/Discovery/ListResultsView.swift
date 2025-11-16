@@ -13,6 +13,7 @@ struct ListResultsView: View {
     let onToggleFavorite: (Place) -> Void
     let onLoadMore: () async -> Void
     let onRefresh: (() async -> Void)?
+    let favoritesManager: FavoritesManager
 
     @Environment(\.photoManager) private var photoManager
 
@@ -21,13 +22,15 @@ struct ListResultsView: View {
         isLoading: Bool,
         onToggleFavorite: @escaping (Place) -> Void,
         onLoadMore: @escaping () async -> Void,
-        onRefresh: (() async -> Void)? = nil
+        onRefresh: (() async -> Void)? = nil,
+        favoritesManager: FavoritesManager
     ) {
         self.places = places
         self.isLoading = isLoading
         self.onToggleFavorite = onToggleFavorite
         self.onLoadMore = onLoadMore
         self.onRefresh = onRefresh
+        self.favoritesManager = favoritesManager
     }
 
     var body: some View {
@@ -56,7 +59,8 @@ struct ListResultsView: View {
             ) {
                 RestaurantRow(
                     place: place,
-                    onToggleFavorite: { onToggleFavorite(place) }
+                    onToggleFavorite: { onToggleFavorite(place) },
+                    favoritesManager: favoritesManager
                 )
             }
             .buttonStyle(.plain)
@@ -82,7 +86,7 @@ struct ListResultsView: View {
 struct RestaurantRow: View {
     let place: Place
     let onToggleFavorite: () -> Void
-    @Environment(FavoritesManager.self) private var favoritesManager
+    let favoritesManager: FavoritesManager
     @State private var isBookmarkAnimating = false
 
     var body: some View {
@@ -232,9 +236,9 @@ struct RestaurantRow: View {
                 photoReferences: [],
                 isFavorite: false
             ),
-            onToggleFavorite: {}
+            onToggleFavorite: {},
+            favoritesManager: AppConfiguration.shared.createFavoritesManager()
         )
     }
-    .environment(AppConfiguration.shared.createFavoritesManager())
 }
 

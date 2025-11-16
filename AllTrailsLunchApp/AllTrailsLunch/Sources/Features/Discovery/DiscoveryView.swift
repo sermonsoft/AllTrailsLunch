@@ -18,7 +18,6 @@ import SwiftUI
 /// - Offline indicator
 struct DiscoveryView: View {
     @Bindable var viewModel: DiscoveryViewModel
-    @Environment(FavoritesManager.self) var favoritesManager
     @State private var photoManager: PhotoManager
     @State private var networkMonitor: NetworkMonitor
 
@@ -163,13 +162,15 @@ struct DiscoveryView: View {
                 isLoading: viewModel.isLoading,
                 onToggleFavorite: viewModel.toggleFavorite,
                 onLoadMore: { await viewModel.loadNextPage() },
-                onRefresh: { await viewModel.refresh() }
+                onRefresh: { await viewModel.refresh() },
+                favoritesManager: viewModel.favoritesManager
             )
         case .map:
             MapResultsView(
                 places: viewModel.results,
                 onToggleFavorite: viewModel.toggleFavorite,
-                isSearchActive: !viewModel.searchText.isEmpty
+                isSearchActive: !viewModel.searchText.isEmpty,
+                favoritesManager: viewModel.favoritesManager
             )
         }
     }
@@ -426,6 +427,5 @@ struct ViewModeToggleButton: View {
         viewModel: config.createDiscoveryViewModel(),
         photoManager: config.createPhotoManager()
     )
-    .environment(config.createFavoritesManager())
 }
 

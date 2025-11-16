@@ -162,6 +162,11 @@ class DiscoveryViewModel {
     private let eventLogger: EventLogger
     private let filterPreferences: FilterPreferencesService
     let savedSearchService: SavedSearchService
+
+    // Expose favoritesManager for UI observation
+    var favoritesManager: FavoritesManager {
+        interactor.favoritesManager
+    }
     private var searchTask: Task<Void, Never>?
     private var debounceTimer: Timer?
     private var currentPage: Int = 0
