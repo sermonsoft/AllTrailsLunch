@@ -117,23 +117,52 @@ class MockPlacesService: PlacesService { ... }
 
 ### 4. Observable State Management
 
-Uses modern `@Observable` macro for reactive UI:
+Uses modern `@Observable` macro for reactive UI - **ONLY on ViewModels**:
 
 ```swift
+// ✅ CORRECT: ViewModel is @Observable
 @Observable
-class FavoritesManager {
-    var favoriteIds: Set<String> = []  // Auto-publishes changes
-    
-    func toggle(_ placeId: String) {
-        if favoriteIds.contains(placeId) {
-            favoriteIds.remove(placeId)
+@MainActor
+class DiscoveryViewModel {
+    var favoriteIds: Set<String> = []  // Auto-publishes changes to views
+
+    private let interactor: DiscoveryInteractor
+
+    func toggleFavorite(_ place: Place) async {
+        let isFavorite = try await interactor.toggleFavorite(place)
+        // Update ViewModel's observable state
+        if isFavorite {
+            favoriteIds.insert(place.id)
         } else {
-            favoriteIds.insert(placeId)
+            favoriteIds.remove(place.id)
         }
-        // UI automatically updates
+    }
+}
+
+// ❌ WRONG: Manager should NOT be @Observable
+// Managers return data via async/await, NOT observable state
+@MainActor
+class FavoritesManager {
+    private var favoriteIdsCache: Set<String> = []  // Private cache
+
+    func toggleFavorite(_ place: Place) async throws -> Bool {
+        // Returns data via async/await
+        let isFavorite = favoriteIdsCache.contains(place.id)
+        if isFavorite {
+            favoriteIdsCache.remove(place.id)
+            return false
+        } else {
+            favoriteIdsCache.insert(place.id)
+            return true
+        }
     }
 }
 ```
+
+**Key Principle**:
+- ✅ **ViewModels are @Observable** - They manage UI state
+- ❌ **Managers are NOT @Observable** - They return data via async/await
+- ✅ **Views ONLY observe ViewModels** - Never managers or interactors
 
 ---
 
@@ -182,9 +211,10 @@ struct DiscoveryView: View {
 - `Features/Discovery/DiscoveryViewModel.swift`
 
 **Characteristics**:
-- `@Observable` for reactive updates
+- `@Observable` for reactive UI updates (ONLY ViewModels should be @Observable)
 - `@MainActor` for main thread execution
 - Transforms domain models to UI models
+- Manages observable state by calling interactor methods and updating local properties
 - Handles debouncing, loading states
 
 **Example**:
@@ -266,20 +296,30 @@ class CoreInteractor: CoreInteracting {
 - All managers initialized once in DependencyContainer
 - Accessed through Interactor layer only
 
+**Characteristics**:
+- **NOT @Observable** - Returns data via async/await instead
+- Coordinates service calls
+- Applies business rules
+- Caches data internally when appropriate
+- Thread-safe for concurrent access
+- Methods return data to ViewModels, which update their own observable state
+
 **Example**:
 ```swift
-@Observable
+// ✅ CORRECT: Manager is NOT @Observable
+@MainActor
 class RestaurantManager {
     private let placesService: PlacesService
     private let favoritesManager: FavoritesManager
-    
+
+    // Returns data via async/await
     func searchNearby(location: CLLocationCoordinate2D) async throws -> [Place] {
         var places = try await placesService.searchNearby(location: location)
-        
+
         // Apply favorite status
         places = favoritesManager.applyFavoriteStatus(to: places)
-        
-        return places
+
+        return places  // Returns data, doesn't publish it
     }
 }
 ```
@@ -446,8 +486,9 @@ Services make API calls / persist data
 1. **Single Source of Truth**: All managers initialized once in `DependencyContainer`
 2. **No Direct Manager Access**: ViewModels NEVER directly access managers - always through interactor
 3. **No Redundant Parameters**: If a dependency is available through interactor, don't pass it separately
-4. **Observable State**: All managers use `@Observable` for reactive UI updates
+4. **Observable State**: ONLY ViewModels use `@Observable` for reactive UI updates (Managers use async/await)
 5. **Protocol-Based**: All services and interactors defined as protocols for testability
+6. **Views Observe ViewModels Only**: Views NEVER observe Managers or Interactors directly
 
 ### Example: Complete Flow
 
@@ -520,27 +561,52 @@ class FavoritesManager {
 
 ### 3. Observer Pattern
 
-**Pattern**: `@Observable` for reactive state
+**Pattern**: `@Observable` for reactive state - **ONLY on ViewModels**
 
 **Benefits**:
-- Automatic UI updates
+- Automatic UI updates when ViewModel state changes
 - Better performance than `@Published`
 - Type-safe
+- Clear separation: Views observe ViewModels, ViewModels call Managers
 
 **Example**:
 ```swift
+// ✅ CORRECT: ViewModel is @Observable
 @Observable
-class FavoritesManager {
-    var favoriteIds: Set<String> = []  // Changes auto-publish
+@MainActor
+class DiscoveryViewModel {
+    var favoriteIds: Set<String> = []  // Changes auto-publish to views
+
+    private let interactor: DiscoveryInteractor
+
+    func toggleFavorite(_ place: Place) async {
+        let isFavorite = try await interactor.toggleFavorite(place)
+        // Update ViewModel's observable state
+        if isFavorite {
+            favoriteIds.insert(place.id)
+        } else {
+            favoriteIds.remove(place.id)
+        }
+    }
 }
 
-// In View
+// ❌ WRONG: Manager should NOT be @Observable
+@MainActor
+class FavoritesManager {
+    private var favoriteIdsCache: Set<String> = []  // Private, not observable
+
+    func toggleFavorite(_ place: Place) async throws -> Bool {
+        // Returns data via async/await
+    }
+}
+
+// In View - ONLY observe ViewModel
 struct FavoritesView: View {
-    @State private var manager: FavoritesManager
-    
+    @Bindable var viewModel: DiscoveryViewModel
+
     var body: some View {
-        Text("Favorites: \(manager.favoriteIds.count)")
-        // Auto-updates when favoriteIds changes
+        Text("Favorites: \(viewModel.favoriteIds.count)")
+        // Auto-updates when ViewModel state changes
     }
 }
 ```
@@ -582,19 +648,25 @@ User taps heart icon
     ↓
 DiscoveryView calls viewModel.toggleFavorite(place)
     ↓
-DiscoveryViewModel calls interactor.toggleFavorite(place)
+DiscoveryViewModel calls interactor.toggleFavorite(place) (async)
     ↓
-CoreInteractor calls favoritesManager.toggle(place.id)
+CoreInteractor calls favoritesManager.toggleFavorite(place) (async)
     ↓
-FavoritesManager updates favoriteIds Set
-    ↓
-@Observable publishes change
-    ↓
-All views observing FavoritesManager update
-    ↓
-CoreInteractor logs analytics event
+FavoritesManager updates internal favoriteIdsCache
     ↓
 FavoritesManager persists to SwiftData
+    ↓
+FavoritesManager returns new status (true/false) via async/await
+    ↓
+CoreInteractor returns new status to ViewModel
+    ↓
+ViewModel updates its observable favoriteIds property
+    ↓
+@Observable publishes change from ViewModel
+    ↓
+All views observing ViewModel update automatically
+    ↓
+ViewModel logs analytics event
 ```
 
 ---
@@ -608,6 +680,8 @@ FavoritesManager persists to SwiftData
 3. **Scalability**: Add features without touching existing code
 4. **Type Safety**: Compile-time checks prevent runtime errors
 5. **Performance**: @Observable is more efficient than @Published
+6. **Clear Data Flow**: Views → ViewModels → Interactors → Managers → Services (no layer skipping)
+7. **Proper Observable Pattern**: Only ViewModels are @Observable, ensuring Views never directly observe Managers
 
 ### Trade-offs
 

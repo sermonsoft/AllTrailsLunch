@@ -26,7 +26,6 @@ struct AllTrailsLunchApp: App {
         // The singleton pattern ensures all ViewModels share the same interactor and managers
         let coreInteractor = config.createCoreInteractor()
 
-        // ViewModel gets EventLogger from interactor (no need to pass it separately)
         let viewModel = DiscoveryViewModel(interactor: coreInteractor)
 
         _viewModel = State(wrappedValue: viewModel)
