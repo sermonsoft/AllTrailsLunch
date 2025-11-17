@@ -11,50 +11,56 @@
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    VIEW LAYER (SwiftUI)                     │
-│  ┌─────────────────┐  ┌──────────────────┐  ┌────────────┐ │
-│  │ DiscoveryView   │  │ DetailView       │  │ MapView    │ │
-│  │ - UI Components │  │ - Restaurant     │  │ - Map      │ │
-│  │ - User Input    │  │   Details        │  │   Display  │ │
-│  └─────────────────┘  └──────────────────┘  └────────────┘ │
+│  ┌─────────────────┐  ┌──────────────────┐  ┌────────────┐  │
+│  │ DiscoveryView   │  │ DetailView       │  │ MapView    │  │
+│  │ - UI Components │  │ - Restaurant     │  │ - Map      │  │
+│  │ - User Input    │  │   Details        │  │   Display  │  │
+│  └─────────────────┘  └──────────────────┘  └────────────┘  │
 └─────────────────────────────────────────────────────────────┘
                             ↓ ↑
 ┌─────────────────────────────────────────────────────────────┐
 │              VIEWMODEL LAYER (@Observable)                  │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │ DiscoveryViewModel                                  │   │
-│  │ - @Published state properties                       │   │
-│  │ - User action handlers                              │   │
-│  │ - UI state transformations                          │   │
-│  └─────────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │ DiscoveryViewModel                                  │    │
+│  │ - @Published state properties                       │    │
+│  │ - User action handlers                              │    │
+│  │ - UI state transformations                          │    │
+│  └─────────────────────────────────────────────────────┘    │
 └─────────────────────────────────────────────────────────────┘
                             ↓ ↑
 ┌─────────────────────────────────────────────────────────────┐
 │               INTERACTOR LAYER (Business Logic)             │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │ CoreInteractor (Protocol)                           │   │
-│  │ - Coordinates between managers                      │   │
-│  │ - Implements business rules                         │   │
-│  │ - Handles complex workflows                         │   │
-│  └─────────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │ CoreInteractor (Protocol)                           │    │
+│  │ - Coordinates between managers                      │    │
+│  │ - Implements business rules                         │    │
+│  │ - Handles complex workflows                         │    │
+│  └─────────────────────────────────────────────────────┘    │
 └─────────────────────────────────────────────────────────────┘
                             ↓ ↑
-┌─────────────────────────────────────────────────────────────┐
-│            MANAGER LAYER (Data Coordination)                │
-│  ┌──────────────┐  ┌──────────────┐  ┌─────────────────┐  │
-│  │ Restaurant   │  │ Favorites    │  │ Photo           │  │
-│  │ Manager      │  │ Manager      │  │ Manager         │  │
-│  │ - Search     │  │ - Add/Remove │  │ - Load/Cache    │  │
-│  │ - Details    │  │ - Persist    │  │ - Memory Mgmt   │  │
-│  └──────────────┘  └──────────────┘  └─────────────────┘  │
-└─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                    MANAGER LAYER (Data Coordination)                            │
+│  ┌──────────────┐  ┌──────────────┐  ┌─────────────────┐  ┌─────────────────┐   │
+│  │ Restaurant   │  │ Favorites    │  │ Photo           │  │ Location        │   │
+│  │ Manager      │  │ Manager      │  │ Manager         │  │ Manager         │   │
+│  │ - Search     │  │ - Add/Remove │  │ - Load/Cache    │  │ - GPS           │   │
+│  │ - Details    │  │ - Persist    │  │ - Memory Mgmt   │  │ - Permissions   │   │
+│  └──────────────┘  └──────────────┘  └─────────────────┘  └─────────────────┘   │
+│  ┌──────────────┐  ┌──────────────┐  ┌─────────────────┐  ┌─────────────────┐   │
+│  │ Filter       │  │ SavedSearch  │  │ EventLogger     │  │ Network         │   │
+│  │ Preferences  │  │ Manager      │  │ (Analytics)     │  │ Monitor         │   │
+│  │ Manager      │  │ - Save       │  │ - Track Events  │  │ - Connectivity  │   │
+│  │ - Filters    │  │ - Load       │  │ - Log Actions   │  │ - Status        │   │
+│  └──────────────┘  └──────────────┘  └─────────────────┘  └─────────────────┘   │
+└─────────────────────────────────────────────────────────────────────────────────┘
                             ↓ ↑
 ┌─────────────────────────────────────────────────────────────┐
 │              SERVICE LAYER (External APIs)                  │
-│  ┌──────────────┐  ┌──────────────┐  ┌─────────────────┐  │
-│  │ Places       │  │ SwiftData    │  │ Location        │  │
-│  │ Service      │  │ Service      │  │ Service         │  │
-│  │ - API calls  │  │ - Persistence│  │ - GPS           │  │
-│  └──────────────┘  └──────────────┘  └─────────────────┘  │
+│  ┌──────────────┐  ┌──────────────┐  ┌─────────────────┐    │
+│  │ Places       │  │ SwiftData    │  │ Location        │    │
+│  │ Service      │  │ Service      │  │ Service         │    │
+│  │ - API calls  │  │ - Persistence│  │ - GPS           │    │
+│  └──────────────┘  └──────────────┘  └─────────────────┘    │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -243,15 +249,22 @@ class CoreInteractor: CoreInteracting {
 **Responsibility**: Coordinate data operations and maintain state
 
 **Key Files**:
-- `Core/Managers/RestaurantManager.swift`
-- `Core/Managers/FavoritesManager.swift`
-- `Core/Managers/PhotoManager.swift`
+- `Core/Managers/RestaurantManager.swift` - Restaurant search and details
+- `Core/Managers/FavoritesManager.swift` - Favorite places management
+- `Core/Managers/PhotoManager.swift` - Photo loading and caching
+- `Core/Managers/LocationManager.swift` - GPS and location services
+- `Core/Managers/FilterPreferencesManager.swift` - Search filter preferences
+- `Core/Managers/SavedSearchManager.swift` - Saved search management
+- `Core/Analytics/EventLogger.swift` - Analytics event tracking
+- `Core/Utilities/NetworkMonitor.swift` - Network connectivity monitoring
 
 **Characteristics**:
 - `@Observable` for shared state
 - Coordinates service calls
 - Applies business rules
 - Caches data
+- All managers initialized once in DependencyContainer
+- Accessed through Interactor layer only
 
 **Example**:
 ```swift
@@ -299,6 +312,155 @@ class GooglePlacesService: PlacesService {
         return try decode(response)
     }
 }
+```
+
+---
+
+## 🏗️ Complete Dependency Architecture
+
+### DependencyContainer Pattern
+
+All managers and services are initialized **once** in the `DependencyContainer` at app startup:
+
+```swift
+// AppConfiguration.swift
+func createDependencyContainer() -> DependencyContainer {
+    let container = DependencyContainer()
+
+    // Register all managers (singletons)
+    container.register(FavoritesManager.self, service: createFavoritesManager())
+    container.register(PhotoManager.self, service: createPhotoManager())
+    container.register(RestaurantManager.self, service: createRestaurantManager())
+    container.register(LocationManager.self, service: createLocationManager())
+    container.register(FilterPreferencesManager.self, service: createFilterPreferencesManager())
+    container.register(SavedSearchManager.self, service: createSavedSearchManager())
+    container.register(EventLogger.self, service: createEventLogger())
+    container.register(NetworkMonitor.self, service: createNetworkMonitor())
+
+    return container
+}
+```
+
+### CoreInteractor Singleton Pattern
+
+The `CoreInteractor` is created **once** as a singleton and holds the `DependencyContainer`:
+
+```swift
+// CoreInteractor.swift
+class CoreInteractor: DiscoveryInteractor, DetailInteractor {
+    private let container: DependencyContainer
+
+    // Thread-safe singleton
+    private static var _shared: CoreInteractor?
+    private static let lock = NSLock()
+
+    static var shared: CoreInteractor {
+        lock.lock()
+        defer { lock.unlock() }
+
+        if let instance = _shared {
+            return instance
+        }
+
+        let instance = CoreInteractor(container: AppConfiguration.shared.createDependencyContainer())
+        _shared = instance
+        return instance
+    }
+
+    // Private computed properties to access managers from container
+    private var favoritesManager: FavoritesManager {
+        container.favoritesManager
+    }
+
+    private var filterPreferencesManager: FilterPreferencesManager {
+        container.filterPreferencesManager
+    }
+
+    // Public methods to expose managers to ViewModels
+    func getFavoritesManager() -> FavoritesManager {
+        return favoritesManager
+    }
+
+    func getFilterPreferencesManager() -> FilterPreferencesManager {
+        return filterPreferencesManager
+    }
+}
+```
+
+### ViewModel Dependency Flow
+
+ViewModels **only** receive the `Interactor` - all other dependencies come through it:
+
+```swift
+// DiscoveryViewModel.swift
+@Observable
+@MainActor
+class DiscoveryViewModel {
+    private let interactor: DiscoveryInteractor
+
+    // ✅ CORRECT: Only interactor parameter
+    init(interactor: DiscoveryInteractor) {
+        self.interactor = interactor
+
+        // Get managers from interactor
+        self.filters = interactor.getFilterPreferencesManager().getFilters()
+    }
+
+    // Computed properties to access managers
+    private var filterPreferencesManager: FilterPreferencesManager {
+        interactor.getFilterPreferencesManager()
+    }
+
+    private var savedSearchManager: SavedSearchManager {
+        interactor.getSavedSearchManager()
+    }
+
+    func saveFilters(_ filters: SearchFilters) {
+        filterPreferencesManager.saveFilters(filters)
+    }
+}
+```
+
+### Complete Dependency Chain
+
+```
+App Startup
+    ↓
+AppConfiguration.createDependencyContainer()
+    ↓
+DependencyContainer registers all managers (once)
+    ↓
+CoreInteractor.shared created with container
+    ↓
+DiscoveryViewModel(interactor: CoreInteractor.shared)
+    ↓
+ViewModel accesses managers via interactor.getXxxManager()
+    ↓
+Managers access services (injected in constructor)
+    ↓
+Services make API calls / persist data
+```
+
+### Key Principles
+
+1. **Single Source of Truth**: All managers initialized once in `DependencyContainer`
+2. **No Direct Manager Access**: ViewModels NEVER directly access managers - always through interactor
+3. **No Redundant Parameters**: If a dependency is available through interactor, don't pass it separately
+4. **Observable State**: All managers use `@Observable` for reactive UI updates
+5. **Protocol-Based**: All services and interactors defined as protocols for testability
+
+### Example: Complete Flow
+
+```swift
+// ❌ WRONG: Passing managers directly to ViewModel
+DiscoveryViewModel(
+    interactor: interactor,
+    filterPreferences: FilterPreferencesService(),  // ❌ Redundant!
+    savedSearchService: SavedSearchService(...)     // ❌ Redundant!
+)
+
+// ✅ CORRECT: Only interactor, everything else comes through it
+DiscoveryViewModel(interactor: interactor)
 ```
 
 ---
