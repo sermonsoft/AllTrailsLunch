@@ -44,7 +44,7 @@ struct DiscoveryView: View {
                 .toolbarBackground(Color.white, for: .navigationBar)
                 .background(DesignSystem.Colors.background)
                 .sheet(isPresented: $viewModel.showSavedSearchesSheet) {
-                    SavedSearchesView(savedSearchManager: viewModel.savedSearchManager) { savedSearch in
+                    SavedSearchesView(viewModel: viewModel) { savedSearch in
                         Task {
                             await viewModel.loadSavedSearch(savedSearch)
                         }
@@ -55,7 +55,7 @@ struct DiscoveryView: View {
                         query: viewModel.searchText,
                         location: viewModel.userLocation.map { (latitude: $0.latitude, longitude: $0.longitude) },
                         filters: viewModel.filters,
-                        savedSearchManager: viewModel.savedSearchManager,
+                        viewModel: viewModel,
                         onSave: {}
                     )
                 }
@@ -116,7 +116,11 @@ struct DiscoveryView: View {
         .sheet(isPresented: $viewModel.showFilterSheet) {
             FilterSheet(filters: Binding(
                 get: { viewModel.filters },
-                set: { viewModel.applyFilters($0) }
+                set: { newFilters in
+                    Task {
+                        await viewModel.applyFilters(newFilters)
+                    }
+                }
             ))
         }
     }

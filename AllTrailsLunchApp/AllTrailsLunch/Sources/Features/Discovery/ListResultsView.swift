@@ -11,7 +11,7 @@ struct ListResultsView: View {
     let places: [Place]
     let isLoading: Bool
     let favoriteIds: Set<String>
-    let onToggleFavorite: (Place) -> Void
+    let onToggleFavorite: (Place) async -> Void
     let onLoadMore: () async -> Void
     let onRefresh: (() async -> Void)?
     let loadPhoto: ([String], Int, Int) async -> Data?
@@ -46,7 +46,7 @@ struct ListResultsView: View {
                 RestaurantRow(
                     place: place,
                     isFavorite: favoriteIds.contains(place.id),
-                    onToggleFavorite: { onToggleFavorite(place) },
+                    onToggleFavorite: { await onToggleFavorite(place) },
                     loadPhoto: loadPhoto
                 )
             }
@@ -73,7 +73,7 @@ struct ListResultsView: View {
 struct RestaurantRow: View {
     let place: Place
     let isFavorite: Bool
-    let onToggleFavorite: () -> Void
+    let onToggleFavorite: () async -> Void
     let loadPhoto: ([String], Int, Int) async -> Data?
     @State private var isBookmarkAnimating = false
 
@@ -197,7 +197,9 @@ struct RestaurantRow: View {
         isBookmarkAnimating = true
 
         // Call the toggle action
-        onToggleFavorite()
+        Task {
+            await onToggleFavorite()
+        }
 
         // Reset animation after delay
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {

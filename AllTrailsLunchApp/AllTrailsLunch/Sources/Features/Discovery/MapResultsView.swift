@@ -13,7 +13,7 @@ struct MapResultsView: View {
 
     let places: [Place]
     let favoriteIds: Set<String>
-    let onToggleFavorite: (Place) -> Void
+    let onToggleFavorite: (Place) async -> Void
     let isSearchActive: Bool
     let loadPhoto: ([String], Int, Int) async -> Data?
 
@@ -97,7 +97,7 @@ struct MapResultsView: View {
             RestaurantRow(
                 place: place,
                 isFavorite: favoriteIds.contains(place.id),
-                onToggleFavorite: { onToggleFavorite(place) },
+                onToggleFavorite: { await onToggleFavorite(place) },
                 loadPhoto: loadPhoto
             )
             // Force view refresh when place or favorite status changes

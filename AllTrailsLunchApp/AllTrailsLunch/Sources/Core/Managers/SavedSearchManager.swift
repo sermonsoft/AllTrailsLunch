@@ -6,83 +6,67 @@
 //
 
 import Foundation
-import Observation
 
-/// Manager for saved searches with observable state.
-/// Wraps SavedSearchService to provide business logic and state management.
+/// Manager for saved searches business logic.
+/// Returns data via async/await - does NOT use @Observable.
+/// ViewModels are responsible for managing observable state.
 @MainActor
-@Observable
 class SavedSearchManager {
     private let service: SavedSearchService
-    
-    // Observable state - automatically triggers UI updates
-    private(set) var savedSearches: [SavedSearch] = []
-    
+
     init(service: SavedSearchService) {
         self.service = service
-        self.loadAllSearches()
     }
-    
+
     // MARK: - Public Methods
-    
+
     /// Get all saved searches sorted by last used
-    func getAllSavedSearches() -> [SavedSearch] {
-        return savedSearches
+    func getAllSavedSearches() async throws -> [SavedSearch] {
+        return try service.getAllSavedSearches()
     }
-    
-    /// Reload all saved searches from persistence
-    func loadAllSearches() {
-        do {
-            savedSearches = try service.getAllSavedSearches()
-        } catch {
-            savedSearches = []
-        }
-    }
-    
+
     /// Get saved search by ID
-    func getSavedSearch(id: UUID) -> SavedSearch? {
-        return savedSearches.first { $0.id == id }
+    func getSavedSearch(id: UUID) async throws -> SavedSearch? {
+        let searches = try service.getAllSavedSearches()
+        return searches.first { $0.id == id }
     }
-    
+
     /// Save a new search
-    func saveSearch(_ search: SavedSearch) throws {
+    func saveSearch(_ search: SavedSearch) async throws {
         try service.saveSearch(search)
-        loadAllSearches() // Reload to update observable state
     }
-    
+
     /// Update an existing search
-    func updateSearch(_ search: SavedSearch) throws {
+    func updateSearch(_ search: SavedSearch) async throws {
         try service.updateSearch(search)
-        loadAllSearches() // Reload to update observable state
     }
-    
+
     /// Delete a saved search
-    func deleteSearch(_ search: SavedSearch) throws {
+    func deleteSearch(_ search: SavedSearch) async throws {
         try service.deleteSearch(search)
-        loadAllSearches() // Reload to update observable state
     }
-    
+
     /// Delete saved search by ID
-    func deleteSearch(id: UUID) throws {
+    func deleteSearch(id: UUID) async throws {
         try service.deleteSearch(id: id)
-        loadAllSearches() // Reload to update observable state
     }
-    
+
     /// Clear all saved searches
-    func clearAllSavedSearches() throws {
+    func clearAllSavedSearches() async throws {
         try service.clearAllSavedSearches()
-        savedSearches.removeAll()
     }
-    
+
     /// Get recently used searches (last 5)
-    func getRecentSearches(limit: Int = 5) -> [SavedSearch] {
-        return Array(savedSearches.prefix(limit))
+    func getRecentSearches(limit: Int = 5) async throws -> [SavedSearch] {
+        let searches = try service.getAllSavedSearches()
+        return Array(searches.prefix(limit))
     }
-    
+
     /// Search saved searches by name or query
-    func searchSavedSearches(query: String) -> [SavedSearch] {
+    func searchSavedSearches(query: String) async throws -> [SavedSearch] {
+        let searches = try service.getAllSavedSearches()
         let lowercaseQuery = query.lowercased()
-        return savedSearches.filter { search in
+        return searches.filter { search in
             search.name.lowercased().contains(lowercaseQuery) ||
             search.query.lowercased().contains(lowercaseQuery)
         }
@@ -94,8 +78,9 @@ class SavedSearchManager {
         latitude: Double?,
         longitude: Double?,
         filters: SearchFilters
-    ) -> SavedSearch? {
-        return savedSearches.first { search in
+    ) async throws -> SavedSearch? {
+        let searches = try service.getAllSavedSearches()
+        return searches.first { search in
             search.query == query &&
             search.latitude == latitude &&
             search.longitude == longitude &&

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct RestaurantDetailView: View {
     let place: Place
-    let onToggleFavorite: ((Place) -> Void)?
+    let onToggleFavorite: ((Place) async -> Void)?
     let loadPhoto: ([String], Int, Int) async -> Data?
     @State private var isBookmarkAnimating = false
     @State private var isFavorite = false
@@ -20,7 +20,7 @@ struct RestaurantDetailView: View {
 
     init(
         place: Place,
-        onToggleFavorite: ((Place) -> Void)? = nil,
+        onToggleFavorite: ((Place) async -> Void)? = nil,
         loadPhoto: @escaping ([String], Int, Int) async -> Data?
     ) {
         self.place = place
@@ -310,7 +310,9 @@ struct RestaurantDetailView: View {
         isFavorite.toggle()
 
         // Call the callback to update the data source
-        onToggleFavorite?(place)
+        Task {
+            await onToggleFavorite?(place)
+        }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             isBookmarkAnimating = false

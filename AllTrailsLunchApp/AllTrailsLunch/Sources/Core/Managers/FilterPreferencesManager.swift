@@ -6,52 +6,43 @@
 //
 
 import Foundation
-import Observation
 
-/// Manager for filter preferences with observable state.
-/// Wraps FilterPreferencesService to provide business logic and state management.
+/// Manager for filter preferences business logic.
+/// Returns data via async/await - does NOT use @Observable.
+/// ViewModels are responsible for managing observable state.
 @MainActor
-@Observable
 class FilterPreferencesManager {
     private let service: FilterPreferencesService
-    
-    // Observable state - automatically triggers UI updates
-    private(set) var currentFilters: SearchFilters
-    
+
     init(service: FilterPreferencesService) {
         self.service = service
-        self.currentFilters = service.loadFilters()
     }
-    
+
     // MARK: - Public Methods
-    
-    /// Get current filters
+
+    /// Get current filters from persistence
     func getFilters() -> SearchFilters {
-        return currentFilters
+        return service.loadFilters()
     }
-    
-    /// Save filters and update observable state
-    func saveFilters(_ filters: SearchFilters) {
-        currentFilters = filters
+
+    /// Save filters to persistence
+    func saveFilters(_ filters: SearchFilters) async throws {
         service.saveFilters(filters)
     }
-    
+
     /// Load filters from persistence
     func loadFilters() -> SearchFilters {
-        let filters = service.loadFilters()
-        currentFilters = filters
-        return filters
+        return service.loadFilters()
     }
-    
+
     /// Clear filters and reset to default
-    func clearFilters() {
-        currentFilters = .default
+    func clearFilters() async throws {
         service.clearFilters()
     }
-    
+
     /// Check if filters are currently applied (not default)
-    func hasActiveFilters() -> Bool {
-        return currentFilters != .default
+    func hasActiveFilters(_ filters: SearchFilters) -> Bool {
+        return filters != .default
     }
 }
 

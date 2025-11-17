@@ -6,14 +6,13 @@
 //
 
 import Foundation
-import Observation
 
 // MARK: - Photo Manager
 
 /// High-level manager for photo operations with automatic caching.
-/// Uses @Observable for SwiftUI integration.
+/// Returns data via async/await - does NOT use @Observable.
+/// ViewModels are responsible for managing observable state.
 /// Works with Data instead of UIImage for platform independence.
-@Observable
 @MainActor
 class PhotoManager {
 

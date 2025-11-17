@@ -9,9 +9,9 @@ import Foundation
 import CoreLocation
 
 /// Manager for restaurant data operations.
-/// This is the high-level API that combines multiple services.
+/// Returns data via async/await - does NOT use @Observable.
+/// ViewModels are responsible for managing observable state.
 @MainActor
-@Observable
 class RestaurantManager {
     private let remote: RemotePlacesService
     private let cache: LocalPlacesCache?

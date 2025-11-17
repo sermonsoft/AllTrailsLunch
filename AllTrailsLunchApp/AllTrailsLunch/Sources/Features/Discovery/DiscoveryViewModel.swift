@@ -158,19 +158,18 @@ class DiscoveryViewModel {
     var showSaveSearchSheet: Bool = false
     var isShowingCachedData: Bool = false // Track if current results are from cache
 
+    // Observable state for favorites (managed by ViewModel, not Manager)
+    var favoriteIds: Set<String> = []
+
+    // Observable state for saved searches (managed by ViewModel, not Manager)
+    var savedSearches: [SavedSearch] = []
+
     private let interactor: DiscoveryInteractor
 
     // MARK: - State (Exposed for UI Observation)
 
-    /// Expose favorite IDs for UI observation
-    /// This allows views to reactively update when favorites change
-    /// Accessed through interactor method, not direct manager access
-    var favoriteIds: Set<String> {
-        interactor.getFavoriteIds()
-    }
-
     /// Access to NetworkMonitor through the interactor
-    /// Accessed through interactor method, not direct manager access
+    /// NetworkMonitor is a special case - it monitors system state, not user data
     var networkMonitor: NetworkMonitor {
         interactor.getNetworkMonitor()
     }
@@ -179,18 +178,6 @@ class DiscoveryViewModel {
     /// Accessed through interactor method, not direct injection
     private var eventLogger: EventLogger {
         interactor.getEventLogger()
-    }
-
-    /// Access to FilterPreferencesManager through the interactor
-    /// Accessed through interactor method, not direct injection
-    private var filterPreferencesManager: FilterPreferencesManager {
-        interactor.getFilterPreferencesManager()
-    }
-
-    /// Access to SavedSearchManager through the interactor
-    /// Accessed through interactor method, not direct injection
-    var savedSearchManager: SavedSearchManager {
-        interactor.getSavedSearchManager()
     }
 
     /// Photo loading closure for views
@@ -217,14 +204,20 @@ class DiscoveryViewModel {
         // Load saved filters from manager
         self.filters = interactor.getFilterPreferencesManager().getFilters()
 
+        // Load favorite IDs from manager into ViewModel's observable state
+        self.favoriteIds = interactor.getFavoriteIds()
+
         // Log screen view - eventLogger is now accessed from interactor
         interactor.getEventLogger().log(Event.screenViewed)
     }
-    
+
     // MARK: - Initialization
 
     func initialize() async {
         eventLogger.log(Event.locationPermissionRequested)
+
+        // Load saved searches into ViewModel's observable state
+        await loadSavedSearches()
 
         do {
             let location = try await interactor.requestLocationPermission()
@@ -241,6 +234,16 @@ class DiscoveryViewModel {
         } catch {
             self.error = .unknown(error.localizedDescription)
             eventLogger.log(Event.searchError(error: error.localizedDescription))
+        }
+    }
+
+    // MARK: - Saved Searches Loading
+
+    func loadSavedSearches() async {
+        do {
+            savedSearches = try await interactor.getSavedSearchManager().getAllSavedSearches()
+        } catch {
+            savedSearches = []
         }
     }
     
@@ -369,17 +372,28 @@ class DiscoveryViewModel {
 
     // MARK: - Favorites
 
-    func toggleFavorite(_ place: Place) {
-        // Update via interactor (FavoritesManager + SwiftData)
-        // FavoritesManager is @Observable, so UI will react automatically
-        interactor.toggleFavorite(place.id)
+    func toggleFavorite(_ place: Place) async {
+        do {
+            // Update via interactor (FavoritesManager + SwiftData)
+            let isFavorite = try await interactor.toggleFavorite(place)
 
-        if let index = results.firstIndex(where: { $0.id == place.id }) {
-            let isFavorite = interactor.isFavorite(place.id)
-            results[index].isFavorite = isFavorite
+            // Update ViewModel's observable state
+            if isFavorite {
+                favoriteIds.insert(place.id)
+            } else {
+                favoriteIds.remove(place.id)
+            }
+
+            // Update results array
+            if let index = results.firstIndex(where: { $0.id == place.id }) {
+                results[index].isFavorite = isFavorite
+            }
 
             // Log favorite toggle
             eventLogger.log(Event.favoriteToggled(placeId: place.id, isFavorite: isFavorite))
+        } catch {
+            // Handle error silently or show to user
+            print("❌ Failed to toggle favorite: \(error)")
         }
     }
 
@@ -391,9 +405,14 @@ class DiscoveryViewModel {
 
     // MARK: - Filters
 
-    func applyFilters(_ newFilters: SearchFilters) {
+    func applyFilters(_ newFilters: SearchFilters) async {
         filters = newFilters
-        filterPreferencesManager.saveFilters(newFilters)
+
+        do {
+            try await interactor.getFilterPreferencesManager().saveFilters(newFilters)
+        } catch {
+            print("❌ Failed to save filters: \(error)")
+        }
 
         // Apply filters to current results
         applyFiltersToResults()
@@ -406,9 +425,15 @@ class DiscoveryViewModel {
         }
     }
 
-    func clearFilters() {
+    func clearFilters() async {
         filters = .default
-        filterPreferencesManager.clearFilters()
+
+        do {
+            try await interactor.getFilterPreferencesManager().clearFilters()
+        } catch {
+            print("❌ Failed to clear filters: \(error)")
+        }
+
         applyFiltersToResults()
         eventLogger.log(Event.filtersCleared)
     }
@@ -439,7 +464,12 @@ class DiscoveryViewModel {
     func loadSavedSearch(_ savedSearch: SavedSearch) async {
         // Apply filters from saved search
         filters = savedSearch.filters
-        filterPreferencesManager.saveFilters(filters)
+
+        do {
+            try await interactor.getFilterPreferencesManager().saveFilters(filters)
+        } catch {
+            print("❌ Failed to save filters: \(error)")
+        }
 
         // Set search text
         searchText = savedSearch.query
@@ -455,7 +485,7 @@ class DiscoveryViewModel {
         }
     }
 
-    func saveCurrentSearch(name: String) throws {
+    func saveCurrentSearch(name: String) async throws {
         let savedSearch = SavedSearch(
             name: name,
             query: searchText,
@@ -463,10 +493,63 @@ class DiscoveryViewModel {
             filters: filters
         )
 
-        try savedSearchManager.saveSearch(savedSearch)
+        try await interactor.getSavedSearchManager().saveSearch(savedSearch)
+
+        // Reload saved searches into ViewModel's observable state
+        await loadSavedSearches()
 
         // Log event
         eventLogger.log(Event.searchSaved(name: name))
+    }
+
+    func saveSearch(
+        name: String,
+        query: String,
+        location: (latitude: Double, longitude: Double)?,
+        filters: SearchFilters
+    ) async throws {
+        let savedSearch = SavedSearch(
+            name: name,
+            query: query,
+            location: location,
+            filters: filters
+        )
+
+        try await interactor.getSavedSearchManager().saveSearch(savedSearch)
+
+        // Reload saved searches into ViewModel's observable state
+        await loadSavedSearches()
+
+        // Log event
+        eventLogger.log(Event.searchSaved(name: name))
+    }
+
+    func deleteSavedSearch(_ search: SavedSearch) async throws {
+        try await interactor.getSavedSearchManager().deleteSearch(search)
+
+        // Reload saved searches into ViewModel's observable state
+        await loadSavedSearches()
+    }
+
+    func findDuplicateSearch(
+        query: String,
+        latitude: Double?,
+        longitude: Double?,
+        filters: SearchFilters
+    ) async throws -> SavedSearch? {
+        return try await interactor.getSavedSearchManager().findDuplicateSearch(
+            query: query,
+            latitude: latitude,
+            longitude: longitude,
+            filters: filters
+        )
+    }
+
+    func clearAllSavedSearches() async throws {
+        try await interactor.getSavedSearchManager().clearAllSavedSearches()
+
+        // Reload saved searches into ViewModel's observable state
+        await loadSavedSearches()
     }
 }
 

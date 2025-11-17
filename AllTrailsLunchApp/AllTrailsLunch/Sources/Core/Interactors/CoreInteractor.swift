@@ -83,21 +83,29 @@ class CoreInteractor: DiscoveryInteractor, DetailInteractor {
     func isFavorite(_ placeId: String) -> Bool {
         return favoritesManager.isFavorite(placeId)
     }
-    
-    func toggleFavorite(_ placeId: String) {
-        favoritesManager.toggleFavorite(placeId)
+
+    func toggleFavorite(_ placeId: String) async throws {
+        _ = try await favoritesManager.toggleFavorite(placeId)
     }
-    
-    func addFavorite(_ placeId: String) {
-        favoritesManager.addFavorite(placeId)
+
+    func toggleFavorite(_ place: Place) async throws -> Bool {
+        return try await favoritesManager.toggleFavorite(place)
     }
-    
-    func removeFavorite(_ placeId: String) {
-        favoritesManager.removeFavorite(placeId)
+
+    func addFavorite(_ placeId: String) async throws {
+        try await favoritesManager.addFavorite(placeId)
     }
-    
+
+    func addFavorite(_ place: Place) async throws {
+        try await favoritesManager.addFavorite(place)
+    }
+
+    func removeFavorite(_ placeId: String) async throws {
+        try await favoritesManager.removeFavorite(placeId)
+    }
+
     func getFavoriteIds() -> Set<String> {
-        return favoritesManager.favoriteIds
+        return favoritesManager.getFavoriteIds()
     }
 
     // MARK: - Network Monitoring
