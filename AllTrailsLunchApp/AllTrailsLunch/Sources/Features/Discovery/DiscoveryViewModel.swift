@@ -163,10 +163,34 @@ class DiscoveryViewModel {
     private let filterPreferences: FilterPreferencesService
     let savedSearchService: SavedSearchService
 
-    // Expose favoritesManager for UI observation
-    var favoritesManager: FavoritesManager {
-        interactor.favoritesManager
+    // MARK: - State (Exposed for UI Observation)
+
+    /// Expose favorite IDs for UI observation
+    /// This allows views to reactively update when favorites change
+    /// Accessed through interactor method, not direct manager access
+    var favoriteIds: Set<String> {
+        interactor.getFavoriteIds()
     }
+
+    /// Access to NetworkMonitor through the interactor
+    /// Accessed through interactor method, not direct manager access
+    var networkMonitor: NetworkMonitor {
+        interactor.getNetworkMonitor()
+    }
+
+    /// Photo loading closure for views
+    /// Views should use this closure instead of accessing PhotoManager directly
+    var loadPhoto: ([String], Int, Int) async -> Data? {
+        { [weak self] photoReferences, maxWidth, maxHeight in
+            guard let self = self else { return nil }
+            return await self.interactor.loadFirstPhoto(
+                from: photoReferences,
+                maxWidth: maxWidth,
+                maxHeight: maxHeight
+            )
+        }
+    }
+
     private var searchTask: Task<Void, Never>?
     private var debounceTimer: Timer?
     private var currentPage: Int = 0

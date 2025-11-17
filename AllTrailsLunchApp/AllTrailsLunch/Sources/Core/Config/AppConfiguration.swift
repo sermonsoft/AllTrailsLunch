@@ -279,8 +279,12 @@ final class AppConfiguration {
 
     @MainActor
     func createCoreInteractor() -> CoreInteractor {
-        // CRITICAL: Create FavoritesManager FIRST to ensure it's shared
-        let favoritesManager = createFavoritesManager()
+        // Create dependency container with all shared managers
+        let container = createDependencyContainer()
+
+        // CRITICAL: Get shared managers from container
+        let favoritesManager = container.favoritesManager
+        let networkMonitor = container.networkMonitor
 
         // Create RestaurantManager with the shared FavoritesManager
         let restaurantManager = RestaurantManager(
@@ -290,9 +294,11 @@ final class AppConfiguration {
         )
 
         return CoreInteractor(
+            container: container,
             restaurantManager: restaurantManager,
             favoritesManager: favoritesManager,
-            locationManager: createLocationManager()
+            locationManager: createLocationManager(),
+            networkMonitor: networkMonitor
         )
     }
 

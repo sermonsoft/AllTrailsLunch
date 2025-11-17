@@ -10,6 +10,7 @@ import SwiftUI
 struct RestaurantDetailView: View {
     let place: Place
     let onToggleFavorite: ((Place) -> Void)?
+    let loadPhoto: ([String], Int, Int) async -> Data?
     @State private var isBookmarkAnimating = false
     @State private var isFavorite = false
     @State private var placeDetail: PlaceDetail?
@@ -17,9 +18,14 @@ struct RestaurantDetailView: View {
     @State private var showHoursDetails = false
     @Environment(\.openURL) private var openURL
 
-    init(place: Place, onToggleFavorite: ((Place) -> Void)? = nil) {
+    init(
+        place: Place,
+        onToggleFavorite: ((Place) -> Void)? = nil,
+        loadPhoto: @escaping ([String], Int, Int) async -> Data?
+    ) {
         self.place = place
         self.onToggleFavorite = onToggleFavorite
+        self.loadPhoto = loadPhoto
         // Initialize the state with the place's favorite status
         _isFavorite = State(initialValue: place.isFavorite)
     }
@@ -364,7 +370,8 @@ struct RestaurantDetailView: View {
             photoReferences: place.photoReferences,
             maxWidth: 800,
             maxHeight: 400,
-            contentMode: .fill
+            contentMode: .fill,
+            loadPhoto: loadPhoto
         )
         .frame(height: 250)
         .clipped()
@@ -387,7 +394,8 @@ struct RestaurantDetailView: View {
                 photoReferences: [],
                 isFavorite: false
             ),
-            onToggleFavorite: { _ in }
+            onToggleFavorite: { _ in },
+            loadPhoto: { _, _, _ in nil }
         )
     }
 }

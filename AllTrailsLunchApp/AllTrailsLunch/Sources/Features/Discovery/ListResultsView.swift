@@ -10,16 +10,11 @@ import SwiftUI
 struct ListResultsView: View {
     let places: [Place]
     let isLoading: Bool
+    let favoriteIds: Set<String>
     let onToggleFavorite: (Place) -> Void
     let onLoadMore: () async -> Void
     let onRefresh: (() async -> Void)?
-
-    @Environment(\.dependencyContainer) private var container
-    @Environment(\.photoManager) private var photoManager
-
-    private var favoritesManager: FavoritesManager {
-        container?.favoritesManager ?? AppConfiguration.shared.createFavoritesManager()
-    }
+    let loadPhoto: ([String], Int, Int) async -> Data?
 
     var body: some View {
         ScrollView {
@@ -42,12 +37,17 @@ struct ListResultsView: View {
     private var restaurantList: some View {
         ForEach(Array(places.enumerated()), id: \.element.id) { index, place in
             NavigationLink(destination:
-                RestaurantDetailView(place: place, onToggleFavorite: onToggleFavorite)
-                    .photoManager(photoManager ?? AppConfiguration.shared.createPhotoManager())
+                RestaurantDetailView(
+                    place: place,
+                    onToggleFavorite: onToggleFavorite,
+                    loadPhoto: loadPhoto
+                )
             ) {
                 RestaurantRow(
                     place: place,
-                    onToggleFavorite: { onToggleFavorite(place) }
+                    isFavorite: favoriteIds.contains(place.id),
+                    onToggleFavorite: { onToggleFavorite(place) },
+                    loadPhoto: loadPhoto
                 )
             }
             .buttonStyle(.plain)
@@ -72,20 +72,13 @@ struct ListResultsView: View {
 
 struct RestaurantRow: View {
     let place: Place
+    let isFavorite: Bool
     let onToggleFavorite: () -> Void
-    @Environment(\.dependencyContainer) private var container
+    let loadPhoto: ([String], Int, Int) async -> Data?
     @State private var isBookmarkAnimating = false
 
-    private var favoritesManager: FavoritesManager {
-        container?.favoritesManager ?? AppConfiguration.shared.createFavoritesManager()
-    }
-
     var body: some View {
-        // CRITICAL: Access favoriteIds at the TOP of body to establish observation
-        let favoriteIds = favoritesManager.favoriteIds
-        let isFavorite = favoriteIds.contains(place.id)
-
-        return HStack(alignment: .top, spacing: DesignSystem.Spacing.md) {
+        HStack(alignment: .top, spacing: DesignSystem.Spacing.md) {
             restaurantImage
             restaurantInfo
             Spacer(minLength: DesignSystem.Spacing.sm)
@@ -102,7 +95,8 @@ struct RestaurantRow: View {
             photoReferences: place.photoReferences,
             maxWidth: 160, // 2x for retina
             maxHeight: 160,
-            contentMode: .fill
+            contentMode: .fill,
+            loadPhoto: loadPhoto
         )
         .frame(width: 80, height: 80)
         .clipped()
@@ -213,9 +207,7 @@ struct RestaurantRow: View {
 }
 
 #Preview {
-    let container = AppConfiguration.shared.createDependencyContainer()
-
-    return List {
+    List {
         RestaurantRow(
             place: Place(
                 id: "1",
@@ -229,9 +221,10 @@ struct RestaurantRow: View {
                 photoReferences: [],
                 isFavorite: false
             ),
-            onToggleFavorite: {}
+            isFavorite: false,
+            onToggleFavorite: {},
+            loadPhoto: { _, _, _ in nil }
         )
     }
-    .dependencyContainer(container)
 }
 

@@ -6,24 +6,24 @@
 //
 
 import Foundation
-import UIKit
 import Observation
 
 // MARK: - Photo Manager
 
 /// High-level manager for photo operations with automatic caching.
 /// Uses @Observable for SwiftUI integration.
+/// Works with Data instead of UIImage for platform independence.
 @Observable
 @MainActor
 class PhotoManager {
-    
+
     // MARK: - Properties
-    
+
     private let loader: PhotoLoaderService
     private let cache: PhotoCacheService
-    
+
     // Track loading states
-    private var loadingTasks: [String: Task<UIImage?, Never>] = [:]
+    private var loadingTasks: [String: Task<Data?, Never>] = [:]
     
     // MARK: - Initialization
     
@@ -33,32 +33,32 @@ class PhotoManager {
     }
     
     // MARK: - Public API
-    
+
     /// Load photo with automatic caching
     /// - Parameters:
     ///   - photoReference: Google Places photo reference
     ///   - maxWidth: Maximum width for the photo
     ///   - maxHeight: Maximum height for the photo
-    /// - Returns: UIImage if successful, nil otherwise
+    /// - Returns: Image data if successful, nil otherwise
     func loadPhoto(
         photoReference: String,
         maxWidth: Int = 400,
         maxHeight: Int = 400
-    ) async -> UIImage? {
+    ) async -> Data? {
         let cacheKey = buildCacheKey(photoReference: photoReference, maxWidth: maxWidth, maxHeight: maxHeight)
-        
+
         // Check if already loading
         if let existingTask = loadingTasks[cacheKey] {
             return await existingTask.value
         }
-        
+
         // Create new loading task
-        let task = Task<UIImage?, Never> {
+        let task = Task<Data?, Never> {
             // Check cache first
-            if let cachedImage = await cache.getCachedPhoto(for: cacheKey) {
-                return cachedImage
+            if let cachedData = await cache.getCachedPhoto(for: cacheKey) {
+                return cachedData
             }
-            
+
             // Load from network
             guard let url = loader.buildPhotoURL(
                 photoReference: photoReference,
@@ -67,27 +67,27 @@ class PhotoManager {
             ) else {
                 return nil
             }
-            
+
             do {
-                let image = try await loader.loadPhoto(from: url)
-                
-                // Cache the image
-                await cache.cachePhoto(image, for: cacheKey)
-                
-                return image
+                let data = try await loader.loadPhoto(from: url)
+
+                // Cache the data
+                await cache.cachePhoto(data, for: cacheKey)
+
+                return data
             } catch {
                 print("❌ PhotoManager: Failed to load photo - \(error.localizedDescription)")
                 return nil
             }
         }
-        
+
         loadingTasks[cacheKey] = task
-        
+
         let result = await task.value
-        
+
         // Clean up task
         loadingTasks.removeValue(forKey: cacheKey)
-        
+
         return result
     }
     
@@ -96,16 +96,16 @@ class PhotoManager {
     ///   - photoReferences: Array of Google Places photo references
     ///   - maxWidth: Maximum width for the photo
     ///   - maxHeight: Maximum height for the photo
-    /// - Returns: UIImage if successful, nil otherwise
+    /// - Returns: Image data if successful, nil otherwise
     func loadFirstPhoto(
         from photoReferences: [String],
         maxWidth: Int = 400,
         maxHeight: Int = 400
-    ) async -> UIImage? {
+    ) async -> Data? {
         guard let firstReference = photoReferences.first else {
             return nil
         }
-        
+
         return await loadPhoto(
             photoReference: firstReference,
             maxWidth: maxWidth,

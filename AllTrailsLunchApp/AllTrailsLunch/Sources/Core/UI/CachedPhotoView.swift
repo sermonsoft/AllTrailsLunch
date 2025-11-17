@@ -14,27 +14,29 @@ struct CachedPhotoView: View {
     let maxWidth: Int
     let maxHeight: Int
     let contentMode: ContentMode
-    
-    @State private var image: UIImage?
+    let loadPhoto: ([String], Int, Int) async -> Data?
+
+    @State private var imageData: Data?
     @State private var isLoading = true
-    @Environment(\.photoManager) private var photoManager
-    
+
     init(
         photoReferences: [String],
         maxWidth: Int = 400,
         maxHeight: Int = 400,
-        contentMode: ContentMode = .fill
+        contentMode: ContentMode = .fill,
+        loadPhoto: @escaping ([String], Int, Int) async -> Data?
     ) {
         self.photoReferences = photoReferences
         self.maxWidth = maxWidth
         self.maxHeight = maxHeight
         self.contentMode = contentMode
+        self.loadPhoto = loadPhoto
     }
     
     var body: some View {
         Group {
-            if let image = image {
-                Image(uiImage: image)
+            if let imageData = imageData, let uiImage = UIImage(data: imageData) {
+                Image(uiImage: uiImage)
                     .resizable()
                     .aspectRatio(contentMode: contentMode)
                     .transition(.opacity.combined(with: .scale(scale: 0.95)))
@@ -46,9 +48,9 @@ struct CachedPhotoView: View {
                 placeholderImage
             }
         }
-        .animation(.easeInOut(duration: 0.3), value: image != nil)
+        .animation(.easeInOut(duration: 0.3), value: imageData != nil)
         .task(id: photoReferences.first) {
-            await loadPhoto()
+            await loadPhotoAsync()
         }
     }
     
@@ -73,51 +75,22 @@ struct CachedPhotoView: View {
         }
     }
     
-    private func loadPhoto() async {
+    private func loadPhotoAsync() async {
         // Reset state when loading new photo
-        image = nil
+        imageData = nil
         isLoading = true
 
-        guard let photoManager = photoManager else {
-            print("⚠️ CachedPhotoView: photoManager is nil!")
-            isLoading = false
-            return
-        }
-
         print("✅ CachedPhotoView: Loading photo with references: \(photoReferences)")
-        let loadedImage = await photoManager.loadFirstPhoto(
-            from: photoReferences,
-            maxWidth: maxWidth,
-            maxHeight: maxHeight
-        )
+        let loadedData = await loadPhoto(photoReferences, maxWidth, maxHeight)
 
-        if loadedImage != nil {
+        if loadedData != nil {
             print("✅ CachedPhotoView: Photo loaded successfully")
         } else {
             print("⚠️ CachedPhotoView: Photo loading returned nil")
         }
 
-        image = loadedImage
+        imageData = loadedData
         isLoading = false
-    }
-}
-
-// MARK: - Photo Manager Environment Key
-
-private struct PhotoManagerKey: EnvironmentKey {
-    static let defaultValue: PhotoManager? = nil
-}
-
-extension EnvironmentValues {
-    var photoManager: PhotoManager? {
-        get { self[PhotoManagerKey.self] }
-        set { self[PhotoManagerKey.self] = newValue }
-    }
-}
-
-extension View {
-    func photoManager(_ manager: PhotoManager) -> some View {
-        environment(\.photoManager, manager)
     }
 }
 
@@ -128,9 +101,12 @@ extension View {
         photoReferences: ["test-photo-reference"],
         maxWidth: 400,
         maxHeight: 400,
-        contentMode: .fill
+        contentMode: .fill,
+        loadPhoto: { references, width, height in
+            // Mock photo loader for preview
+            return nil
+        }
     )
     .frame(width: 200, height: 200)
-    .photoManager(AppConfiguration.shared.createPhotoManager())
 }
 

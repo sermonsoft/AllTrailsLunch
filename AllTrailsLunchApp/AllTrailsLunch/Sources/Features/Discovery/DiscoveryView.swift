@@ -18,30 +18,16 @@ import SwiftUI
 /// - Offline indicator
 struct DiscoveryView: View {
     @Bindable var viewModel: DiscoveryViewModel
-    @Environment(\.dependencyContainer) private var container
-
-    // Access managers from dependency container
-    private var photoManager: PhotoManager {
-        container?.photoManager ?? AppConfiguration.shared.createPhotoManager()
-    }
-
-    private var networkMonitor: NetworkMonitor {
-        container?.networkMonitor ?? AppConfiguration.shared.createNetworkMonitor()
-    }
-
-    private var favoritesManager: FavoritesManager {
-        container?.favoritesManager ?? AppConfiguration.shared.createFavoritesManager()
-    }
 
     var body: some View {
         NavigationStack {
             ZStack {
                 VStack(spacing: 0) {
                     OfflineIndicatorView(
-                        isOffline: !networkMonitor.isConnected,
+                        isOffline: !viewModel.networkMonitor.isConnected,
                         isShowingCachedData: viewModel.isShowingCachedData
                     )
-                    .animation(.easeInOut, value: networkMonitor.isConnected)
+                    .animation(.easeInOut, value: viewModel.networkMonitor.isConnected)
                     .animation(.easeInOut, value: viewModel.isShowingCachedData)
 
                     ZStack {
@@ -57,7 +43,6 @@ struct DiscoveryView: View {
                 .toolbarBackground(.visible, for: .navigationBar)
                 .toolbarBackground(Color.white, for: .navigationBar)
                 .background(DesignSystem.Colors.background)
-                .photoManager(photoManager)
                 .sheet(isPresented: $viewModel.showSavedSearchesSheet) {
                     SavedSearchesView(savedSearchService: viewModel.savedSearchService) { savedSearch in
                         Task {
@@ -162,15 +147,19 @@ struct DiscoveryView: View {
             ListResultsView(
                 places: viewModel.results,
                 isLoading: viewModel.isLoading,
+                favoriteIds: viewModel.favoriteIds,
                 onToggleFavorite: viewModel.toggleFavorite,
                 onLoadMore: { await viewModel.loadNextPage() },
-                onRefresh: { await viewModel.refresh() }
+                onRefresh: { await viewModel.refresh() },
+                loadPhoto: viewModel.loadPhoto
             )
         case .map:
             MapResultsView(
                 places: viewModel.results,
+                favoriteIds: viewModel.favoriteIds,
                 onToggleFavorite: viewModel.toggleFavorite,
-                isSearchActive: !viewModel.searchText.isEmpty
+                isSearchActive: !viewModel.searchText.isEmpty,
+                loadPhoto: viewModel.loadPhoto
             )
         }
     }

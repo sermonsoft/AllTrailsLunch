@@ -9,13 +9,9 @@ import Foundation
 import CoreLocation
 
 /// Protocol for Discovery feature business logic
+/// ViewModels should ONLY call methods on this protocol, never access managers directly
 @MainActor
 protocol DiscoveryInteractor {
-    // MARK: - Favorites Manager Access
-
-    /// Access to the observable FavoritesManager for UI reactivity
-    var favoritesManager: FavoritesManager { get }
-
     // MARK: - Location
 
     /// Request location permission and get user's current location
@@ -73,5 +69,37 @@ protocol DiscoveryInteractor {
     /// Get all favorite place IDs
     /// - Returns: Set of favorite place IDs
     func getFavoriteIds() -> Set<String>
+
+    // MARK: - Network Monitoring
+
+    /// Get the network monitor for observing connectivity status
+    /// - Returns: NetworkMonitor instance
+    func getNetworkMonitor() -> NetworkMonitor
+
+    // MARK: - Photo Loading
+
+    /// Load a photo from a photo reference
+    /// - Parameters:
+    ///   - photoReference: Google Places photo reference
+    ///   - maxWidth: Maximum width for the photo
+    ///   - maxHeight: Maximum height for the photo
+    /// - Returns: Image data if successful, nil otherwise
+    func loadPhoto(
+        photoReference: String,
+        maxWidth: Int,
+        maxHeight: Int
+    ) async -> Data?
+
+    /// Load the first available photo from a list of photo references
+    /// - Parameters:
+    ///   - photoReferences: Array of Google Places photo references
+    ///   - maxWidth: Maximum width for the photo
+    ///   - maxHeight: Maximum height for the photo
+    /// - Returns: Image data if successful, nil otherwise
+    func loadFirstPhoto(
+        from photoReferences: [String],
+        maxWidth: Int,
+        maxHeight: Int
+    ) async -> Data?
 }
 

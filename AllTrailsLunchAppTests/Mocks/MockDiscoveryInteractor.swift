@@ -12,9 +12,11 @@ import CoreLocation
 @MainActor
 final class MockDiscoveryInteractor: DiscoveryInteractor {
 
-    // MARK: - FavoritesManager Access
+    // MARK: - Private Dependencies (Not exposed to ViewModels)
 
-    let favoritesManager: FavoritesManager
+    private let container: DependencyContainer
+    private let favoritesManager: FavoritesManager
+    private let networkMonitor: NetworkMonitor
 
     // MARK: - Mock Configuration
 
@@ -28,8 +30,10 @@ final class MockDiscoveryInteractor: DiscoveryInteractor {
 
     // MARK: - Initialization
 
-    init(favoritesManager: FavoritesManager? = nil) {
+    init(favoritesManager: FavoritesManager? = nil, container: DependencyContainer? = nil) {
         self.favoritesManager = favoritesManager ?? AppConfiguration.shared.createFavoritesManager()
+        self.container = container ?? AppConfiguration.shared.createDependencyContainer()
+        self.networkMonitor = self.container.networkMonitor
     }
     
     // MARK: - Call Tracking
@@ -137,6 +141,30 @@ final class MockDiscoveryInteractor: DiscoveryInteractor {
 
     func getFavoriteIds() -> Set<String> {
         return []
+    }
+
+    func getNetworkMonitor() -> NetworkMonitor {
+        return networkMonitor
+    }
+
+    // MARK: - Photo Loading
+
+    func loadPhoto(
+        photoReference: String,
+        maxWidth: Int,
+        maxHeight: Int
+    ) async -> Data? {
+        // Return nil for mock - tests don't need actual images
+        return nil
+    }
+
+    func loadFirstPhoto(
+        from photoReferences: [String],
+        maxWidth: Int,
+        maxHeight: Int
+    ) async -> Data? {
+        // Return nil for mock - tests don't need actual images
+        return nil
     }
 
     // MARK: - Test Helpers

@@ -45,14 +45,19 @@ final class BookmarkToggleIntegrationTests: XCTestCase {
         let mockRemoteService = MockRemotePlacesService()
         mockRemoteService.nearbySearchResult = (results: [], nextPageToken: nil)
 
+        // Create a dependency container for testing
+        let container = config.createDependencyContainer()
+
         coreInteractor = CoreInteractor(
+            container: container,
             restaurantManager: RestaurantManager(
                 remote: mockRemoteService,
                 cache: nil,
                 favorites: favoritesManager
             ),
             favoritesManager: favoritesManager,
-            locationManager: config.createLocationManager()
+            locationManager: config.createLocationManager(),
+            networkMonitor: container.networkMonitor
         )
         
         // Create ViewModel with the same interactor

@@ -10,24 +10,34 @@ import CoreLocation
 
 /// Core implementation of all Interactor protocols
 /// This is the production implementation that ViewModels will use
+/// ViewModels should ONLY call methods on this interactor, never access managers directly
 @MainActor
 class CoreInteractor: DiscoveryInteractor, DetailInteractor {
     // MARK: - Dependencies
 
+    // NOTE: These are internal for testing purposes only
+    // ViewModels should NEVER access these directly - use protocol methods instead
+    let container: DependencyContainer
+    let favoritesManager: FavoritesManager
+
     private let restaurantManager: RestaurantManager
-    let favoritesManager: FavoritesManager // Exposed for UI observation
     private let locationManager: LocationManager
-    
+    private let networkMonitor: NetworkMonitor
+
     // MARK: - Initialization
-    
+
     init(
+        container: DependencyContainer,
         restaurantManager: RestaurantManager,
         favoritesManager: FavoritesManager,
-        locationManager: LocationManager
+        locationManager: LocationManager,
+        networkMonitor: NetworkMonitor
     ) {
+        self.container = container
         self.restaurantManager = restaurantManager
         self.favoritesManager = favoritesManager
         self.locationManager = locationManager
+        self.networkMonitor = networkMonitor
     }
     
     // MARK: - DiscoveryInteractor Implementation
@@ -79,7 +89,39 @@ class CoreInteractor: DiscoveryInteractor, DetailInteractor {
     func getFavoriteIds() -> Set<String> {
         return favoritesManager.favoriteIds
     }
-    
+
+    // MARK: - Network Monitoring
+
+    func getNetworkMonitor() -> NetworkMonitor {
+        return networkMonitor
+    }
+
+    // MARK: - Photo Loading
+
+    nonisolated func loadPhoto(
+        photoReference: String,
+        maxWidth: Int,
+        maxHeight: Int
+    ) async -> Data? {
+        return await container.photoManager.loadPhoto(
+            photoReference: photoReference,
+            maxWidth: maxWidth,
+            maxHeight: maxHeight
+        )
+    }
+
+    nonisolated func loadFirstPhoto(
+        from photoReferences: [String],
+        maxWidth: Int,
+        maxHeight: Int
+    ) async -> Data? {
+        return await container.photoManager.loadFirstPhoto(
+            from: photoReferences,
+            maxWidth: maxWidth,
+            maxHeight: maxHeight
+        )
+    }
+
     // MARK: - DetailInteractor Implementation
     
     func getPlaceDetails(placeId: String) async throws -> PlaceDetail {
