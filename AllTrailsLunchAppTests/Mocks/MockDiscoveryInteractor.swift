@@ -200,5 +200,17 @@ final class MockDiscoveryInteractor: DiscoveryInteractor {
         lastToggledPlace = nil
         lastToggledPlaceId = nil
     }
+
+    // MARK: - Filter Preferences
+
+    func getFilterPreferencesManager() -> FilterPreferencesManager {
+        return container.filterPreferencesManager
+    }
+
+    // MARK: - Saved Searches
+
+    func getSavedSearchManager() -> SavedSearchManager {
+        return container.savedSearchManager
+    }
 }
 

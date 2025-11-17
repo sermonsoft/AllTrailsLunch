@@ -115,5 +115,15 @@ extension DependencyContainer {
     var restaurantManager: RestaurantManager {
         require(RestaurantManager.self)
     }
+
+    /// Quick access to FilterPreferencesManager
+    var filterPreferencesManager: FilterPreferencesManager {
+        require(FilterPreferencesManager.self)
+    }
+
+    /// Quick access to SavedSearchManager
+    var savedSearchManager: SavedSearchManager {
+        require(SavedSearchManager.self)
+    }
 }
 

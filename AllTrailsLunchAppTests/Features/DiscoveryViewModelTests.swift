@@ -15,14 +15,18 @@ final class DiscoveryViewModelTests: XCTestCase {
     var sut: DiscoveryViewModel!
     var mockInteractor: MockDiscoveryInteractor!
     var mockEventLogger: MockEventLogger!
-    var mockFilterPreferences: MockFilterPreferencesService!
-    var mockSavedSearchService: MockSavedSearchService!
-    
+    var mockFilterPreferencesManager: FilterPreferencesManager!
+    var mockSavedSearchManager: SavedSearchManager!
+
     override func setUp() async throws {
         try await super.setUp()
 
         // Create mock event logger first
         mockEventLogger = MockEventLogger()
+
+        // Create mock managers
+        mockFilterPreferencesManager = FilterPreferencesManager(service: MockFilterPreferencesService())
+        mockSavedSearchManager = SavedSearchManager(service: MockSavedSearchService())
 
         // Create container with mock event logger
         let container = DependencyContainer()
@@ -32,25 +36,21 @@ final class DiscoveryViewModelTests: XCTestCase {
         container.register(NetworkMonitor.self, service: AppConfiguration.shared.createNetworkMonitor())
         container.register(LocationManager.self, service: AppConfiguration.shared.createLocationManager())
         container.register(RestaurantManager.self, service: AppConfiguration.shared.createRestaurantManager())
+        container.register(FilterPreferencesManager.self, service: mockFilterPreferencesManager)
+        container.register(SavedSearchManager.self, service: mockSavedSearchManager)
 
         // Create mock interactor with the container
         mockInteractor = MockDiscoveryInteractor(container: container)
-        mockFilterPreferences = MockFilterPreferencesService()
-        mockSavedSearchService = MockSavedSearchService()
 
-        sut = DiscoveryViewModel(
-            interactor: mockInteractor,
-            filterPreferences: mockFilterPreferences,
-            savedSearchService: mockSavedSearchService
-        )
+        sut = DiscoveryViewModel(interactor: mockInteractor)
     }
-    
+
     override func tearDown() async throws {
         sut = nil
         mockInteractor = nil
         mockEventLogger = nil
-        mockFilterPreferences = nil
-        mockSavedSearchService = nil
+        mockFilterPreferencesManager = nil
+        mockSavedSearchManager = nil
         try await super.tearDown()
     }
     

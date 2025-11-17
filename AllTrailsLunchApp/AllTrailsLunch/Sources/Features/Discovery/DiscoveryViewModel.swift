@@ -159,8 +159,6 @@ class DiscoveryViewModel {
     var isShowingCachedData: Bool = false // Track if current results are from cache
 
     private let interactor: DiscoveryInteractor
-    private let filterPreferences: FilterPreferencesService
-    let savedSearchService: SavedSearchService
 
     // MARK: - State (Exposed for UI Observation)
 
@@ -183,6 +181,18 @@ class DiscoveryViewModel {
         interactor.getEventLogger()
     }
 
+    /// Access to FilterPreferencesManager through the interactor
+    /// Accessed through interactor method, not direct injection
+    private var filterPreferencesManager: FilterPreferencesManager {
+        interactor.getFilterPreferencesManager()
+    }
+
+    /// Access to SavedSearchManager through the interactor
+    /// Accessed through interactor method, not direct injection
+    var savedSearchManager: SavedSearchManager {
+        interactor.getSavedSearchManager()
+    }
+
     /// Photo loading closure for views
     /// Views should use this closure instead of accessing PhotoManager directly
     var loadPhoto: ([String], Int, Int) async -> Data? {
@@ -201,17 +211,11 @@ class DiscoveryViewModel {
     private var currentPage: Int = 0
     private var unfilteredResults: [Place] = [] // Store unfiltered results for client-side filtering
 
-    init(
-        interactor: DiscoveryInteractor,
-        filterPreferences: FilterPreferencesService = FilterPreferencesService(),
-        savedSearchService: SavedSearchService? = nil
-    ) {
+    init(interactor: DiscoveryInteractor) {
         self.interactor = interactor
-        self.filterPreferences = filterPreferences
-        self.savedSearchService = savedSearchService ?? SavedSearchService(modelContext: SwiftDataStorageManager.shared.mainContext)
 
-        // Load saved filters
-        self.filters = filterPreferences.loadFilters()
+        // Load saved filters from manager
+        self.filters = interactor.getFilterPreferencesManager().getFilters()
 
         // Log screen view - eventLogger is now accessed from interactor
         interactor.getEventLogger().log(Event.screenViewed)
@@ -389,7 +393,7 @@ class DiscoveryViewModel {
 
     func applyFilters(_ newFilters: SearchFilters) {
         filters = newFilters
-        filterPreferences.saveFilters(newFilters)
+        filterPreferencesManager.saveFilters(newFilters)
 
         // Apply filters to current results
         applyFiltersToResults()
@@ -404,7 +408,7 @@ class DiscoveryViewModel {
 
     func clearFilters() {
         filters = .default
-        filterPreferences.clearFilters()
+        filterPreferencesManager.clearFilters()
         applyFiltersToResults()
         eventLogger.log(Event.filtersCleared)
     }
@@ -435,7 +439,7 @@ class DiscoveryViewModel {
     func loadSavedSearch(_ savedSearch: SavedSearch) async {
         // Apply filters from saved search
         filters = savedSearch.filters
-        filterPreferences.saveFilters(filters)
+        filterPreferencesManager.saveFilters(filters)
 
         // Set search text
         searchText = savedSearch.query
@@ -459,7 +463,7 @@ class DiscoveryViewModel {
             filters: filters
         )
 
-        try savedSearchService.saveSearch(savedSearch)
+        try savedSearchManager.saveSearch(savedSearch)
 
         // Log event
         eventLogger.log(Event.searchSaved(name: name))

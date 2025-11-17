@@ -15,14 +15,18 @@ final class PerformanceTests: XCTestCase {
     var viewModel: DiscoveryViewModel!
     var mockInteractor: MockDiscoveryInteractor!
     var mockEventLogger: MockEventLogger!
-    var mockFilterPreferences: MockFilterPreferencesService!
-    var mockSavedSearchService: MockSavedSearchService!
-    
+    var mockFilterPreferencesManager: FilterPreferencesManager!
+    var mockSavedSearchManager: SavedSearchManager!
+
     override func setUp() async throws {
         try await super.setUp()
 
         // Create mock event logger first
         mockEventLogger = MockEventLogger()
+
+        // Create mock managers
+        mockFilterPreferencesManager = FilterPreferencesManager(service: MockFilterPreferencesService())
+        mockSavedSearchManager = SavedSearchManager(service: MockSavedSearchService())
 
         // Create container with mock event logger
         let container = DependencyContainer()
@@ -32,25 +36,21 @@ final class PerformanceTests: XCTestCase {
         container.register(NetworkMonitor.self, service: AppConfiguration.shared.createNetworkMonitor())
         container.register(LocationManager.self, service: AppConfiguration.shared.createLocationManager())
         container.register(RestaurantManager.self, service: AppConfiguration.shared.createRestaurantManager())
+        container.register(FilterPreferencesManager.self, service: mockFilterPreferencesManager)
+        container.register(SavedSearchManager.self, service: mockSavedSearchManager)
 
         // Create mock interactor with the container
         mockInteractor = MockDiscoveryInteractor(container: container)
-        mockFilterPreferences = MockFilterPreferencesService()
-        mockSavedSearchService = MockSavedSearchService()
 
-        viewModel = DiscoveryViewModel(
-            interactor: mockInteractor,
-            filterPreferences: mockFilterPreferences,
-            savedSearchService: mockSavedSearchService
-        )
+        viewModel = DiscoveryViewModel(interactor: mockInteractor)
     }
-    
+
     override func tearDown() async throws {
         viewModel = nil
         mockInteractor = nil
         mockEventLogger = nil
-        mockFilterPreferences = nil
-        mockSavedSearchService = nil
+        mockFilterPreferencesManager = nil
+        mockSavedSearchManager = nil
         try await super.tearDown()
     }
     
@@ -247,14 +247,15 @@ final class PerformanceTests: XCTestCase {
         for i in 0..<20 {
             try viewModel.saveCurrentSearch(name: "Search \(i)")
         }
-        
+
         // Then: Verify all saved
-        XCTAssertEqual(mockSavedSearchService.savedSearches.count, 20)
-        
+        let savedSearches = mockSavedSearchManager.getAllSavedSearches()
+        XCTAssertEqual(savedSearches.count, 20)
+
         // Measure loading saved searches
         measure {
             Task { @MainActor in
-                for savedSearch in mockSavedSearchService.savedSearches {
+                for savedSearch in savedSearches {
                     await viewModel.loadSavedSearch(savedSearch)
                 }
             }

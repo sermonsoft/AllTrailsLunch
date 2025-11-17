@@ -36,6 +36,14 @@ class CoreInteractor: DiscoveryInteractor, DetailInteractor {
         container.networkMonitor
     }
 
+    private var filterPreferencesManager: FilterPreferencesManager {
+        container.filterPreferencesManager
+    }
+
+    private var savedSearchManager: SavedSearchManager {
+        container.savedSearchManager
+    }
+
     // MARK: - Initialization
 
     init(container: DependencyContainer) {
@@ -102,6 +110,18 @@ class CoreInteractor: DiscoveryInteractor, DetailInteractor {
 
     func getEventLogger() -> EventLogger {
         return container.eventLogger
+    }
+
+    // MARK: - Filter Preferences
+
+    func getFilterPreferencesManager() -> FilterPreferencesManager {
+        return filterPreferencesManager
+    }
+
+    // MARK: - Saved Searches
+
+    func getSavedSearchManager() -> SavedSearchManager {
+        return savedSearchManager
     }
 
     // MARK: - Photo Loading

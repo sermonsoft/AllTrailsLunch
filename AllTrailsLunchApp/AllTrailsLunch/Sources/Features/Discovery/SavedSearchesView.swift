@@ -9,20 +9,28 @@ import SwiftUI
 
 struct SavedSearchesView: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var savedSearchService: SavedSearchService
-    @State private var savedSearches: [SavedSearch] = []
+    @Bindable var savedSearchManager: SavedSearchManager
     @State private var searchQuery: String = ""
     @State private var showError: Bool = false
     @State private var errorMessage: String = ""
-    
+
     let onSelectSearch: (SavedSearch) -> Void
-    
+
     init(
-        savedSearchService: SavedSearchService? = nil,
+        savedSearchManager: SavedSearchManager,
         onSelectSearch: @escaping (SavedSearch) -> Void
     ) {
-        self._savedSearchService = State(initialValue: savedSearchService ?? SavedSearchService(modelContext: SwiftDataStorageManager.shared.mainContext))
+        self.savedSearchManager = savedSearchManager
         self.onSelectSearch = onSelectSearch
+    }
+
+    // Computed property to get saved searches from manager
+    private var savedSearches: [SavedSearch] {
+        if searchQuery.isEmpty {
+            return savedSearchManager.getAllSavedSearches()
+        } else {
+            return savedSearchManager.searchSavedSearches(query: searchQuery)
+        }
     }
     
     var body: some View {
@@ -55,7 +63,8 @@ struct SavedSearchesView: View {
                 }
             }
             .task {
-                await loadSavedSearches()
+                // Manager already has the searches loaded
+                // No need to load them again
             }
             .alert("Error", isPresented: $showError) {
                 Button("OK", role: .cancel) {}
@@ -122,43 +131,31 @@ struct SavedSearchesView: View {
     }
     
     // MARK: - Actions
-    
-    @MainActor
-    private func loadSavedSearches() async {
-        do {
-            savedSearches = try savedSearchService.getAllSavedSearches()
-        } catch {
-            errorMessage = "Failed to load saved searches: \(error.localizedDescription)"
-            showError = true
-        }
-    }
-    
+
     private func selectSearch(_ search: SavedSearch) {
         // Update last used date
         do {
-            try savedSearchService.updateSearch(search)
+            try savedSearchManager.updateSearch(search)
         } catch {
             print("Failed to update search: \(error)")
         }
-        
+
         onSelectSearch(search)
         dismiss()
     }
-    
+
     private func deleteSearch(_ search: SavedSearch) {
         do {
-            try savedSearchService.deleteSearch(search)
-            savedSearches.removeAll { $0.id == search.id }
+            try savedSearchManager.deleteSearch(search)
         } catch {
             errorMessage = "Failed to delete search: \(error.localizedDescription)"
             showError = true
         }
     }
-    
+
     private func clearAllSearches() {
         do {
-            try savedSearchService.clearAllSavedSearches()
-            savedSearches.removeAll()
+            try savedSearchManager.clearAllSavedSearches()
         } catch {
             errorMessage = "Failed to clear searches: \(error.localizedDescription)"
             showError = true
@@ -208,6 +205,8 @@ struct SavedSearchRow: View {
 }
 
 #Preview {
-    SavedSearchesView { _ in }
+    let service = SavedSearchService(modelContext: SwiftDataStorageManager.shared.mainContext)
+    let manager = SavedSearchManager(service: service)
+    return SavedSearchesView(savedSearchManager: manager) { _ in }
 }
 

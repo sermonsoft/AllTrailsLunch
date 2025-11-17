@@ -12,11 +12,11 @@ struct SaveSearchSheet: View {
     @State private var searchName: String = ""
     @State private var showError: Bool = false
     @State private var errorMessage: String = ""
-    
+
     let query: String
     let location: (latitude: Double, longitude: Double)?
     let filters: SearchFilters
-    let savedSearchService: SavedSearchService
+    @Bindable var savedSearchManager: SavedSearchManager
     let onSave: () -> Void
     
     var body: some View {
@@ -120,21 +120,17 @@ struct SaveSearchSheet: View {
         }
         
         // Check for duplicate
-        do {
-            if let duplicate = try savedSearchService.findDuplicateSearch(
-                query: query,
-                latitude: location?.latitude,
-                longitude: location?.longitude,
-                filters: filters
-            ) {
-                errorMessage = "A search with these parameters already exists: \"\(duplicate.displayName)\""
-                showError = true
-                return
-            }
-        } catch {
-            print("Error checking for duplicates: \(error)")
+        if let duplicate = savedSearchManager.findDuplicateSearch(
+            query: query,
+            latitude: location?.latitude,
+            longitude: location?.longitude,
+            filters: filters
+        ) {
+            errorMessage = "A search with these parameters already exists: \"\(duplicate.displayName)\""
+            showError = true
+            return
         }
-        
+
         // Create and save the search
         let savedSearch = SavedSearch(
             name: trimmedName,
@@ -142,9 +138,9 @@ struct SaveSearchSheet: View {
             location: location,
             filters: filters
         )
-        
+
         do {
-            try savedSearchService.saveSearch(savedSearch)
+            try savedSearchManager.saveSearch(savedSearch)
             onSave()
             dismiss()
         } catch {
@@ -155,11 +151,13 @@ struct SaveSearchSheet: View {
 }
 
 #Preview {
-    SaveSearchSheet(
+    let service = SavedSearchService(modelContext: SwiftDataStorageManager.shared.mainContext)
+    let manager = SavedSearchManager(service: service)
+    return SaveSearchSheet(
         query: "Pizza",
         location: (latitude: 37.7749, longitude: -122.4194),
         filters: .highlyRated,
-        savedSearchService: SavedSearchService(modelContext: SwiftDataStorageManager.shared.mainContext),
+        savedSearchManager: manager,
         onSave: {}
     )
 }

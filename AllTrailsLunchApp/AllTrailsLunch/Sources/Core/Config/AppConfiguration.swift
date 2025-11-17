@@ -278,6 +278,19 @@ final class AppConfiguration {
         NetworkMonitor()
     }
 
+    @MainActor
+    func createFilterPreferencesManager() -> FilterPreferencesManager {
+        let service = FilterPreferencesService()
+        return FilterPreferencesManager(service: service)
+    }
+
+    @MainActor
+    func createSavedSearchManager() -> SavedSearchManager {
+        let modelContext = SwiftDataStorageManager.shared.mainContext
+        let service = SavedSearchService(modelContext: modelContext)
+        return SavedSearchManager(service: service)
+    }
+
     // MARK: - Interactors (Protocol-Based Services)
 
     @MainActor
@@ -341,6 +354,8 @@ final class AppConfiguration {
         container.register(NetworkMonitor.self, service: createNetworkMonitor())
         container.register(EventLogger.self, service: createEventLogger())
         container.register(LocationManager.self, service: createLocationManager())
+        container.register(FilterPreferencesManager.self, service: createFilterPreferencesManager())
+        container.register(SavedSearchManager.self, service: createSavedSearchManager())
 
         // RestaurantManager depends on FavoritesManager, so register it after
         container.register(RestaurantManager.self, service: createRestaurantManager())

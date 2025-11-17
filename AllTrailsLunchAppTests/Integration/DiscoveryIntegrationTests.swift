@@ -15,14 +15,18 @@ final class DiscoveryIntegrationTests: XCTestCase {
     var viewModel: DiscoveryViewModel!
     var mockInteractor: MockDiscoveryInteractor!
     var mockEventLogger: MockEventLogger!
-    var mockFilterPreferences: MockFilterPreferencesService!
-    var mockSavedSearchService: MockSavedSearchService!
-    
+    var mockFilterPreferencesManager: FilterPreferencesManager!
+    var mockSavedSearchManager: SavedSearchManager!
+
     override func setUp() async throws {
         try await super.setUp()
 
         // Create mock event logger first
         mockEventLogger = MockEventLogger()
+
+        // Create mock managers
+        mockFilterPreferencesManager = FilterPreferencesManager(service: MockFilterPreferencesService())
+        mockSavedSearchManager = SavedSearchManager(service: MockSavedSearchService())
 
         // Create container with mock event logger
         let container = DependencyContainer()
@@ -32,25 +36,21 @@ final class DiscoveryIntegrationTests: XCTestCase {
         container.register(NetworkMonitor.self, service: AppConfiguration.shared.createNetworkMonitor())
         container.register(LocationManager.self, service: AppConfiguration.shared.createLocationManager())
         container.register(RestaurantManager.self, service: AppConfiguration.shared.createRestaurantManager())
+        container.register(FilterPreferencesManager.self, service: mockFilterPreferencesManager)
+        container.register(SavedSearchManager.self, service: mockSavedSearchManager)
 
         // Create mock interactor with the container
         mockInteractor = MockDiscoveryInteractor(container: container)
-        mockFilterPreferences = MockFilterPreferencesService()
-        mockSavedSearchService = MockSavedSearchService()
 
-        viewModel = DiscoveryViewModel(
-            interactor: mockInteractor,
-            filterPreferences: mockFilterPreferences,
-            savedSearchService: mockSavedSearchService
-        )
+        viewModel = DiscoveryViewModel(interactor: mockInteractor)
     }
-    
+
     override func tearDown() async throws {
         viewModel = nil
         mockInteractor = nil
         mockEventLogger = nil
-        mockFilterPreferences = nil
-        mockSavedSearchService = nil
+        mockFilterPreferencesManager = nil
+        mockSavedSearchManager = nil
         try await super.tearDown()
     }
     
@@ -113,9 +113,11 @@ final class DiscoveryIntegrationTests: XCTestCase {
         
         // Step 5: Save search
         try? viewModel.saveCurrentSearch(name: "My Pizza Search")
-        
-        XCTAssertEqual(mockSavedSearchService.saveSearchCallCount, 1)
-        XCTAssertEqual(mockSavedSearchService.lastSavedSearch?.name, "My Pizza Search")
+
+        // Verify search was saved through the manager
+        let savedSearches = mockSavedSearchManager.getAllSavedSearches()
+        XCTAssertEqual(savedSearches.count, 1)
+        XCTAssertEqual(savedSearches.first?.name, "My Pizza Search")
         XCTAssertTrue(mockEventLogger.didLog(eventName: "search_saved"))
     }
     
@@ -127,7 +129,7 @@ final class DiscoveryIntegrationTests: XCTestCase {
         
         // Given: Saved search exists
         let savedSearch = SavedSearchFixtures.sushiSearch
-        mockSavedSearchService.savedSearches = [savedSearch]
+        try? mockSavedSearchManager.saveSearch(savedSearch)
         
         // When: Load saved search
         mockInteractor.placesToReturn = [PlaceFixtures.sampleSushiPlace]

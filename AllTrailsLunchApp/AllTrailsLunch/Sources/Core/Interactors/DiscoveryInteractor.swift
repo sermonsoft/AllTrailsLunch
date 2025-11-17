@@ -82,6 +82,18 @@ protocol DiscoveryInteractor {
     /// - Returns: EventLogger instance
     func getEventLogger() -> EventLogger
 
+    // MARK: - Filter Preferences
+
+    /// Get the filter preferences manager for managing search filters
+    /// - Returns: FilterPreferencesManager instance
+    func getFilterPreferencesManager() -> FilterPreferencesManager
+
+    // MARK: - Saved Searches
+
+    /// Get the saved search manager for managing saved searches
+    /// - Returns: SavedSearchManager instance
+    func getSavedSearchManager() -> SavedSearchManager
+
     // MARK: - Photo Loading
 
     /// Load a photo from a photo reference

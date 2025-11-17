@@ -59,6 +59,8 @@ final class BookmarkToggleIntegrationTests: XCTestCase {
             cache: nil,
             favorites: favoritesManager
         ))
+        container.register(FilterPreferencesManager.self, service: FilterPreferencesManager(service: FilterPreferencesService()))
+        container.register(SavedSearchManager.self, service: SavedSearchManager(service: SavedSearchService(modelContext: SwiftDataStorageManager.shared.mainContext)))
 
         // Create CoreInteractor with just the container
         coreInteractor = CoreInteractor(container: container)
