@@ -133,5 +133,13 @@ protocol DiscoveryInteractor {
         maxWidth: Int,
         maxHeight: Int
     ) async -> Data?
+
+    // MARK: - Place Details
+
+    /// Get detailed information about a place
+    /// - Parameter placeId: The place ID to get details for
+    /// - Returns: Detailed place information
+    /// - Throws: PlacesError if request fails
+    func getPlaceDetails(placeId: String) async throws -> PlaceDetail
 }
 

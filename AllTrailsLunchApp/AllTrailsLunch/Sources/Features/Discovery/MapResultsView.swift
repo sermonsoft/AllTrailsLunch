@@ -16,6 +16,7 @@ struct MapResultsView: View {
     let onToggleFavorite: (Place) async -> Void
     let isSearchActive: Bool
     let loadPhoto: ([String], Int, Int) async -> Data?
+    let loadPlaceDetails: (String) async throws -> PlaceDetail
 
     @State private var position: MapCameraPosition = .automatic
     @State private var selectedPlace: Place?
@@ -91,7 +92,8 @@ struct MapResultsView: View {
             RestaurantDetailView(
                 place: place,
                 onToggleFavorite: onToggleFavorite,
-                loadPhoto: loadPhoto
+                loadPhoto: loadPhoto,
+                loadPlaceDetails: loadPlaceDetails
             )
         ) {
             RestaurantRow(
@@ -230,6 +232,26 @@ struct MapPinView: View {
         favoriteIds: [],
         onToggleFavorite: { _ in },
         isSearchActive: false,
-        loadPhoto: { _, _, _ in nil }
+        loadPhoto: { _, _, _ in nil },
+        loadPlaceDetails: { _ in
+            PlaceDetail(
+                place: Place(
+                    id: "1",
+                    name: "Test Restaurant",
+                    rating: 4.5,
+                    userRatingsTotal: 120,
+                    priceLevel: 2,
+                    latitude: 37.7749,
+                    longitude: -122.4194,
+                    address: "123 Main St",
+                    photoReferences: [],
+                    isFavorite: false
+                ),
+                phoneNumber: nil,
+                openingHours: nil,
+                website: nil,
+                reviews: nil
+            )
+        }
     )
 }

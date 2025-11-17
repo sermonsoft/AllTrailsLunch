@@ -15,6 +15,7 @@ struct ListResultsView: View {
     let onLoadMore: () async -> Void
     let onRefresh: (() async -> Void)?
     let loadPhoto: ([String], Int, Int) async -> Data?
+    let loadPlaceDetails: (String) async throws -> PlaceDetail
 
     var body: some View {
         ScrollView {
@@ -40,7 +41,8 @@ struct ListResultsView: View {
                 RestaurantDetailView(
                     place: place,
                     onToggleFavorite: onToggleFavorite,
-                    loadPhoto: loadPhoto
+                    loadPhoto: loadPhoto,
+                    loadPlaceDetails: loadPlaceDetails
                 )
             ) {
                 RestaurantRow(

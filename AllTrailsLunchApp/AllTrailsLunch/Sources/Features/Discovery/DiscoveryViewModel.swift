@@ -193,6 +193,17 @@ class DiscoveryViewModel {
         }
     }
 
+    /// Place details loading closure for views
+    /// Views should use this closure instead of accessing RestaurantManager directly
+    var loadPlaceDetails: (String) async throws -> PlaceDetail {
+        { [weak self] placeId in
+            guard let self = self else {
+                throw PlacesError.invalidResponse("ViewModel deallocated")
+            }
+            return try await self.interactor.getPlaceDetails(placeId: placeId)
+        }
+    }
+
     private var searchTask: Task<Void, Never>?
     private var debounceTimer: Timer?
     private var currentPage: Int = 0

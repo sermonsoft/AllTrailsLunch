@@ -11,6 +11,7 @@ struct RestaurantDetailView: View {
     let place: Place
     let onToggleFavorite: ((Place) async -> Void)?
     let loadPhoto: ([String], Int, Int) async -> Data?
+    let loadPlaceDetails: (String) async throws -> PlaceDetail
     @State private var isBookmarkAnimating = false
     @State private var isFavorite = false
     @State private var placeDetail: PlaceDetail?
@@ -21,11 +22,13 @@ struct RestaurantDetailView: View {
     init(
         place: Place,
         onToggleFavorite: ((Place) async -> Void)? = nil,
-        loadPhoto: @escaping ([String], Int, Int) async -> Data?
+        loadPhoto: @escaping ([String], Int, Int) async -> Data?,
+        loadPlaceDetails: @escaping (String) async throws -> PlaceDetail
     ) {
         self.place = place
         self.onToggleFavorite = onToggleFavorite
         self.loadPhoto = loadPhoto
+        self.loadPlaceDetails = loadPlaceDetails
         // Initialize the state with the place's favorite status
         _isFavorite = State(initialValue: place.isFavorite)
     }
@@ -324,8 +327,7 @@ struct RestaurantDetailView: View {
         defer { isLoadingDetails = false }
 
         do {
-            let manager = AppConfiguration.shared.createRestaurantManager()
-            placeDetail = try await manager.getPlaceDetails(placeId: place.id)
+            placeDetail = try await loadPlaceDetails(place.id)
         } catch {
             // Check if this is a network simulation error (offline mode)
             #if DEV
@@ -397,7 +399,27 @@ struct RestaurantDetailView: View {
                 isFavorite: false
             ),
             onToggleFavorite: { _ in },
-            loadPhoto: { _, _, _ in nil }
+            loadPhoto: { _, _, _ in nil },
+            loadPlaceDetails: { _ in
+                PlaceDetail(
+                    place: Place(
+                        id: "1",
+                        name: "Test Restaurant",
+                        rating: 4.5,
+                        userRatingsTotal: 120,
+                        priceLevel: 2,
+                        latitude: 0,
+                        longitude: 0,
+                        address: "123 Main St",
+                        photoReferences: [],
+                        isFavorite: false
+                    ),
+                    phoneNumber: nil,
+                    openingHours: nil,
+                    website: nil,
+                    reviews: nil
+                )
+            }
         )
     }
 }

@@ -252,15 +252,6 @@ final class AppConfiguration {
     }
 
     @MainActor
-    func createRestaurantManager() -> RestaurantManager {
-        RestaurantManager(
-            remote: createRemotePlacesService(),
-            cache: createPlacesCacheService(),
-            favorites: createFavoritesManager()
-        )
-    }
-
-    @MainActor
     func createLocationManager() -> LocationManager {
         LocationManager()
     }
@@ -349,7 +340,8 @@ final class AppConfiguration {
 
         // Register shared managers (singletons)
         // Order matters: FavoritesManager must be registered before RestaurantManager
-        container.register(FavoritesManager.self, service: createFavoritesManager())
+        let favoritesManager = createFavoritesManager()
+        container.register(FavoritesManager.self, service: favoritesManager)
         container.register(PhotoManager.self, service: createPhotoManager())
         container.register(NetworkMonitor.self, service: createNetworkMonitor())
         container.register(EventLogger.self, service: createEventLogger())
@@ -357,8 +349,12 @@ final class AppConfiguration {
         container.register(FilterPreferencesManager.self, service: createFilterPreferencesManager())
         container.register(SavedSearchManager.self, service: createSavedSearchManager())
 
-        // RestaurantManager depends on FavoritesManager, so register it after
-        container.register(RestaurantManager.self, service: createRestaurantManager())
+        // RestaurantManager depends on FavoritesManager, so pass it directly
+        container.register(RestaurantManager.self, service: RestaurantManager(
+            remote: createRemotePlacesService(),
+            cache: createPlacesCacheService(),
+            favorites: favoritesManager  // ✅ Use the same instance
+        ))
 
         return container
     }

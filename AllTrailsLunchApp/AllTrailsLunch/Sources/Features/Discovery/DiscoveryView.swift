@@ -155,7 +155,8 @@ struct DiscoveryView: View {
                 onToggleFavorite: viewModel.toggleFavorite,
                 onLoadMore: { await viewModel.loadNextPage() },
                 onRefresh: { await viewModel.refresh() },
-                loadPhoto: viewModel.loadPhoto
+                loadPhoto: viewModel.loadPhoto,
+                loadPlaceDetails: viewModel.loadPlaceDetails
             )
         case .map:
             MapResultsView(
@@ -163,7 +164,8 @@ struct DiscoveryView: View {
                 favoriteIds: viewModel.favoriteIds,
                 onToggleFavorite: viewModel.toggleFavorite,
                 isSearchActive: !viewModel.searchText.isEmpty,
-                loadPhoto: viewModel.loadPhoto
+                loadPhoto: viewModel.loadPhoto,
+                loadPlaceDetails: viewModel.loadPlaceDetails
             )
         }
     }
