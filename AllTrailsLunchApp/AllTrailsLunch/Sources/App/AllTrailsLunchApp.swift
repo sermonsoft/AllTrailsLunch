@@ -11,20 +11,16 @@ import SwiftUI
 ///
 /// Configures the app with:
 /// - CoreInteractor initialized once at app level with all managers
-/// - PhotoManager injected via environment from the container
+/// - DependencyContainer created inside CoreInteractor with shared manager instances
 /// - Clean architecture: ViewModel → Interactor → Manager → Service
 @main
 struct AllTrailsLunchApp: App {
     @State private var viewModel: DiscoveryViewModel
-    private let container: DependencyContainer
 
     init() {
         let config = AppConfiguration.shared
 
-        // Create container with all managers initialized once
-        container = config.createDependencyContainer()
-
-        // Create interactor (which holds references to managers)
+        // Create interactor (which creates and holds the DependencyContainer with all managers)
         // The singleton pattern in AppConfiguration ensures shared instances
         let interactor = config.createDiscoveryInteractor()
         let viewModel = DiscoveryViewModel(
