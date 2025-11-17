@@ -14,6 +14,7 @@ import SwiftUI
 /// - DependencyContainer created inside CoreInteractor with shared manager instances
 /// - All managers and services are singletons, ensuring shared state across the app
 /// - Clean architecture: ViewModel → Interactor → Manager → Service
+/// - ViewModels get all dependencies (including EventLogger) through the interactor
 @main
 struct AllTrailsLunchApp: App {
     @State private var viewModel: DiscoveryViewModel
@@ -25,13 +26,8 @@ struct AllTrailsLunchApp: App {
         // The singleton pattern ensures all ViewModels share the same interactor and managers
         let coreInteractor = config.createCoreInteractor()
 
-        // Use EventLogger from the container to avoid creating duplicate instances
-        let eventLogger = coreInteractor.container.eventLogger
-
-        let viewModel = DiscoveryViewModel(
-            interactor: coreInteractor,
-            eventLogger: eventLogger
-        )
+        // ViewModel gets EventLogger from interactor (no need to pass it separately)
+        let viewModel = DiscoveryViewModel(interactor: coreInteractor)
 
         _viewModel = State(wrappedValue: viewModel)
     }

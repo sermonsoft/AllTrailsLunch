@@ -76,6 +76,12 @@ protocol DiscoveryInteractor {
     /// - Returns: NetworkMonitor instance
     func getNetworkMonitor() -> NetworkMonitor
 
+    // MARK: - Event Logging
+
+    /// Get the event logger for logging analytics events
+    /// - Returns: EventLogger instance
+    func getEventLogger() -> EventLogger
+
     // MARK: - Photo Loading
 
     /// Load a photo from a photo reference

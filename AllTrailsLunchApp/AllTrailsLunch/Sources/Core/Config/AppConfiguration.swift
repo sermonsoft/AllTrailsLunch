@@ -322,10 +322,8 @@ final class AppConfiguration {
 
     @MainActor
     func createDiscoveryViewModel() -> DiscoveryViewModel {
-        DiscoveryViewModel(
-            interactor: createDiscoveryInteractor(),
-            eventLogger: createEventLogger()
-        )
+        // ViewModel gets EventLogger from interactor (no need to pass it separately)
+        DiscoveryViewModel(interactor: createDiscoveryInteractor())
     }
 
     // MARK: - Dependency Container
@@ -350,3 +348,4 @@ final class AppConfiguration {
         return container
     }
 }
+

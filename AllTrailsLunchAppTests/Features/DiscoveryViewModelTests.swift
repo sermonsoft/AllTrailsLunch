@@ -20,14 +20,26 @@ final class DiscoveryViewModelTests: XCTestCase {
     
     override func setUp() async throws {
         try await super.setUp()
-        mockInteractor = MockDiscoveryInteractor()
+
+        // Create mock event logger first
         mockEventLogger = MockEventLogger()
+
+        // Create container with mock event logger
+        let container = DependencyContainer()
+        container.register(EventLogger.self, service: mockEventLogger)
+        container.register(FavoritesManager.self, service: AppConfiguration.shared.createFavoritesManager())
+        container.register(PhotoManager.self, service: AppConfiguration.shared.createPhotoManager())
+        container.register(NetworkMonitor.self, service: AppConfiguration.shared.createNetworkMonitor())
+        container.register(LocationManager.self, service: AppConfiguration.shared.createLocationManager())
+        container.register(RestaurantManager.self, service: AppConfiguration.shared.createRestaurantManager())
+
+        // Create mock interactor with the container
+        mockInteractor = MockDiscoveryInteractor(container: container)
         mockFilterPreferences = MockFilterPreferencesService()
         mockSavedSearchService = MockSavedSearchService()
-        
+
         sut = DiscoveryViewModel(
             interactor: mockInteractor,
-            eventLogger: mockEventLogger,
             filterPreferences: mockFilterPreferences,
             savedSearchService: mockSavedSearchService
         )

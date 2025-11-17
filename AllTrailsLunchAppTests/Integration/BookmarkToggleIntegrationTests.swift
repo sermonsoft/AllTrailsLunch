@@ -63,11 +63,8 @@ final class BookmarkToggleIntegrationTests: XCTestCase {
         // Create CoreInteractor with just the container
         coreInteractor = CoreInteractor(container: container)
 
-        // Create ViewModel with the same interactor
-        viewModel = DiscoveryViewModel(
-            interactor: coreInteractor,
-            eventLogger: mockEventLogger
-        )
+        // Create ViewModel - it gets EventLogger from interactor
+        viewModel = DiscoveryViewModel(interactor: coreInteractor)
     }
     
     override func tearDown() {

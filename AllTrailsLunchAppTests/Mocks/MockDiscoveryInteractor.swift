@@ -147,6 +147,10 @@ final class MockDiscoveryInteractor: DiscoveryInteractor {
         return networkMonitor
     }
 
+    func getEventLogger() -> EventLogger {
+        return container.eventLogger
+    }
+
     // MARK: - Photo Loading
 
     func loadPhoto(

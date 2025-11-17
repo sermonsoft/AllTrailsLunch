@@ -159,7 +159,6 @@ class DiscoveryViewModel {
     var isShowingCachedData: Bool = false // Track if current results are from cache
 
     private let interactor: DiscoveryInteractor
-    private let eventLogger: EventLogger
     private let filterPreferences: FilterPreferencesService
     let savedSearchService: SavedSearchService
 
@@ -176,6 +175,12 @@ class DiscoveryViewModel {
     /// Accessed through interactor method, not direct manager access
     var networkMonitor: NetworkMonitor {
         interactor.getNetworkMonitor()
+    }
+
+    /// Access to EventLogger through the interactor
+    /// Accessed through interactor method, not direct injection
+    private var eventLogger: EventLogger {
+        interactor.getEventLogger()
     }
 
     /// Photo loading closure for views
@@ -198,20 +203,18 @@ class DiscoveryViewModel {
 
     init(
         interactor: DiscoveryInteractor,
-        eventLogger: EventLogger,
         filterPreferences: FilterPreferencesService = FilterPreferencesService(),
         savedSearchService: SavedSearchService? = nil
     ) {
         self.interactor = interactor
-        self.eventLogger = eventLogger
         self.filterPreferences = filterPreferences
         self.savedSearchService = savedSearchService ?? SavedSearchService(modelContext: SwiftDataStorageManager.shared.mainContext)
 
         // Load saved filters
         self.filters = filterPreferences.loadFilters()
 
-        // Log screen view
-        eventLogger.log(Event.screenViewed)
+        // Log screen view - eventLogger is now accessed from interactor
+        interactor.getEventLogger().log(Event.screenViewed)
     }
     
     // MARK: - Initialization

@@ -98,6 +98,12 @@ class CoreInteractor: DiscoveryInteractor, DetailInteractor {
         return networkMonitor
     }
 
+    // MARK: - Event Logging
+
+    func getEventLogger() -> EventLogger {
+        return container.eventLogger
+    }
+
     // MARK: - Photo Loading
 
     nonisolated func loadPhoto(
