@@ -105,5 +105,15 @@ extension DependencyContainer {
     var eventLogger: EventLogger {
         require(EventLogger.self)
     }
+
+    /// Quick access to LocationManager
+    var locationManager: LocationManager {
+        require(LocationManager.self)
+    }
+
+    /// Quick access to RestaurantManager
+    var restaurantManager: RestaurantManager {
+        require(RestaurantManager.self)
+    }
 }
 

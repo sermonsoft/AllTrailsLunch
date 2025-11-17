@@ -291,26 +291,11 @@ final class AppConfiguration {
         }
 
         // Create dependency container with all shared managers
+        // The container holds ALL managers as singletons
         let container = createDependencyContainer()
 
-        // CRITICAL: Get shared managers from container
-        let favoritesManager = container.favoritesManager
-        let networkMonitor = container.networkMonitor
-
-        // Create RestaurantManager with the shared FavoritesManager
-        let restaurantManager = RestaurantManager(
-            remote: createRemotePlacesService(),
-            cache: createPlacesCacheService(),
-            favorites: favoritesManager
-        )
-
-        let interactor = CoreInteractor(
-            container: container,
-            restaurantManager: restaurantManager,
-            favoritesManager: favoritesManager,
-            locationManager: createLocationManager(),
-            networkMonitor: networkMonitor
-        )
+        // CoreInteractor only needs the container - it resolves all managers from it
+        let interactor = CoreInteractor(container: container)
 
         _coreInteractor = interactor
         return interactor
@@ -346,16 +331,21 @@ final class AppConfiguration {
     // MARK: - Dependency Container
 
     /// Creates a fully configured dependency container with all app dependencies.
-    /// This allows views to access managers directly without prop drilling.
+    /// All managers are registered as singletons to ensure shared state across the app.
     @MainActor
     func createDependencyContainer() -> DependencyContainer {
         let container = DependencyContainer()
 
         // Register shared managers (singletons)
+        // Order matters: FavoritesManager must be registered before RestaurantManager
         container.register(FavoritesManager.self, service: createFavoritesManager())
         container.register(PhotoManager.self, service: createPhotoManager())
         container.register(NetworkMonitor.self, service: createNetworkMonitor())
         container.register(EventLogger.self, service: createEventLogger())
+        container.register(LocationManager.self, service: createLocationManager())
+
+        // RestaurantManager depends on FavoritesManager, so register it after
+        container.register(RestaurantManager.self, service: createRestaurantManager())
 
         return container
     }

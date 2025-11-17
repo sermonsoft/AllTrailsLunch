@@ -15,29 +15,31 @@ import CoreLocation
 class CoreInteractor: DiscoveryInteractor, DetailInteractor {
     // MARK: - Dependencies
 
-    // NOTE: These are internal for testing purposes only
-    // ViewModels should NEVER access these directly - use protocol methods instead
+    // NOTE: container is internal for testing purposes only
+    // ViewModels should NEVER access this directly - use protocol methods instead
     let container: DependencyContainer
-    let favoritesManager: FavoritesManager
 
-    private let restaurantManager: RestaurantManager
-    private let locationManager: LocationManager
-    private let networkMonitor: NetworkMonitor
+    // Convenience accessors - all managers are resolved from container
+    var favoritesManager: FavoritesManager {
+        container.favoritesManager
+    }
+
+    private var restaurantManager: RestaurantManager {
+        container.restaurantManager
+    }
+
+    private var locationManager: LocationManager {
+        container.locationManager
+    }
+
+    private var networkMonitor: NetworkMonitor {
+        container.networkMonitor
+    }
 
     // MARK: - Initialization
 
-    init(
-        container: DependencyContainer,
-        restaurantManager: RestaurantManager,
-        favoritesManager: FavoritesManager,
-        locationManager: LocationManager,
-        networkMonitor: NetworkMonitor
-    ) {
+    init(container: DependencyContainer) {
         self.container = container
-        self.restaurantManager = restaurantManager
-        self.favoritesManager = favoritesManager
-        self.locationManager = locationManager
-        self.networkMonitor = networkMonitor
     }
     
     // MARK: - DiscoveryInteractor Implementation

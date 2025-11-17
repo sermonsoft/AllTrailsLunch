@@ -32,34 +32,37 @@ final class BookmarkToggleIntegrationTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        
+
         // Create mock services
         mockFavoritesService = MockFavoritesService()
         mockEventLogger = MockEventLogger()
-        
+
         // Create FavoritesManager with mock service
         favoritesManager = FavoritesManager(service: mockFavoritesService)
-        
-        // Create CoreInteractor with the FavoritesManager
-        let config = AppConfiguration.shared
+
+        // Create mock remote service
         let mockRemoteService = MockRemotePlacesService()
         mockRemoteService.nearbySearchResult = (results: [], nextPageToken: nil)
 
-        // Create a dependency container for testing
-        let container = config.createDependencyContainer()
+        // Create a dependency container and register mock managers
+        let container = DependencyContainer()
+        container.register(FavoritesManager.self, service: favoritesManager)
+        container.register(PhotoManager.self, service: PhotoManager(
+            loader: GooglePlacesPhotoLoader(apiKey: "test"),
+            cache: NSCachePhotoCache()
+        ))
+        container.register(NetworkMonitor.self, service: NetworkMonitor())
+        container.register(EventLogger.self, service: mockEventLogger)
+        container.register(LocationManager.self, service: LocationManager())
+        container.register(RestaurantManager.self, service: RestaurantManager(
+            remote: mockRemoteService,
+            cache: nil,
+            favorites: favoritesManager
+        ))
 
-        coreInteractor = CoreInteractor(
-            container: container,
-            restaurantManager: RestaurantManager(
-                remote: mockRemoteService,
-                cache: nil,
-                favorites: favoritesManager
-            ),
-            favoritesManager: favoritesManager,
-            locationManager: config.createLocationManager(),
-            networkMonitor: container.networkMonitor
-        )
-        
+        // Create CoreInteractor with just the container
+        coreInteractor = CoreInteractor(container: container)
+
         // Create ViewModel with the same interactor
         viewModel = DiscoveryViewModel(
             interactor: coreInteractor,
