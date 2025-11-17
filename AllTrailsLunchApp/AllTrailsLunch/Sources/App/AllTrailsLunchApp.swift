@@ -10,8 +10,9 @@ import SwiftUI
 /// Main app entry point for AllTrails Lunch.
 ///
 /// Configures the app with:
-/// - CoreInteractor initialized once at app level with all managers
+/// - CoreInteractor initialized once as singleton with all managers
 /// - DependencyContainer created inside CoreInteractor with shared manager instances
+/// - All managers and services are singletons, ensuring shared state across the app
 /// - Clean architecture: ViewModel → Interactor → Manager → Service
 @main
 struct AllTrailsLunchApp: App {
@@ -20,12 +21,16 @@ struct AllTrailsLunchApp: App {
     init() {
         let config = AppConfiguration.shared
 
-        // Create interactor (which creates and holds the DependencyContainer with all managers)
-        // The singleton pattern in AppConfiguration ensures shared instances
-        let interactor = config.createDiscoveryInteractor()
+        // Create CoreInteractor singleton (which creates and holds the DependencyContainer)
+        // The singleton pattern ensures all ViewModels share the same interactor and managers
+        let coreInteractor = config.createCoreInteractor()
+
+        // Use EventLogger from the container to avoid creating duplicate instances
+        let eventLogger = coreInteractor.container.eventLogger
+
         let viewModel = DiscoveryViewModel(
-            interactor: interactor,
-            eventLogger: config.createEventLogger()
+            interactor: coreInteractor,
+            eventLogger: eventLogger
         )
 
         _viewModel = State(wrappedValue: viewModel)

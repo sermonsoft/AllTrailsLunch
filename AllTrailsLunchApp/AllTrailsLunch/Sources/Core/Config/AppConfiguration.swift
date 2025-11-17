@@ -83,6 +83,9 @@ final class AppConfiguration {
     private var _favoritesManager: FavoritesManager?
     private let favoritesManagerLock = NSLock()
 
+    private var _coreInteractor: CoreInteractor?
+    private let coreInteractorLock = NSLock()
+
     // MARK: - Initialization
 
     init() {
@@ -279,6 +282,14 @@ final class AppConfiguration {
 
     @MainActor
     func createCoreInteractor() -> CoreInteractor {
+        // Thread-safe singleton pattern - ensures single CoreInteractor instance
+        coreInteractorLock.lock()
+        defer { coreInteractorLock.unlock() }
+
+        if let existing = _coreInteractor {
+            return existing
+        }
+
         // Create dependency container with all shared managers
         let container = createDependencyContainer()
 
@@ -293,23 +304,26 @@ final class AppConfiguration {
             favorites: favoritesManager
         )
 
-        return CoreInteractor(
+        let interactor = CoreInteractor(
             container: container,
             restaurantManager: restaurantManager,
             favoritesManager: favoritesManager,
             locationManager: createLocationManager(),
             networkMonitor: networkMonitor
         )
+
+        _coreInteractor = interactor
+        return interactor
     }
 
     @MainActor
     func createDiscoveryInteractor() -> DiscoveryInteractor {
-        createCoreInteractor()
+        createCoreInteractor()  // Returns singleton instance
     }
 
     @MainActor
     func createDetailInteractor() -> DetailInteractor {
-        createCoreInteractor()
+        createCoreInteractor()  // Returns singleton instance
     }
 
     // MARK: - Legacy Support (for backward compatibility with views)
