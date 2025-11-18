@@ -160,13 +160,12 @@ final class DependencyFactory {
 
     /// Creates a fully configured dependency container with all app dependencies.
     /// All managers are registered as singletons to ensure shared state across the app.
+    /// Order-independent: managers can be registered in any order.
     func createDependencyContainer() -> DependencyContainer {
         let container = DependencyContainer()
 
         // Register shared managers (singletons)
-        // Order matters: FavoritesManager must be registered before RestaurantManager
-        let favoritesManager = createFavoritesManager()
-        container.register(FavoritesManager.self, service: favoritesManager)
+        container.register(FavoritesManager.self, service: createFavoritesManager())
         container.register(PhotoManager.self, service: createPhotoManager())
         container.register(NetworkMonitor.self, service: createNetworkMonitor())
         container.register(EventLogger.self, service: createEventLogger())
@@ -174,11 +173,11 @@ final class DependencyFactory {
         container.register(FilterPreferencesManager.self, service: createFilterPreferencesManager())
         container.register(SavedSearchManager.self, service: createSavedSearchManager())
 
-        // RestaurantManager depends on FavoritesManager, so pass it directly
+        // RestaurantManager resolves FavoritesManager lazily from container
         container.register(RestaurantManager.self, service: RestaurantManager(
             remote: createRemotePlacesService(),
             cache: createPlacesCacheService(),
-            favorites: favoritesManager  // ✅ Use the same instance
+            container: container
         ))
 
         return container

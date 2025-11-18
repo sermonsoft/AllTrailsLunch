@@ -57,7 +57,7 @@ final class BookmarkToggleIntegrationTests: XCTestCase {
         container.register(RestaurantManager.self, service: RestaurantManager(
             remote: mockRemoteService,
             cache: nil,
-            favorites: favoritesManager
+            container: container
         ))
         container.register(FilterPreferencesManager.self, service: FilterPreferencesManager(service: FilterPreferencesService()))
         container.register(SavedSearchManager.self, service: SavedSearchManager(service: SavedSearchService(modelContext: SwiftDataStorageManager.shared.mainContext)))

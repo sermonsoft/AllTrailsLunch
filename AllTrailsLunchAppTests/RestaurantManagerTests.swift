@@ -15,24 +15,31 @@ final class RestaurantManagerTests: XCTestCase {
     var mockRemoteService: MockRemotePlacesService!
     var mockFavoritesManager: FavoritesManager!
     var mockFavoritesService: MockFavoritesService!
-    
+    var mockContainer: DependencyContainer!
+
     override func setUp() {
         super.setUp()
         mockRemoteService = MockRemotePlacesService()
         mockFavoritesService = MockFavoritesService()
         mockFavoritesManager = FavoritesManager(service: mockFavoritesService)
+
+        // Create container and register FavoritesManager
+        mockContainer = DependencyContainer()
+        mockContainer.register(FavoritesManager.self, service: mockFavoritesManager)
+
         sut = RestaurantManager(
             remote: mockRemoteService,
             cache: nil,
-            favorites: mockFavoritesManager
+            container: mockContainer
         )
     }
-    
+
     override func tearDown() {
         sut = nil
         mockRemoteService = nil
         mockFavoritesManager = nil
         mockFavoritesService = nil
+        mockContainer = nil
         super.tearDown()
     }
     
@@ -47,7 +54,8 @@ final class RestaurantManagerTests: XCTestCase {
         mockRemoteService.nearbySearchResult = ([dto1, dto2], nil)
         mockFavoritesService.favoriteIds = ["place1"]
         mockFavoritesManager = FavoritesManager(service: mockFavoritesService)
-        sut = RestaurantManager(remote: mockRemoteService, cache: nil, favorites: mockFavoritesManager)
+        mockContainer.register(FavoritesManager.self, service: mockFavoritesManager)
+        sut = RestaurantManager(remote: mockRemoteService, cache: nil, container: mockContainer)
 
         // When
         let (places, nextToken, isFromCache) = try await sut.searchNearby(location: location, radius: 1500)
@@ -99,7 +107,8 @@ final class RestaurantManagerTests: XCTestCase {
         mockRemoteService.textSearchResult = ([dto1, dto2], nil)
         mockFavoritesService.favoriteIds = ["place2"]
         mockFavoritesManager = FavoritesManager(service: mockFavoritesService)
-        sut = RestaurantManager(remote: mockRemoteService, cache: nil, favorites: mockFavoritesManager)
+        mockContainer.register(FavoritesManager.self, service: mockFavoritesManager)
+        sut = RestaurantManager(remote: mockRemoteService, cache: nil, container: mockContainer)
 
         // When
         let (places, _, isFromCache) = try await sut.searchText(query: "pizza")
@@ -134,7 +143,8 @@ final class RestaurantManagerTests: XCTestCase {
         mockRemoteService.placeDetailsResult = detailsDTO
         mockFavoritesService.favoriteIds = ["place123"]
         mockFavoritesManager = FavoritesManager(service: mockFavoritesService)
-        sut = RestaurantManager(remote: mockRemoteService, cache: nil, favorites: mockFavoritesManager)
+        mockContainer.register(FavoritesManager.self, service: mockFavoritesManager)
+        sut = RestaurantManager(remote: mockRemoteService, cache: nil, container: mockContainer)
         
         // When
         let details = try await sut.getPlaceDetails(placeId: "place123")
@@ -152,7 +162,8 @@ final class RestaurantManagerTests: XCTestCase {
         mockRemoteService.placeDetailsResult = detailsDTO
         mockFavoritesService.favoriteIds = []
         mockFavoritesManager = FavoritesManager(service: mockFavoritesService)
-        sut = RestaurantManager(remote: mockRemoteService, cache: nil, favorites: mockFavoritesManager)
+        mockContainer.register(FavoritesManager.self, service: mockFavoritesManager)
+        sut = RestaurantManager(remote: mockRemoteService, cache: nil, container: mockContainer)
         
         // When
         let details = try await sut.getPlaceDetails(placeId: "place456")

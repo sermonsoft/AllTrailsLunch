@@ -35,7 +35,11 @@ final class DiscoveryViewModelTests: XCTestCase {
         container.register(PhotoManager.self, service: AppConfiguration.shared.createPhotoManager())
         container.register(NetworkMonitor.self, service: AppConfiguration.shared.createNetworkMonitor())
         container.register(LocationManager.self, service: AppConfiguration.shared.createLocationManager())
-        container.register(RestaurantManager.self, service: AppConfiguration.shared.createRestaurantManager())
+        container.register(RestaurantManager.self, service: RestaurantManager(
+            remote: AppConfiguration.shared.createRemotePlacesService(),
+            cache: AppConfiguration.shared.createPlacesCacheService(),
+            container: container
+        ))
         container.register(FilterPreferencesManager.self, service: mockFilterPreferencesManager)
         container.register(SavedSearchManager.self, service: mockSavedSearchManager)
 

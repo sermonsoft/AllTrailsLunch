@@ -15,16 +15,21 @@ import CoreLocation
 class RestaurantManager {
     private let remote: RemotePlacesService
     private let cache: LocalPlacesCache?
-    private let favorites: FavoritesManager
-    
+    private let container: DependencyContainer
+
+    // Lazy resolution of FavoritesManager from container
+    private var favorites: FavoritesManager {
+        container.favoritesManager
+    }
+
     init(
         remote: RemotePlacesService,
         cache: LocalPlacesCache? = nil,
-        favorites: FavoritesManager
+        container: DependencyContainer
     ) {
         self.remote = remote
         self.cache = cache
-        self.favorites = favorites
+        self.container = container
     }
     
     // MARK: - Search Operations
