@@ -90,5 +90,14 @@ class SavedSearchManager {
             search.maxDistance == filters.maxDistance
         }
     }
+
+    /// Update last used timestamp for a saved search
+    func updateLastUsed(id: UUID) async throws {
+        guard let search = try await getSavedSearch(id: id) else {
+            return
+        }
+        search.lastUsedAt = Date()
+        try await updateSearch(search)
+    }
 }
 

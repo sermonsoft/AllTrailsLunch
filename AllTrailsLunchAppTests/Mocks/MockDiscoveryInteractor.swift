@@ -143,17 +143,17 @@ final class MockDiscoveryInteractor: DiscoveryInteractor {
         return []
     }
 
-    func getNetworkMonitor() -> NetworkMonitor {
-        return networkMonitor
+    func addFavorite(_ place: Place) {
+        // No-op for mock
     }
 
-    func getEventLogger() -> EventLogger {
-        return container.eventLogger
+    func removeFavorite(_ place: Place) {
+        // No-op for mock
     }
 
     // MARK: - Photo Loading
 
-    func loadPhoto(
+    nonisolated func loadPhoto(
         photoReference: String,
         maxWidth: Int,
         maxHeight: Int
@@ -162,7 +162,7 @@ final class MockDiscoveryInteractor: DiscoveryInteractor {
         return nil
     }
 
-    func loadFirstPhoto(
+    nonisolated func loadFirstPhoto(
         from photoReferences: [String],
         maxWidth: Int,
         maxHeight: Int
@@ -171,8 +171,84 @@ final class MockDiscoveryInteractor: DiscoveryInteractor {
         return nil
     }
 
+    // MARK: - Event Logging
+
+    func logEvent(_ event: LoggableEvent) {
+        // No-op for mock
+    }
+
+    func logScreenView(_ screenName: String) {
+        // No-op for mock
+    }
+
+    func logCustomEvent(name: String, parameters: [String: Any]) {
+        // No-op for mock
+    }
+
+    // MARK: - Network Status
+
+    func isNetworkConnected() -> Bool {
+        return networkMonitor.isConnected
+    }
+
+    func getConnectionType() -> NetworkMonitor.ConnectionType {
+        return networkMonitor.connectionType
+    }
+
+    // MARK: - Filter Management
+
+    func getFilters() -> SearchFilters {
+        return container.filterPreferencesManager.getFilters()
+    }
+
+    func saveFilters(_ filters: SearchFilters) {
+        container.filterPreferencesManager.saveFilters(filters)
+    }
+
+    func loadFilters() -> SearchFilters {
+        return container.filterPreferencesManager.loadFilters()
+    }
+
+    func resetFilters() {
+        container.filterPreferencesManager.clearFilters()
+    }
+
+    // MARK: - Saved Search Management
+
+    func getAllSavedSearches() async throws -> [SavedSearch] {
+        return try await container.savedSearchManager.getAllSavedSearches()
+    }
+
+    func getSavedSearch(id: UUID) async throws -> SavedSearch? {
+        return try await container.savedSearchManager.getSavedSearch(id: id)
+    }
+
+    func saveSearch(_ search: SavedSearch) async throws {
+        try await container.savedSearchManager.saveSearch(search)
+    }
+
+    func deleteSearch(id: UUID) async throws {
+        try await container.savedSearchManager.deleteSearch(id: id)
+    }
+
+    func deleteSearch(_ search: SavedSearch) async throws {
+        try await container.savedSearchManager.deleteSearch(search)
+    }
+
+    func updateLastUsed(id: UUID) async throws {
+        try await container.savedSearchManager.updateLastUsed(id: id)
+    }
+
+    func findDuplicateSearch(query: String, latitude: Double?, longitude: Double?) async throws -> SavedSearch? {
+        return try await container.savedSearchManager.findDuplicateSearch(query: query, latitude: latitude, longitude: longitude)
+    }
+
+    func clearAllSavedSearches() async throws {
+        try await container.savedSearchManager.clearAllSavedSearches()
+    }
+
     // MARK: - Test Helpers
-    
+
     func reset() {
         shouldFailLocationPermission = false
         shouldFailSearch = false
@@ -181,36 +257,24 @@ final class MockDiscoveryInteractor: DiscoveryInteractor {
         nextPageTokenToReturn = nil
         errorToThrow = nil
         placeDetailsToReturn = nil
-        
+
         requestLocationPermissionCallCount = 0
         searchNearbyCallCount = 0
         searchTextCallCount = 0
         getPlaceDetailsCallCount = 0
         toggleFavoriteCallCount = 0
-        
+
         lastSearchNearbyLocation = nil
         lastSearchNearbyRadius = nil
         lastSearchNearbyPageToken = nil
-        
+
         lastSearchTextQuery = nil
         lastSearchTextLocation = nil
         lastSearchTextPageToken = nil
-        
+
         lastPlaceDetailsId = nil
         lastToggledPlace = nil
         lastToggledPlaceId = nil
-    }
-
-    // MARK: - Filter Preferences
-
-    func getFilterPreferencesManager() -> FilterPreferencesManager {
-        return container.filterPreferencesManager
-    }
-
-    // MARK: - Saved Searches
-
-    func getSavedSearchManager() -> SavedSearchManager {
-        return container.savedSearchManager
     }
 }
 

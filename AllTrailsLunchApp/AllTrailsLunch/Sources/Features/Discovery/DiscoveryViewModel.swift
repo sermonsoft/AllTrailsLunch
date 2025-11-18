@@ -144,7 +144,7 @@ class DiscoveryViewModel {
     var viewMode: ViewMode = .list {
         didSet {
             if viewMode != oldValue {
-                eventLogger.log(Event.viewModeChanged(mode: viewMode))
+                interactor.logEvent(Event.viewModeChanged(mode: viewMode))
             }
         }
     }
@@ -168,16 +168,10 @@ class DiscoveryViewModel {
 
     // MARK: - State (Exposed for UI Observation)
 
-    /// Access to NetworkMonitor through the interactor
-    /// NetworkMonitor is a special case - it monitors system state, not user data
-    var networkMonitor: NetworkMonitor {
-        interactor.getNetworkMonitor()
-    }
-
-    /// Access to EventLogger through the interactor
-    /// Accessed through interactor method, not direct injection
-    private var eventLogger: EventLogger {
-        interactor.getEventLogger()
+    /// Check if network is connected
+    /// Accessed through interactor behavior method
+    var isNetworkConnected: Bool {
+        interactor.isNetworkConnected()
     }
 
     /// Photo loading closure for views
@@ -212,20 +206,20 @@ class DiscoveryViewModel {
     init(interactor: DiscoveryInteractor) {
         self.interactor = interactor
 
-        // Load saved filters from manager
-        self.filters = interactor.getFilterPreferencesManager().getFilters()
+        // Load saved filters from interactor
+        self.filters = interactor.getFilters()
 
-        // Load favorite IDs from manager into ViewModel's observable state
+        // Load favorite IDs from interactor into ViewModel's observable state
         self.favoriteIds = interactor.getFavoriteIds()
 
-        // Log screen view - eventLogger is now accessed from interactor
-        interactor.getEventLogger().log(Event.screenViewed)
+        // Log screen view
+        interactor.logEvent(Event.screenViewed)
     }
 
     // MARK: - Initialization
 
     func initialize() async {
-        eventLogger.log(Event.locationPermissionRequested)
+        interactor.logEvent(Event.locationPermissionRequested)
 
         // Load saved searches into ViewModel's observable state
         await loadSavedSearches()
@@ -233,18 +227,18 @@ class DiscoveryViewModel {
         do {
             let location = try await interactor.requestLocationPermission()
             self.userLocation = location
-            eventLogger.log(Event.locationPermissionGranted)
+            interactor.logEvent(Event.locationPermissionGranted)
             await searchNearby()
         } catch let error as PlacesError {
             self.error = error
             if error == .locationPermissionDenied {
-                eventLogger.log(Event.locationPermissionDenied)
+                interactor.logEvent(Event.locationPermissionDenied)
             } else {
-                eventLogger.log(Event.searchError(error: error.localizedDescription))
+                interactor.logEvent(Event.searchError(error: error.localizedDescription))
             }
         } catch {
             self.error = .unknown(error.localizedDescription)
-            eventLogger.log(Event.searchError(error: error.localizedDescription))
+            interactor.logEvent(Event.searchError(error: error.localizedDescription))
         }
     }
 
@@ -252,7 +246,7 @@ class DiscoveryViewModel {
 
     func loadSavedSearches() async {
         do {
-            savedSearches = try await interactor.getSavedSearchManager().getAllSavedSearches()
+            savedSearches = try await interactor.getAllSavedSearches()
         } catch {
             savedSearches = []
         }
@@ -308,15 +302,15 @@ class DiscoveryViewModel {
             self.isShowingCachedData = isFromCache
 
             // Log successful search
-            eventLogger.log(Event.nearbySearchPerformed(resultCount: results.count))
+            interactor.logEvent(Event.nearbySearchPerformed(resultCount: results.count))
         } catch let error as PlacesError {
             self.error = error
             self.isShowingCachedData = false
-            eventLogger.log(Event.searchError(error: error.localizedDescription))
+            interactor.logEvent(Event.searchError(error: error.localizedDescription))
         } catch {
             self.error = .unknown(error.localizedDescription)
             self.isShowingCachedData = false
-            eventLogger.log(Event.searchError(error: error.localizedDescription))
+            interactor.logEvent(Event.searchError(error: error.localizedDescription))
         }
 
         isLoading = false
@@ -338,15 +332,15 @@ class DiscoveryViewModel {
             self.isShowingCachedData = isFromCache
 
             // Log successful search
-            eventLogger.log(Event.searchPerformed(query: query, resultCount: results.count))
+            interactor.logEvent(Event.searchPerformed(query: query, resultCount: results.count))
         } catch let error as PlacesError {
             self.error = error
             self.isShowingCachedData = false
-            eventLogger.log(Event.searchError(error: error.localizedDescription))
+            interactor.logEvent(Event.searchError(error: error.localizedDescription))
         } catch {
             self.error = .unknown(error.localizedDescription)
             self.isShowingCachedData = false
-            eventLogger.log(Event.searchError(error: error.localizedDescription))
+            interactor.logEvent(Event.searchError(error: error.localizedDescription))
         }
 
         isLoading = false
@@ -369,13 +363,13 @@ class DiscoveryViewModel {
             // Pagination always loads from network, so don't update cache flag
 
             // Log pagination
-            eventLogger.log(Event.loadMoreResults(pageNumber: currentPage))
+            interactor.logEvent(Event.loadMoreResults(pageNumber: currentPage))
         } catch let error as PlacesError {
             self.error = error
-            eventLogger.log(Event.searchError(error: error.localizedDescription))
+            interactor.logEvent(Event.searchError(error: error.localizedDescription))
         } catch {
             self.error = .unknown(error.localizedDescription)
-            eventLogger.log(Event.searchError(error: error.localizedDescription))
+            interactor.logEvent(Event.searchError(error: error.localizedDescription))
         }
 
         isLoading = false
@@ -401,7 +395,7 @@ class DiscoveryViewModel {
             }
 
             // Log favorite toggle
-            eventLogger.log(Event.favoriteToggled(placeId: place.id, isFavorite: isFavorite))
+            interactor.logEvent(Event.favoriteToggled(placeId: place.id, isFavorite: isFavorite))
         } catch {
             // Handle error silently or show to user
             print("❌ Failed to toggle favorite: \(error)")
@@ -411,7 +405,7 @@ class DiscoveryViewModel {
     // MARK: - Navigation
 
     func didSelectPlace(_ place: Place) {
-        eventLogger.log(Event.placeSelected(placeId: place.id, placeName: place.name))
+        interactor.logEvent(Event.placeSelected(placeId: place.id, placeName: place.name))
     }
 
     // MARK: - Filters
@@ -420,7 +414,7 @@ class DiscoveryViewModel {
         filters = newFilters
 
         do {
-            try await interactor.getFilterPreferencesManager().saveFilters(newFilters)
+            try await interactor.saveFilters(newFilters)
         } catch {
             print("❌ Failed to save filters: \(error)")
         }
@@ -430,9 +424,9 @@ class DiscoveryViewModel {
 
         // Log filter application
         if newFilters.hasActiveFilters {
-            eventLogger.log(Event.filtersApplied(filterCount: newFilters.activeFilterCount))
+            interactor.logEvent(Event.filtersApplied(filterCount: newFilters.activeFilterCount))
         } else {
-            eventLogger.log(Event.filtersCleared)
+            interactor.logEvent(Event.filtersCleared)
         }
     }
 
@@ -440,13 +434,13 @@ class DiscoveryViewModel {
         filters = .default
 
         do {
-            try await interactor.getFilterPreferencesManager().clearFilters()
+            try await interactor.resetFilters()
         } catch {
             print("❌ Failed to clear filters: \(error)")
         }
 
         applyFiltersToResults()
-        eventLogger.log(Event.filtersCleared)
+        interactor.logEvent(Event.filtersCleared)
     }
 
     private func applyFiltersToResults() {
@@ -477,7 +471,7 @@ class DiscoveryViewModel {
         filters = savedSearch.filters
 
         do {
-            try await interactor.getFilterPreferencesManager().saveFilters(filters)
+            try await interactor.saveFilters(filters)
         } catch {
             print("❌ Failed to save filters: \(error)")
         }
@@ -486,7 +480,7 @@ class DiscoveryViewModel {
         searchText = savedSearch.query
 
         // Log event
-        eventLogger.log(Event.savedSearchLoaded(name: savedSearch.displayName))
+        interactor.logEvent(Event.savedSearchLoaded(name: savedSearch.displayName))
 
         // Perform search
         if savedSearch.query.isEmpty {
@@ -504,13 +498,13 @@ class DiscoveryViewModel {
             filters: filters
         )
 
-        try await interactor.getSavedSearchManager().saveSearch(savedSearch)
+        try await interactor.saveSearch(savedSearch)
 
         // Reload saved searches into ViewModel's observable state
         await loadSavedSearches()
 
         // Log event
-        eventLogger.log(Event.searchSaved(name: name))
+        interactor.logEvent(Event.searchSaved(name: name))
     }
 
     func saveSearch(
@@ -526,17 +520,17 @@ class DiscoveryViewModel {
             filters: filters
         )
 
-        try await interactor.getSavedSearchManager().saveSearch(savedSearch)
+        try await interactor.saveSearch(savedSearch)
 
         // Reload saved searches into ViewModel's observable state
         await loadSavedSearches()
 
         // Log event
-        eventLogger.log(Event.searchSaved(name: name))
+        interactor.logEvent(Event.searchSaved(name: name))
     }
 
     func deleteSavedSearch(_ search: SavedSearch) async throws {
-        try await interactor.getSavedSearchManager().deleteSearch(search)
+        try await interactor.deleteSearch(search)
 
         // Reload saved searches into ViewModel's observable state
         await loadSavedSearches()
@@ -548,7 +542,7 @@ class DiscoveryViewModel {
         longitude: Double?,
         filters: SearchFilters
     ) async throws -> SavedSearch? {
-        return try await interactor.getSavedSearchManager().findDuplicateSearch(
+        return try await interactor.findDuplicateSearch(
             query: query,
             latitude: latitude,
             longitude: longitude,
@@ -557,7 +551,7 @@ class DiscoveryViewModel {
     }
 
     func clearAllSavedSearches() async throws {
-        try await interactor.getSavedSearchManager().clearAllSavedSearches()
+        try await interactor.clearAllSavedSearches()
 
         // Reload saved searches into ViewModel's observable state
         await loadSavedSearches()

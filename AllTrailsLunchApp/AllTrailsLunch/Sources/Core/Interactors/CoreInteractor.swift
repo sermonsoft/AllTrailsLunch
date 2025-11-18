@@ -108,28 +108,90 @@ class CoreInteractor: DiscoveryInteractor, DetailInteractor {
         return favoritesManager.getFavoriteIds()
     }
 
-    // MARK: - Network Monitoring
+    // MARK: - NetworkStatusInteractor Implementation
 
-    func getNetworkMonitor() -> NetworkMonitor {
-        return networkMonitor
+    func isNetworkConnected() -> Bool {
+        return networkMonitor.isConnected
     }
 
-    // MARK: - Event Logging
-
-    func getEventLogger() -> EventLogger {
-        return container.eventLogger
+    func getConnectionType() -> NetworkMonitor.ConnectionType {
+        return networkMonitor.connectionType
     }
 
-    // MARK: - Filter Preferences
+    // MARK: - EventLoggingInteractor Implementation
 
-    func getFilterPreferencesManager() -> FilterPreferencesManager {
-        return filterPreferencesManager
+    func logEvent(_ event: LoggableEvent) {
+        container.eventLogger.log(event)
     }
 
-    // MARK: - Saved Searches
+    func logScreenView(screenName: String, screenClass: String?) {
+        container.eventLogger.logScreenView(screenName: screenName, screenClass: screenClass)
+    }
 
-    func getSavedSearchManager() -> SavedSearchManager {
-        return savedSearchManager
+    func logCustomEvent(name: String, parameters: [String: Any]?) {
+        container.eventLogger.logEvent(name: name, parameters: parameters)
+    }
+
+    // MARK: - FilterManagementInteractor Implementation
+
+    func getFilters() -> SearchFilters {
+        return filterPreferencesManager.getFilters()
+    }
+
+    func saveFilters(_ filters: SearchFilters) async throws {
+        try await filterPreferencesManager.saveFilters(filters)
+    }
+
+    func loadFilters() -> SearchFilters {
+        return filterPreferencesManager.loadFilters()
+    }
+
+    func resetFilters() async throws {
+        try await filterPreferencesManager.clearFilters()
+    }
+
+    // MARK: - SavedSearchInteractor Implementation
+
+    func getAllSavedSearches() async throws -> [SavedSearch] {
+        return try await savedSearchManager.getAllSavedSearches()
+    }
+
+    func getSavedSearch(id: UUID) async throws -> SavedSearch? {
+        return try await savedSearchManager.getSavedSearch(id: id)
+    }
+
+    func saveSearch(_ search: SavedSearch) async throws {
+        try await savedSearchManager.saveSearch(search)
+    }
+
+    func deleteSearch(id: UUID) async throws {
+        try await savedSearchManager.deleteSearch(id: id)
+    }
+
+    func updateLastUsed(id: UUID) async throws {
+        try await savedSearchManager.updateLastUsed(id: id)
+    }
+
+    func deleteSearch(_ search: SavedSearch) async throws {
+        try await savedSearchManager.deleteSearch(search)
+    }
+
+    func findDuplicateSearch(
+        query: String,
+        latitude: Double?,
+        longitude: Double?,
+        filters: SearchFilters
+    ) async throws -> SavedSearch? {
+        return try await savedSearchManager.findDuplicateSearch(
+            query: query,
+            latitude: latitude,
+            longitude: longitude,
+            filters: filters
+        )
+    }
+
+    func clearAllSavedSearches() async throws {
+        try await savedSearchManager.clearAllSavedSearches()
     }
 
     // MARK: - Photo Loading
