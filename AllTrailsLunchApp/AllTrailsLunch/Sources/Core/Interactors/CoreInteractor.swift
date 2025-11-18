@@ -196,7 +196,10 @@ class CoreInteractor: DiscoveryInteractor, DetailInteractor {
 
     // MARK: - Photo Loading
 
-    nonisolated func loadPhoto(
+    /// Load photo from PhotoManager
+    /// Note: This method can be called from any isolation domain because it's async
+    /// and the underlying PhotoManager uses actors for thread-safe caching
+    func loadPhoto(
         photoReference: String,
         maxWidth: Int,
         maxHeight: Int
@@ -208,7 +211,8 @@ class CoreInteractor: DiscoveryInteractor, DetailInteractor {
         )
     }
 
-    nonisolated func loadFirstPhoto(
+    /// Load first available photo from a list of photo references
+    func loadFirstPhoto(
         from photoReferences: [String],
         maxWidth: Int,
         maxHeight: Int
