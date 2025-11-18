@@ -104,7 +104,7 @@ struct CachedPhotoView: View {
 
 // MARK: - Photo Manager Environment Key
 
-private struct PhotoManagerKey: EnvironmentKey {
+struct PhotoManagerKey: EnvironmentKey {
     static let defaultValue: PhotoManager? = nil
 }
 

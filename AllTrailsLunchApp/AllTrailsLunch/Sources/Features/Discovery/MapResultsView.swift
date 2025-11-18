@@ -225,4 +225,5 @@ struct MapPinView: View {
         isSearchActive: false
     )
     .environment(AppConfiguration.shared.createFavoritesManager())
+    .photoManager(AppConfiguration.shared.createPhotoManager())
 }
