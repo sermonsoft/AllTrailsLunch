@@ -35,7 +35,6 @@ final class PerformanceTests: XCTestCase {
         container.register(PhotoManager.self, service: AppConfiguration.shared.createPhotoManager())
         container.register(NetworkMonitor.self, service: AppConfiguration.shared.createNetworkMonitor())
         container.register(LocationManager.self, service: AppConfiguration.shared.createLocationManager())
-        container.register(RestaurantManager.self, service: AppConfiguration.shared.createRestaurantManager())
         container.register(FilterPreferencesManager.self, service: mockFilterPreferencesManager)
         container.register(SavedSearchManager.self, service: mockSavedSearchManager)
 
@@ -115,22 +114,24 @@ final class PerformanceTests: XCTestCase {
         mockInteractor.locationToReturn = PlaceFixtures.sanFranciscoLocation
         mockInteractor.placesToReturn = largePlaceList
         await viewModel.initialize()
-        
+
         // Measure filter application
         measure {
-            viewModel.applyFilters(SearchFiltersFixtures.highRatingFilter)
+            Task { @MainActor in
+                await viewModel.applyFilters(SearchFiltersFixtures.highRatingFilter)
+            }
         }
 
         // Verify filtering worked
         XCTAssertTrue(viewModel.results.allSatisfy { ($0.rating ?? 0) >= 4.5 })
     }
-    
+
     func testPerformance_RapidSearchChanges() async {
         // Given
         mockInteractor.locationToReturn = PlaceFixtures.sanFranciscoLocation
         mockInteractor.placesToReturn = PlaceFixtures.samplePlaces
         await viewModel.initialize()
-        
+
         // Measure rapid search changes
         measure {
             for query in ["pizza", "sushi", "burger", "cafe", "bar"] {
@@ -138,7 +139,7 @@ final class PerformanceTests: XCTestCase {
             }
         }
     }
-    
+
     func testPerformance_ToggleFavoriteMultipleTimes() async {
         // Given
         mockInteractor.locationToReturn = PlaceFixtures.sanFranciscoLocation
@@ -149,7 +150,7 @@ final class PerformanceTests: XCTestCase {
 
         // Measure - run directly without measure block
         for _ in 0..<100 {
-            viewModel.toggleFavorite(place)
+            await viewModel.toggleFavorite(place)
         }
 
         // Verify call count
@@ -176,20 +177,22 @@ final class PerformanceTests: XCTestCase {
         
         // When
         await viewModel.initialize()
-        
+
         // Then: Verify all loaded
         XCTAssertEqual(viewModel.results.count, 5000)
-        
+
         // Measure memory usage during filtering
         measure(metrics: [XCTMemoryMetric()]) {
-            viewModel.applyFilters(SearchFiltersFixtures.highRatingFilter)
+            Task { @MainActor in
+                await viewModel.applyFilters(SearchFiltersFixtures.highRatingFilter)
+            }
         }
     }
-    
+
     func testMemory_MultipleSearches() async {
         // Given
         mockInteractor.locationToReturn = PlaceFixtures.sanFranciscoLocation
-        
+
         // Measure memory during multiple searches
         measure(metrics: [XCTMemoryMetric()]) {
             Task { @MainActor in
@@ -205,9 +208,9 @@ final class PerformanceTests: XCTestCase {
             }
         }
     }
-    
+
     // MARK: - Stress Tests
-    
+
     func testStress_RapidViewModeChanges() {
         // Measure
         measure {
@@ -216,40 +219,42 @@ final class PerformanceTests: XCTestCase {
                 viewModel.viewMode = .list
             }
         }
-        
+
         // Verify final state
         XCTAssertEqual(viewModel.viewMode, .list)
     }
-    
+
     func testStress_ConcurrentFilterChanges() async {
         // Given
         mockInteractor.locationToReturn = PlaceFixtures.sanFranciscoLocation
         mockInteractor.placesToReturn = PlaceFixtures.samplePlaces
         await viewModel.initialize()
-        
+
         // Measure concurrent filter changes
         measure {
-            for _ in 0..<50 {
-                viewModel.applyFilters(SearchFiltersFixtures.highRatingFilter)
-                viewModel.applyFilters(SearchFiltersFixtures.lowPriceFilter)
-                viewModel.clearFilters()
+            Task { @MainActor in
+                for _ in 0..<50 {
+                    await viewModel.applyFilters(SearchFiltersFixtures.highRatingFilter)
+                    await viewModel.applyFilters(SearchFiltersFixtures.lowPriceFilter)
+                    await viewModel.clearFilters()
+                }
             }
         }
     }
-    
+
     func testStress_SaveAndLoadMultipleSearches() async throws {
         // Given
         mockInteractor.locationToReturn = PlaceFixtures.sanFranciscoLocation
         mockInteractor.placesToReturn = PlaceFixtures.samplePlaces
         await viewModel.initialize()
-        
+
         // When: Save multiple searches
         for i in 0..<20 {
-            try viewModel.saveCurrentSearch(name: "Search \(i)")
+            try await viewModel.saveCurrentSearch(name: "Search \(i)")
         }
 
         // Then: Verify all saved
-        let savedSearches = mockSavedSearchManager.getAllSavedSearches()
+        let savedSearches = try await mockSavedSearchManager.getAllSavedSearches()
         XCTAssertEqual(savedSearches.count, 20)
 
         // Measure loading saved searches
@@ -293,24 +298,24 @@ final class PerformanceTests: XCTestCase {
         // Given
         mockInteractor.locationToReturn = PlaceFixtures.sanFranciscoLocation
         mockInteractor.placesToReturn = PlaceFixtures.samplePlaces
-        
+
         // Measure event logging overhead
         measure {
             Task { @MainActor in
                 await viewModel.initialize()
                 viewModel.viewMode = .map
                 viewModel.viewMode = .list
-                viewModel.toggleFavorite(PlaceFixtures.sampleRestaurant)
-                viewModel.applyFilters(SearchFiltersFixtures.highRatingFilter)
+                await viewModel.toggleFavorite(PlaceFixtures.sampleRestaurant)
+                await viewModel.applyFilters(SearchFiltersFixtures.highRatingFilter)
             }
         }
-        
+
         // Verify events logged
         XCTAssertGreaterThan(mockEventLogger.logCallCount, 0)
     }
-    
+
     // MARK: - CPU Performance
-    
+
     func testCPU_FilteringComplexCriteria() async {
         // Given: Large dataset
         let largePlaceList = (0..<1000).map { index in
@@ -322,14 +327,16 @@ final class PerformanceTests: XCTestCase {
                 priceLevel: Int.random(in: 1...4)
             )
         }
-        
+
         mockInteractor.locationToReturn = PlaceFixtures.sanFranciscoLocation
         mockInteractor.placesToReturn = largePlaceList
         await viewModel.initialize()
-        
+
         // Measure CPU usage during complex filtering
         measure(metrics: [XCTCPUMetric()]) {
-            viewModel.applyFilters(SearchFiltersFixtures.combinedFilter)
+            Task { @MainActor in
+                await viewModel.applyFilters(SearchFiltersFixtures.combinedFilter)
+            }
         }
     }
 }

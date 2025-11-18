@@ -91,29 +91,29 @@ final class BookmarkToggleIntegrationTests: XCTestCase {
     }
 
     /// Verifies multiple accesses to FavoritesManager return the same instance.
-    func testFavoritesManager_InstanceIdentity() {
+    func testFavoritesManager_InstanceIdentity() async throws {
         // Given
         let manager1 = coreInteractor.favoritesManager
         let manager2 = coreInteractor.favoritesManager
 
         // When
-        manager1.addFavorite("test-place-1")
+        try await manager1.addFavorite("test-place-1")
 
         // Then
         XCTAssertTrue(manager1 === manager2, "Multiple accesses should return the same instance")
         XCTAssertTrue(manager2.isFavorite("test-place-1"), "Changes should be visible through all references")
     }
-    
+
     // MARK: - Bookmark Toggle Integration Tests
 
     /// Verifies toggling a bookmark updates the shared FavoritesManager instance.
-    func testBookmarkToggle_UpdatesSharedFavoritesManager() {
+    func testBookmarkToggle_UpdatesSharedFavoritesManager() async {
         // Given
         let place = PlaceFixtures.sampleRestaurant
         XCTAssertFalse(favoritesManager.isFavorite(place.id), "Place should not be favorited initially")
 
         // When
-        viewModel.toggleFavorite(place)
+        await viewModel.toggleFavorite(place)
 
         // Then
         XCTAssertTrue(favoritesManager.isFavorite(place.id),
@@ -123,12 +123,12 @@ final class BookmarkToggleIntegrationTests: XCTestCase {
     }
 
     /// Verifies ViewModel and CoreInteractor see consistent bookmark state.
-    func testBookmarkToggle_ViewModelAndInteractorSeesSameState() {
+    func testBookmarkToggle_ViewModelAndInteractorSeesSameState() async {
         // Given
         let place = PlaceFixtures.sampleRestaurant
 
         // When
-        viewModel.toggleFavorite(place)
+        await viewModel.toggleFavorite(place)
 
         // Then
         let interactorSees = coreInteractor.isFavorite(place.id)
@@ -140,14 +140,14 @@ final class BookmarkToggleIntegrationTests: XCTestCase {
     }
 
     /// Verifies state remains synchronized across multiple toggle operations.
-    func testBookmarkToggle_MultipleToggles_StateStaysSynced() {
+    func testBookmarkToggle_MultipleToggles_StateStaysSynced() async {
         // Given
         let place = PlaceFixtures.sampleRestaurant
 
         // When
-        viewModel.toggleFavorite(place) // Add
-        viewModel.toggleFavorite(place) // Remove
-        viewModel.toggleFavorite(place) // Add again
+        await viewModel.toggleFavorite(place) // Add
+        await viewModel.toggleFavorite(place) // Remove
+        await viewModel.toggleFavorite(place) // Add again
 
         // Then
         XCTAssertTrue(favoritesManager.isFavorite(place.id))
@@ -155,17 +155,17 @@ final class BookmarkToggleIntegrationTests: XCTestCase {
     }
 
     /// Verifies state synchronization when toggling multiple different places.
-    func testBookmarkToggle_MultiplePlaces_AllStaysSynced() {
+    func testBookmarkToggle_MultiplePlaces_AllStaysSynced() async {
         // Given
         let place1 = PlaceFixtures.sampleRestaurant
         let place2 = PlaceFixtures.samplePizzaPlace
         let place3 = PlaceFixtures.sampleSushiPlace
 
         // When
-        viewModel.toggleFavorite(place1) // Add
-        viewModel.toggleFavorite(place2) // Add
-        viewModel.toggleFavorite(place3) // Add
-        viewModel.toggleFavorite(place2) // Remove
+        await viewModel.toggleFavorite(place1) // Add
+        await viewModel.toggleFavorite(place2) // Add
+        await viewModel.toggleFavorite(place3) // Add
+        await viewModel.toggleFavorite(place2) // Remove
 
         // Then
         XCTAssertTrue(favoritesManager.isFavorite(place1.id))
@@ -176,54 +176,54 @@ final class BookmarkToggleIntegrationTests: XCTestCase {
         XCTAssertFalse(coreInteractor.isFavorite(place2.id))
         XCTAssertTrue(coreInteractor.isFavorite(place3.id))
 
-        XCTAssertEqual(favoritesManager.favoriteIds.count, 2)
+        XCTAssertEqual(favoritesManager.getFavoriteIds().count, 2)
         XCTAssertEqual(coreInteractor.getFavoriteIds().count, 2)
     }
     
     // MARK: - Observable State Tests
 
     /// Verifies observable favoriteIds collection updates when adding a favorite.
-    func testFavoritesManager_ObservableStateUpdates() {
+    func testFavoritesManager_ObservableStateUpdates() async {
         // Given
         let place = PlaceFixtures.sampleRestaurant
-        let initialCount = favoritesManager.favoriteIds.count
+        let initialCount = favoritesManager.getFavoriteIds().count
 
         // When
-        viewModel.toggleFavorite(place)
+        await viewModel.toggleFavorite(place)
 
         // Then
-        XCTAssertEqual(favoritesManager.favoriteIds.count, initialCount + 1,
+        XCTAssertEqual(favoritesManager.getFavoriteIds().count, initialCount + 1,
                       "Observable favoriteIds should be updated")
-        XCTAssertTrue(favoritesManager.favoriteIds.contains(place.id),
+        XCTAssertTrue(favoritesManager.getFavoriteIds().contains(place.id),
                       "Observable favoriteIds should contain the new favorite")
     }
 
     /// Verifies observable favoriteIds collection updates when removing a favorite.
-    func testFavoritesManager_ObservableStateRemoves() {
+    func testFavoritesManager_ObservableStateRemoves() async {
         // Given
         let place = PlaceFixtures.sampleRestaurant
-        viewModel.toggleFavorite(place) // Add first
-        let countAfterAdd = favoritesManager.favoriteIds.count
+        await viewModel.toggleFavorite(place) // Add first
+        let countAfterAdd = favoritesManager.getFavoriteIds().count
 
         // When
-        viewModel.toggleFavorite(place) // Remove
+        await viewModel.toggleFavorite(place) // Remove
 
         // Then
-        XCTAssertEqual(favoritesManager.favoriteIds.count, countAfterAdd - 1,
+        XCTAssertEqual(favoritesManager.getFavoriteIds().count, countAfterAdd - 1,
                       "Observable favoriteIds should be updated after removal")
-        XCTAssertFalse(favoritesManager.favoriteIds.contains(place.id),
+        XCTAssertFalse(favoritesManager.getFavoriteIds().contains(place.id),
                        "Observable favoriteIds should not contain the removed favorite")
     }
     
     // MARK: - Service Integration Tests
 
     /// Verifies FavoritesService is called with correct parameters when toggling.
-    func testBookmarkToggle_CallsServiceCorrectly() {
+    func testBookmarkToggle_CallsServiceCorrectly() async {
         // Given
         let place = PlaceFixtures.sampleRestaurant
 
         // When
-        viewModel.toggleFavorite(place)
+        await viewModel.toggleFavorite(place)
 
         // Then
         XCTAssertEqual(mockFavoritesService.addFavoriteCallCount, 1,
@@ -233,29 +233,29 @@ final class BookmarkToggleIntegrationTests: XCTestCase {
     }
 
     /// Verifies in-memory state updates even when persistence fails.
-    func testBookmarkToggle_ServiceFailure_StillUpdatesMemoryState() {
+    func testBookmarkToggle_ServiceFailure_StillUpdatesMemoryState() async {
         // Given
         let place = PlaceFixtures.sampleRestaurant
         mockFavoritesService.shouldThrowError = true
 
         // When
-        viewModel.toggleFavorite(place)
+        await viewModel.toggleFavorite(place)
 
         // Then
         XCTAssertTrue(favoritesManager.isFavorite(place.id),
                       "Memory state should be updated even if persistence fails")
     }
-    
+
     // MARK: - ViewModel Results Integration Tests
 
     /// Verifies ViewModel results array updates with favorite status after toggle.
-    func testBookmarkToggle_UpdatesViewModelResults() {
+    func testBookmarkToggle_UpdatesViewModelResults() async {
         // Given
         let place = PlaceFixtures.sampleRestaurant
         viewModel.results = [place]
 
         // When
-        viewModel.toggleFavorite(place)
+        await viewModel.toggleFavorite(place)
 
         // Then
         XCTAssertTrue(viewModel.results[0].isFavorite,
@@ -263,14 +263,14 @@ final class BookmarkToggleIntegrationTests: XCTestCase {
     }
 
     /// Verifies ViewModel results stay synchronized with FavoritesManager state.
-    func testBookmarkToggle_ViewModelResultsMatchFavoritesManager() {
+    func testBookmarkToggle_ViewModelResultsMatchFavoritesManager() async {
         // Given
         let place1 = PlaceFixtures.sampleRestaurant
         let place2 = PlaceFixtures.samplePizzaPlace
         viewModel.results = [place1, place2]
 
         // When
-        viewModel.toggleFavorite(place1)
+        await viewModel.toggleFavorite(place1)
 
         // Then
         XCTAssertEqual(viewModel.results[0].isFavorite, favoritesManager.isFavorite(place1.id),
@@ -282,13 +282,13 @@ final class BookmarkToggleIntegrationTests: XCTestCase {
     // MARK: - Event Logging Tests
 
     /// Verifies analytics events are logged correctly when toggling favorites.
-    func testBookmarkToggle_LogsEventCorrectly() {
+    func testBookmarkToggle_LogsEventCorrectly() async {
         // Given
         let place = PlaceFixtures.sampleRestaurant
         viewModel.results = [place]
 
         // When
-        viewModel.toggleFavorite(place)
+        await viewModel.toggleFavorite(place)
 
         // Then
         XCTAssertTrue(mockEventLogger.didLog(eventName: "favorite_toggled"),

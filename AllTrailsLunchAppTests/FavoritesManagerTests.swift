@@ -30,12 +30,12 @@ final class FavoritesManagerTests: XCTestCase {
     func testInitialization_LoadsFavoritesFromService() {
         // Given
         mockService.favoriteIds = ["place1", "place2"]
-        
+
         // When
         sut = FavoritesManager(service: mockService)
-        
+
         // Then
-        XCTAssertEqual(sut.favoriteIds, ["place1", "place2"])
+        XCTAssertEqual(sut.getFavoriteIds(), ["place1", "place2"])
     }
     
     func testIsFavorite_ReturnsTrueForFavoritedPlace() {
@@ -62,83 +62,83 @@ final class FavoritesManagerTests: XCTestCase {
         XCTAssertFalse(result)
     }
     
-    func testToggleFavorite_AddsFavoriteWhenNotPresent() {
+    func testToggleFavorite_AddsFavoriteWhenNotPresent() async throws {
         // Given
         mockService.favoriteIds = []
         sut = FavoritesManager(service: mockService)
-        
+
         // When
-        sut.toggleFavorite("place1")
-        
+        try await sut.toggleFavorite("place1")
+
         // Then
-        XCTAssertTrue(sut.favoriteIds.contains("place1"))
+        XCTAssertTrue(sut.getFavoriteIds().contains("place1"))
         XCTAssertEqual(mockService.addFavoriteCallCount, 1)
         XCTAssertEqual(mockService.lastAddedPlaceId, "place1")
     }
-    
-    func testToggleFavorite_RemovesFavoriteWhenPresent() {
+
+    func testToggleFavorite_RemovesFavoriteWhenPresent() async throws {
         // Given
         mockService.favoriteIds = ["place1"]
         sut = FavoritesManager(service: mockService)
-        
+
         // When
-        sut.toggleFavorite("place1")
-        
+        try await sut.toggleFavorite("place1")
+
         // Then
-        XCTAssertFalse(sut.favoriteIds.contains("place1"))
+        XCTAssertFalse(sut.getFavoriteIds().contains("place1"))
         XCTAssertEqual(mockService.removeFavoriteCallCount, 1)
         XCTAssertEqual(mockService.lastRemovedPlaceId, "place1")
     }
-    
-    func testAddFavorite_AddsPlaceToFavorites() {
+
+    func testAddFavorite_AddsPlaceToFavorites() async throws {
         // Given
         mockService.favoriteIds = []
         sut = FavoritesManager(service: mockService)
-        
+
         // When
-        sut.addFavorite("place1")
-        
+        try await sut.addFavorite("place1")
+
         // Then
-        XCTAssertTrue(sut.favoriteIds.contains("place1"))
+        XCTAssertTrue(sut.getFavoriteIds().contains("place1"))
         XCTAssertEqual(mockService.addFavoriteCallCount, 1)
     }
-    
-    func testAddFavorite_DoesNotAddDuplicate() {
+
+    func testAddFavorite_DoesNotAddDuplicate() async throws {
         // Given
         mockService.favoriteIds = ["place1"]
         sut = FavoritesManager(service: mockService)
-        
+
         // When
-        sut.addFavorite("place1")
-        
+        try await sut.addFavorite("place1")
+
         // Then
-        XCTAssertEqual(sut.favoriteIds.count, 1)
+        XCTAssertEqual(sut.getFavoriteIds().count, 1)
         XCTAssertEqual(mockService.addFavoriteCallCount, 0)
     }
-    
-    func testRemoveFavorite_RemovesPlaceFromFavorites() {
+
+    func testRemoveFavorite_RemovesPlaceFromFavorites() async throws {
         // Given
         mockService.favoriteIds = ["place1"]
         sut = FavoritesManager(service: mockService)
-        
+
         // When
-        sut.removeFavorite("place1")
-        
+        try await sut.removeFavorite("place1")
+
         // Then
-        XCTAssertFalse(sut.favoriteIds.contains("place1"))
+        XCTAssertFalse(sut.getFavoriteIds().contains("place1"))
         XCTAssertEqual(mockService.removeFavoriteCallCount, 1)
     }
-    
-    func testClearAllFavorites_RemovesAllFavorites() {
+
+    func testClearAllFavorites_RemovesAllFavorites() async throws {
         // Given
         mockService.favoriteIds = ["place1", "place2", "place3"]
         sut = FavoritesManager(service: mockService)
-        
+
         // When
-        sut.clearAllFavorites()
-        
+        try await sut.clearAllFavorites()
+
         // Then
-        XCTAssertTrue(sut.favoriteIds.isEmpty)
+        XCTAssertTrue(sut.getFavoriteIds().isEmpty)
         XCTAssertEqual(mockService.clearAllFavoritesCallCount, 1)
     }
     

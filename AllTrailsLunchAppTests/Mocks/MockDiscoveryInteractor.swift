@@ -116,39 +116,38 @@ final class MockDiscoveryInteractor: DiscoveryInteractor {
 
         return details
     }
-    
-    func toggleFavorite(_ place: Place) {
-        toggleFavoriteCallCount += 1
-        lastToggledPlace = place
-    }
+
+    // MARK: - Favorites
 
     func isFavorite(_ placeId: String) -> Bool {
         return false
     }
 
-    func toggleFavorite(_ placeId: String) {
+    func toggleFavorite(_ placeId: String) async throws {
         toggleFavoriteCallCount += 1
         lastToggledPlaceId = placeId
     }
 
-    func addFavorite(_ placeId: String) {
+    func toggleFavorite(_ place: Place) async throws -> Bool {
+        toggleFavoriteCallCount += 1
+        lastToggledPlace = place
+        return true
+    }
+
+    func addFavorite(_ placeId: String) async throws {
         // No-op for mock
     }
 
-    func removeFavorite(_ placeId: String) {
+    func addFavorite(_ place: Place) async throws {
+        // No-op for mock
+    }
+
+    func removeFavorite(_ placeId: String) async throws {
         // No-op for mock
     }
 
     func getFavoriteIds() -> Set<String> {
         return []
-    }
-
-    func addFavorite(_ place: Place) {
-        // No-op for mock
-    }
-
-    func removeFavorite(_ place: Place) {
-        // No-op for mock
     }
 
     // MARK: - Photo Loading
@@ -177,11 +176,11 @@ final class MockDiscoveryInteractor: DiscoveryInteractor {
         // No-op for mock
     }
 
-    func logScreenView(_ screenName: String) {
+    func logScreenView(screenName: String, screenClass: String?) {
         // No-op for mock
     }
 
-    func logCustomEvent(name: String, parameters: [String: Any]) {
+    func logCustomEvent(name: String, parameters: [String: Any]?) {
         // No-op for mock
     }
 
@@ -201,16 +200,16 @@ final class MockDiscoveryInteractor: DiscoveryInteractor {
         return container.filterPreferencesManager.getFilters()
     }
 
-    func saveFilters(_ filters: SearchFilters) {
-        container.filterPreferencesManager.saveFilters(filters)
+    func saveFilters(_ filters: SearchFilters) async throws {
+        try await container.filterPreferencesManager.saveFilters(filters)
     }
 
     func loadFilters() -> SearchFilters {
         return container.filterPreferencesManager.loadFilters()
     }
 
-    func resetFilters() {
-        container.filterPreferencesManager.clearFilters()
+    func resetFilters() async throws {
+        try await container.filterPreferencesManager.clearFilters()
     }
 
     // MARK: - Saved Search Management
@@ -239,8 +238,8 @@ final class MockDiscoveryInteractor: DiscoveryInteractor {
         try await container.savedSearchManager.updateLastUsed(id: id)
     }
 
-    func findDuplicateSearch(query: String, latitude: Double?, longitude: Double?) async throws -> SavedSearch? {
-        return try await container.savedSearchManager.findDuplicateSearch(query: query, latitude: latitude, longitude: longitude)
+    func findDuplicateSearch(query: String, latitude: Double?, longitude: Double?, filters: SearchFilters) async throws -> SavedSearch? {
+        return try await container.savedSearchManager.findDuplicateSearch(query: query, latitude: latitude, longitude: longitude, filters: filters)
     }
 
     func clearAllSavedSearches() async throws {

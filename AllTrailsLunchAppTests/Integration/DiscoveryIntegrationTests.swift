@@ -35,7 +35,6 @@ final class DiscoveryIntegrationTests: XCTestCase {
         container.register(PhotoManager.self, service: AppConfiguration.shared.createPhotoManager())
         container.register(NetworkMonitor.self, service: AppConfiguration.shared.createNetworkMonitor())
         container.register(LocationManager.self, service: AppConfiguration.shared.createLocationManager())
-        container.register(RestaurantManager.self, service: AppConfiguration.shared.createRestaurantManager())
         container.register(FilterPreferencesManager.self, service: mockFilterPreferencesManager)
         container.register(SavedSearchManager.self, service: mockSavedSearchManager)
 
@@ -98,7 +97,7 @@ final class DiscoveryIntegrationTests: XCTestCase {
         XCTAssertTrue(mockEventLogger.didLog(eventName: "search_performed"))
 
         // Step 3: Apply filters
-        viewModel.applyFilters(SearchFiltersFixtures.highRatingFilter)
+        await viewModel.applyFilters(SearchFiltersFixtures.highRatingFilter)
 
         XCTAssertTrue(mockEventLogger.didLog(eventName: "filters_applied"))
         XCTAssertTrue(viewModel.results.allSatisfy { ($0.rating ?? 0) >= 4.5 })
@@ -106,18 +105,18 @@ final class DiscoveryIntegrationTests: XCTestCase {
 
         // Step 4: Toggle favorite
         let place = viewModel.results.first!
-        viewModel.toggleFavorite(place)
-        
+        await viewModel.toggleFavorite(place)
+
         XCTAssertEqual(mockInteractor.toggleFavoriteCallCount, 1)
         XCTAssertTrue(mockEventLogger.didLog(eventName: "favorite_toggled"))
-        
+
         // Step 5: Save search
-        try? viewModel.saveCurrentSearch(name: "My Pizza Search")
+        try? await viewModel.saveCurrentSearch(name: "My Pizza Search")
 
         // Verify search was saved through the manager
-        let savedSearches = mockSavedSearchManager.getAllSavedSearches()
-        XCTAssertEqual(savedSearches.count, 1)
-        XCTAssertEqual(savedSearches.first?.name, "My Pizza Search")
+        let savedSearches = try? await mockSavedSearchManager.getAllSavedSearches()
+        XCTAssertEqual(savedSearches?.count, 1)
+        XCTAssertEqual(savedSearches?.first?.name, "My Pizza Search")
         XCTAssertTrue(mockEventLogger.didLog(eventName: "search_saved"))
     }
     
@@ -129,7 +128,7 @@ final class DiscoveryIntegrationTests: XCTestCase {
         
         // Given: Saved search exists
         let savedSearch = SavedSearchFixtures.sushiSearch
-        try? mockSavedSearchManager.saveSearch(savedSearch)
+        try? await mockSavedSearchManager.saveSearch(savedSearch)
         
         // When: Load saved search
         mockInteractor.placesToReturn = [PlaceFixtures.sampleSushiPlace]

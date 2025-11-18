@@ -247,26 +247,26 @@ final class DiscoveryViewModelTests: XCTestCase {
         let place = PlaceFixtures.sampleRestaurant
 
         // When
-        sut.toggleFavorite(place)
+        await sut.toggleFavorite(place)
 
         // Then
         XCTAssertEqual(mockInteractor.toggleFavoriteCallCount, 1)
         XCTAssertEqual(mockInteractor.lastToggledPlaceId, place.id)
         XCTAssertTrue(mockEventLogger.didLog(eventName: "favorite_toggled"))
     }
-    
+
     // MARK: - View Mode Tests
-    
+
     func testViewMode_Change_LogsEvent() {
         // When
         sut.viewMode = .map
-        
+
         // Then
         XCTAssertTrue(mockEventLogger.didLog(eventName: "view_mode_changed"))
         let params = mockEventLogger.parameters(for: "view_mode_changed")
         XCTAssertEqual(params?["mode"] as? String, "map")
     }
-    
+
     // MARK: - Filter Tests
 
     func testApplyFilters_FiltersResults() async {
@@ -276,7 +276,7 @@ final class DiscoveryViewModelTests: XCTestCase {
         await sut.initialize()
 
         // When
-        sut.applyFilters(SearchFiltersFixtures.highRatingFilter)
+        await sut.applyFilters(SearchFiltersFixtures.highRatingFilter)
 
         // Then
         XCTAssertTrue(sut.results.allSatisfy { ($0.rating ?? 0) >= 4.5 })
@@ -289,10 +289,10 @@ final class DiscoveryViewModelTests: XCTestCase {
         mockInteractor.placesToReturn = PlaceFixtures.samplePlaces
         await sut.initialize()
 
-        sut.applyFilters(SearchFiltersFixtures.highRatingFilter)
+        await sut.applyFilters(SearchFiltersFixtures.highRatingFilter)
 
         // When
-        sut.clearFilters()
+        await sut.clearFilters()
 
         // Then
         XCTAssertEqual(sut.filters, .default)
