@@ -159,7 +159,15 @@ class CombinePlacesService {
                     NetworkLogger.shared.logError(context, error: placesError)
                     return placesError
                 } else if let urlError = error as? URLError {
-                    let placesError = PlacesError.networkError(urlError.localizedDescription)
+                    let placesError: PlacesError
+                    switch urlError.code {
+                    case .notConnectedToInternet, .networkConnectionLost:
+                        placesError = PlacesError.networkUnavailable
+                    case .timedOut:
+                        placesError = PlacesError.timeout
+                    default:
+                        placesError = PlacesError.unknown(urlError.localizedDescription)
+                    }
                     NetworkLogger.shared.logError(context, error: placesError)
                     return placesError
                 } else {

@@ -201,7 +201,7 @@ class DataPipelineCoordinator {
 
             Task {
                 do {
-                    let location = try await self.locationManager.requestLocation()
+                    let location = try await self.locationManager.requestLocationPermission()
                     promise(.success(location))
                 } catch {
                     promise(.failure(.location(error)))
