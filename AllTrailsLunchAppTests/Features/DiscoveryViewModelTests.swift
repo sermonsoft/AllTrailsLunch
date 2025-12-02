@@ -299,5 +299,43 @@ final class DiscoveryViewModelTests: XCTestCase {
         XCTAssertEqual(sut.results.count, PlaceFixtures.samplePlaces.count)
         XCTAssertTrue(mockEventLogger.didLog(eventName: "filters_cleared"))
     }
+
+    // MARK: - Search Restriction Tests
+
+    func testSaveSearch_WithInvalidCategory_ThrowsError() async {
+        // Given
+        mockInteractor.locationToReturn = PlaceFixtures.sanFranciscoLocation
+        await sut.initialize()
+
+        sut.searchText = "car repair shop"
+
+        // When/Then
+        do {
+            try await sut.saveCurrentSearch(name: "My Car Search")
+            XCTFail("Should throw error for invalid search category")
+        } catch let error as PlacesError {
+            if case .invalidSearchCategory = error {
+                // Success
+            } else {
+                XCTFail("Expected invalidSearchCategory error, got \(error)")
+            }
+        } catch {
+            XCTFail("Expected PlacesError, got \(error)")
+        }
+    }
+
+    func testSaveSearch_WithValidFoodQuery_Succeeds() async throws {
+        // Given
+        mockInteractor.locationToReturn = PlaceFixtures.sanFranciscoLocation
+        await sut.initialize()
+
+        sut.searchText = "italian restaurant"
+
+        // When
+        try await sut.saveCurrentSearch(name: "Italian Places")
+
+        // Then - Should not throw
+        XCTAssertTrue(mockEventLogger.didLog(eventName: "search_saved"))
+    }
 }
 

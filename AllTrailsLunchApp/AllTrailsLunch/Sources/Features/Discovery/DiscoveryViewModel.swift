@@ -317,6 +317,17 @@ class DiscoveryViewModel {
     }
 
     private func searchText(_ query: String) async {
+        // Validate search query before performing search
+        let validationResult = SearchQueryValidator.validate(query)
+        guard validationResult.isValid else {
+            // Set error and notify user of invalid search category
+            if let errorMessage = validationResult.errorMessage {
+                self.error = .invalidSearchCategory(errorMessage)
+                interactor.logEvent(Event.searchError(error: "Invalid search category: \(query)"))
+            }
+            return
+        }
+
         isLoading = true
         error = nil
         currentPage = 0
@@ -491,6 +502,15 @@ class DiscoveryViewModel {
     }
 
     func saveCurrentSearch(name: String) async throws {
+        // Validate search query before saving
+        let validationResult = SearchQueryValidator.validate(searchText)
+        guard validationResult.isValid else {
+            if let errorMessage = validationResult.errorMessage {
+                throw PlacesError.invalidSearchCategory(errorMessage)
+            }
+            throw PlacesError.invalidSearchCategory("Cannot save non-food/restaurant searches")
+        }
+
         let savedSearch = SavedSearch(
             name: name,
             query: searchText,
@@ -513,6 +533,15 @@ class DiscoveryViewModel {
         location: (latitude: Double, longitude: Double)?,
         filters: SearchFilters
     ) async throws {
+        // Validate search query before saving
+        let validationResult = SearchQueryValidator.validate(query)
+        guard validationResult.isValid else {
+            if let errorMessage = validationResult.errorMessage {
+                throw PlacesError.invalidSearchCategory(errorMessage)
+            }
+            throw PlacesError.invalidSearchCategory("Cannot save non-food/restaurant searches")
+        }
+
         let savedSearch = SavedSearch(
             name: name,
             query: query,
@@ -557,4 +586,3 @@ class DiscoveryViewModel {
         await loadSavedSearches()
     }
 }
-
