@@ -7,14 +7,26 @@
 
 import Foundation
 import CoreLocation
+import Combine
 
 /// Manager for location services.
 /// Returns data via async/await - does NOT use @Observable or ObservableObject.
 /// ViewModels are responsible for managing observable state.
+///
+/// Combine Integration:
+/// - Publishes location updates for reactive pipelines
+/// - Thread-safe updates on MainActor
+/// - Supports both async/await and Combine patterns
 @MainActor
 class LocationManager: NSObject, CLLocationManagerDelegate {
-    private var userLocation: CLLocationCoordinate2D?
-    private var authorizationStatus: CLAuthorizationStatus = .notDetermined
+
+    // MARK: - Combine Publishers
+
+    /// Published user location for Combine pipelines
+    @Published private(set) var userLocation: CLLocationCoordinate2D?
+
+    /// Published authorization status
+    @Published private(set) var authorizationStatus: CLAuthorizationStatus = .notDetermined
 
     private let manager = CLLocationManager()
     private var locationContinuation: CheckedContinuation<CLLocationCoordinate2D, Error>?
