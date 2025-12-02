@@ -143,12 +143,6 @@ final class DependencyFactory {
         createCoreInteractor()  // Returns singleton instance
     }
 
-    // MARK: - Legacy Support
-
-    func createFavoritesStore() -> FavoritesStore {
-        FavoritesStore()
-    }
-
     // MARK: - ViewModels
 
     func createDiscoveryViewModel() -> DiscoveryViewModel {

@@ -117,12 +117,6 @@ final class AppConfiguration {
         factory.createDetailInteractor()
     }
 
-    // MARK: - Legacy Support
-
-    func createFavoritesStore() -> FavoritesStore {
-        factory.createFavoritesStore()
-    }
-
     // MARK: - ViewModels
 
     func createDiscoveryViewModel() -> DiscoveryViewModel {
