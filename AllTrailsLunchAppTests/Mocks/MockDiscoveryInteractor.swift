@@ -7,6 +7,7 @@
 
 import Foundation
 import CoreLocation
+import Combine
 @testable import AllTrailsLunchApp
 
 @MainActor
@@ -244,6 +245,49 @@ final class MockDiscoveryInteractor: DiscoveryInteractor {
 
     func clearAllSavedSearches() async throws {
         try await container.savedSearchManager.clearAllSavedSearches()
+    }
+
+    // MARK: - ReactivePipelineInteractor Implementation
+
+    func executePipeline(
+        query: String?,
+        radius: Int = 1500
+    ) -> AnyPublisher<[Place], Never> {
+        // Return mock data as publisher
+        return Just(placesToReturn).eraseToAnyPublisher()
+    }
+
+    func createDebouncedSearchPipeline(
+        queryPublisher: AnyPublisher<String, Never>,
+        debounceInterval: TimeInterval = 0.5
+    ) -> AnyPublisher<[Place], Never> {
+        // Return empty publisher that never emits (mock doesn't need to emit)
+        // This prevents immediate completion which could cause issues in tests
+        return Empty<[Place], Never>().eraseToAnyPublisher()
+    }
+
+    func createThrottledLocationPipeline(
+        throttleInterval: TimeInterval = 2.0
+    ) -> AnyPublisher<CLLocationCoordinate2D, Never> {
+        // Return empty publisher that never emits (mock doesn't need to emit)
+        // This prevents immediate completion which could cause issues in tests
+        return Empty<CLLocationCoordinate2D, Never>().eraseToAnyPublisher()
+    }
+
+    var pipelineStatusPublisher: AnyPublisher<PipelineStatus, Never> {
+        return Just(.idle).eraseToAnyPublisher()
+    }
+
+    var mergedResultsPublisher: AnyPublisher<[Place], Never> {
+        return Empty<[Place], Never>().eraseToAnyPublisher()
+    }
+
+    var pipelineErrorsPublisher: AnyPublisher<[PipelineError], Never> {
+        return Empty<[PipelineError], Never>().eraseToAnyPublisher()
+    }
+
+    func cancelAllPipelines() {
+        // No-op for mock
     }
 
     // MARK: - Test Helpers
