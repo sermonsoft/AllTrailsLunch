@@ -10,6 +10,41 @@ import Combine
 import CoreLocation
 @testable import AllTrailsLunchApp
 
+// MARK: - Mock URLSession
+
+class MockURLProtocol: URLProtocol {
+    static var mockData: Data?
+    static var mockResponse: HTTPURLResponse?
+    static var mockError: Error?
+
+    override class func canInit(with request: URLRequest) -> Bool {
+        return true
+    }
+
+    override class func canonicalRequest(for request: URLRequest) -> URLRequest {
+        return request
+    }
+
+    override func startLoading() {
+        if let error = MockURLProtocol.mockError {
+            client?.urlProtocol(self, didFailWithError: error)
+            return
+        }
+
+        if let response = MockURLProtocol.mockResponse {
+            client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+        }
+
+        if let data = MockURLProtocol.mockData {
+            client?.urlProtocol(self, didLoad: data)
+        }
+
+        client?.urlProtocolDidFinishLoading(self)
+    }
+
+    override func stopLoading() {}
+}
+
 /// Integration tests for Combine data pipelines
 /// Demonstrates:
 /// - Thread safety and actor isolation
@@ -19,24 +54,74 @@ import CoreLocation
 /// - Error recovery and resilience
 @MainActor
 final class CombinePipelineTests: XCTestCase {
-    
+
     var cancellables: Set<AnyCancellable>!
     var mockClient: PlacesClient!
     var combineService: CombinePlacesService!
-    
+    var mockSession: URLSession!
+
     override func setUp() async throws {
         try await super.setUp()
         cancellables = Set<AnyCancellable>()
-        
-        // Use test API key
-        mockClient = PlacesClient(apiKey: "test-key", session: .shared)
-        combineService = CombinePlacesService(client: mockClient, session: .shared)
+
+        // Configure mock URLSession
+        let config = URLSessionConfiguration.ephemeral
+        config.protocolClasses = [MockURLProtocol.self]
+        mockSession = URLSession(configuration: config)
+
+        // Use test API key with mock session
+        mockClient = PlacesClient(apiKey: "test-key", session: mockSession)
+        combineService = CombinePlacesService(client: mockClient, session: mockSession)
+
+        // Setup default mock response
+        setupSuccessResponse()
+    }
+
+    func setupSuccessResponse() {
+        let mockJSON = """
+        {
+            "results": [
+                {
+                    "place_id": "test-place-1",
+                    "name": "Test Restaurant",
+                    "vicinity": "123 Test St",
+                    "geometry": {
+                        "location": {
+                            "lat": 37.7749,
+                            "lng": -122.4194
+                        }
+                    },
+                    "rating": 4.5,
+                    "user_ratings_total": 100
+                }
+            ],
+            "status": "OK"
+        }
+        """
+        MockURLProtocol.mockData = mockJSON.data(using: .utf8)
+        MockURLProtocol.mockResponse = HTTPURLResponse(
+            url: URL(string: "https://maps.googleapis.com/maps/api/place/nearbysearch/json")!,
+            statusCode: 200,
+            httpVersion: nil,
+            headerFields: nil
+        )
+        MockURLProtocol.mockError = nil
+    }
+
+    func setupErrorResponse() {
+        MockURLProtocol.mockData = nil
+        MockURLProtocol.mockResponse = nil
+        MockURLProtocol.mockError = URLError(.notConnectedToInternet)
     }
     
     override func tearDown() async throws {
         cancellables.removeAll()
         combineService = nil
         mockClient = nil
+        mockSession = nil
+        MockURLProtocol.mockData = nil
+        MockURLProtocol.mockResponse = nil
+        MockURLProtocol.mockError = nil
         try await super.tearDown()
     }
     
@@ -95,11 +180,14 @@ final class CombinePipelineTests: XCTestCase {
     func testRetryLogic_NetworkFailure() async throws {
         let expectation = XCTestExpectation(description: "Retry logic executes")
         var attemptCount = 0
-        
+
+        // Setup error response
+        setupErrorResponse()
+
         // This will fail but should retry
         combineService.searchNearbyPublisher(
-            latitude: 0,
-            longitude: 0,
+            latitude: 37.7749,
+            longitude: -122.4194,
             radius: 1500
         )
         .handleEvents(receiveSubscription: { _ in
