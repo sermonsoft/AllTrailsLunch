@@ -26,7 +26,13 @@ struct AllTrailsLunchApp: App {
         // The singleton pattern ensures all ViewModels share the same interactor and managers
         let coreInteractor = config.createCoreInteractor()
 
-        let viewModel = DiscoveryViewModel(interactor: coreInteractor)
+        // Get DataPipelineCoordinator from the container
+        let pipelineCoordinator = coreInteractor.container.dataPipelineCoordinator
+
+        let viewModel = DiscoveryViewModel(
+            interactor: coreInteractor,
+            pipelineCoordinator: pipelineCoordinator
+        )
 
         _viewModel = State(wrappedValue: viewModel)
     }
