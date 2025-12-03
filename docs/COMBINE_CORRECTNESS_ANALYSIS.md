@@ -467,7 +467,7 @@ class Service {
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│ START: searchNearbyPublisher(lat, lon, radius)                 │
+│ START: searchNearbyPublisher(lat, lon, radius)                  │
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
@@ -475,7 +475,7 @@ class Service {
 │ Future<URLRequest, PlacesError>                                 │
 │  • Build URLRequest with parameters                             │
 │  • Thread: Background (processingQueue)                         │
-│  • .subscribe(on: processingQueue)                             │
+│  • .subscribe(on: processingQueue)                              │
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
@@ -496,7 +496,7 @@ class Service {
 │ .decode(type: NearbySearchResponse.self, decoder: JSONDecoder())│
 │  • Decode JSON response                                         │
 │  • Thread: Background (processingQueue)                         │
-│  • .subscribe(on: processingQueue)                             │
+│  • .subscribe(on: processingQueue)                              │
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
@@ -541,9 +541,9 @@ class Service {
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
-┌─────────────────────────────────────────────────────────────────┐
+┌──────────────────────────────────────────────────────────────────┐
 │ RESULT: AnyPublisher<(results: [PlaceDTO], nextPageToken), Error>│
-└─────────────────────────────────────────────────────────────────┘
+└──────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -552,7 +552,7 @@ class Service {
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│ START: executePipeline(query: String?)                         │
+│ START: executePipeline(query: String?)                          │
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
@@ -613,10 +613,10 @@ class Service {
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
-┌─────────────────────────────────────────────────────────────────┐
+┌──────────────────────────────────────────────────────────────────┐
 │ Publishers.CombineLatest(mergedDataPublisher, favoritesPublisher)│
-│  • Wait for both: [Place] + Set<String>                         │
-└─────────────────────────────────────────────────────────────────┘
+│  • Wait for both: [Place] + Set<String>                          │
+└──────────────────────────────────────────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
@@ -663,14 +663,14 @@ class Service {
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │ USER INTERACTION: TextField                                     │
-│  • User types: "p" → "pi" → "piz" → "pizz" → "pizza"          │
+│  • User types: "p" → "pi" → "piz" → "pizz" → "pizza"            │
 │  • SwiftUI binding: $viewModel.searchQuery                      │
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│ ViewModel: @Published var searchQuery = ""                     │
-│  • Emits: "p", "pi", "piz", "pizz", "pizza"                    │
+│ ViewModel: @Published var searchQuery = ""                      │
+│  • Emits: "p", "pi", "piz", "pizz", "pizza"                     │
 │  • Thread: Main                                                 │
 └─────────────────────────────────────────────────────────────────┘
                               │
@@ -691,7 +691,7 @@ class Service {
 │    200ms: "piz" → Timer resets                                  │
 │    300ms: "pizz" → Timer resets                                 │
 │    400ms: "pizza" → Timer resets                                │
-│    900ms: Timer fires → Emit "pizza" ✅                         │
+│    900ms: Timer fires → Emit "pizza"                            │
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
@@ -710,7 +710,7 @@ class Service {
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│ .flatMap { query in executePipeline(query: query) }            │
+│ .flatMap { query in executePipeline(query: query) }             │
 │  • Chain to full pipeline                                       │
 │  • Executes: Network + Cache + Favorites merge                  │
 └─────────────────────────────────────────────────────────────────┘
@@ -740,17 +740,17 @@ class Service {
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
-┌─────────────────────────────────────────────────────────────────┐
+┌──────────────────────────────────────────────────────────────────────┐
 │ LocationManager: @Published var userLocation: CLLocationCoordinate2D?│
-│  • Emits: L1, L2, L3, L4, L5, L6, L7                            │
-│  • Thread: Main                                                 │
-└─────────────────────────────────────────────────────────────────┘
+│  • Emits: L1, L2, L3, L4, L5, L6, L7                                 │
+│  • Thread: Main                                                      │
+└──────────────────────────────────────────────────────────────────────┘
                               │
                               ▼
-┌─────────────────────────────────────────────────────────────────┐
+┌────────────────────────────────────────────────────────────────────┐
 │ userLocationPublisher: AnyPublisher<CLLocationCoordinate2D?, Never>│
-│  • Cached during init for thread-safe access                    │
-└─────────────────────────────────────────────────────────────────┘
+│  • Cached during init for thread-safe access                       │
+└────────────────────────────────────────────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
@@ -760,20 +760,20 @@ class Service {
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
-┌─────────────────────────────────────────────────────────────────┐
+┌───────────────────────────────────────────────────────────────────────────┐
 │ .throttle(for: .seconds(2.0), scheduler: DispatchQueue.main, latest: true)│
-│  • Emit at most once per 2 seconds                              │
-│  • latest: true → Emit most recent value in window              │
-│  • Timeline:                                                    │
-│    0s: L1 → Emit immediately ✅                                 │
-│    0.5s: L2 → Buffered                                          │
-│    1.0s: L3 → Buffered                                          │
-│    1.5s: L4 → Buffered                                          │
-│    2.0s: Emit L4 (latest in window) ✅                          │
-│    2.5s: L5 → Buffered                                          │
-│    3.0s: L6 → Buffered                                          │
-│    4.0s: Emit L6 (latest in window) ✅                          │
-└─────────────────────────────────────────────────────────────────┘
+│  • Emit at most once per 2 seconds                                        │
+│  • latest: true → Emit most recent value in window                        │
+│  • Timeline:                                                              │
+│    0s: L1 → Emit immediately                                              │
+│    0.5s: L2 → Buffered                                                    │
+│    1.0s: L3 → Buffered                                                    │
+│    1.5s: L4 → Buffered                                                    │
+│    2.0s: Emit L4 (latest in window)                                       │
+│    2.5s: L5 → Buffered                                                    │
+│    3.0s: L6 → Buffered                                                    │
+│    4.0s: Emit L6 (latest in window)                                       │
+└───────────────────────────────────────────────────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
@@ -781,8 +781,8 @@ class Service {
 │  • Custom comparison: distance < 10 meters                      │
 │  • Example:                                                     │
 │    L1 (37.7749, -122.4194)                                      │
-│    L2 (37.7750, -122.4195) - 5m from L1 → Filtered ❌           │
-│    L3 (37.7760, -122.4210) - 150m from L2 → Passed ✅           │
+│    L2 (37.7750, -122.4195) - 5m from L1 → Filtered              │
+│    L3 (37.7760, -122.4210) - 150m from L2 → Passed              │
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
