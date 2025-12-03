@@ -175,7 +175,6 @@ class DiscoveryViewModel {
     // MARK: - Combine Support (NEW)
 
     private var cancellables = Set<AnyCancellable>()
-    private var pipelineCoordinator: DataPipelineCoordinator?
     private let searchTextSubject = PassthroughSubject<String, Never>()
 
     // MARK: - State (Exposed for UI Observation)
@@ -215,9 +214,8 @@ class DiscoveryViewModel {
     private var currentPage: Int = 0
     private var unfilteredResults: [Place] = [] // Store unfiltered results for client-side filtering
 
-    init(interactor: DiscoveryInteractor, pipelineCoordinator: DataPipelineCoordinator? = nil) {
+    init(interactor: DiscoveryInteractor) {
         self.interactor = interactor
-        self.pipelineCoordinator = pipelineCoordinator
 
         // Load saved filters from interactor
         self.filters = interactor.getFilters()
@@ -225,10 +223,8 @@ class DiscoveryViewModel {
         // Load favorite IDs from interactor into ViewModel's observable state
         self.favoriteIds = interactor.getFavoriteIds()
 
-        // Setup Combine pipelines if available
-        if pipelineCoordinator != nil {
-            setupCombinePipelines()
-        }
+        // Setup Combine pipelines
+        setupCombinePipelines()
 
         // Log screen view
         interactor.logEvent(Event.screenViewed)
@@ -607,18 +603,16 @@ class DiscoveryViewModel {
     // MARK: - Combine Pipeline Setup (NEW)
 
     private func setupCombinePipelines() {
-        guard let pipelineCoordinator = pipelineCoordinator else { return }
-
-        setupDebouncedSearch(coordinator: pipelineCoordinator)
-        setupThrottledLocation(coordinator: pipelineCoordinator)
+        setupDebouncedSearch()
+        setupThrottledLocation()
         setupFavoritesObservation()
-        setupPipelineStatusObservation(coordinator: pipelineCoordinator)
+        setupPipelineStatusObservation()
     }
 
     /// Setup debounced search pipeline for text input
-    private func setupDebouncedSearch(coordinator: DataPipelineCoordinator) {
-        // Create debounced pipeline from searchTextSubject
-        coordinator
+    private func setupDebouncedSearch() {
+        // Create debounced pipeline from searchTextSubject using interactor
+        interactor
             .createDebouncedSearchPipeline(
                 queryPublisher: searchTextSubject.eraseToAnyPublisher(),
                 debounceInterval: 0.5
@@ -644,9 +638,9 @@ class DiscoveryViewModel {
     }
 
     /// Setup throttled location updates pipeline
-    private func setupThrottledLocation(coordinator: DataPipelineCoordinator) {
-        coordinator
-            .createThrottledLocationPipeline()
+    private func setupThrottledLocation() {
+        interactor
+            .createThrottledLocationPipeline(throttleInterval: 2.0)
             .flatMap { [weak self] location -> AnyPublisher<[Place], Never> in
                 guard let self = self else {
                     return Just([]).eraseToAnyPublisher()
@@ -659,7 +653,7 @@ class DiscoveryViewModel {
 
                 // Only search if no active text search
                 if self.searchText.isEmpty {
-                    return coordinator.executePipeline(
+                    return self.interactor.executePipeline(
                         query: nil,
                         radius: 1500
                     )
@@ -704,8 +698,8 @@ class DiscoveryViewModel {
     }
 
     /// Setup pipeline status observation for loading states
-    private func setupPipelineStatusObservation(coordinator: DataPipelineCoordinator) {
-        coordinator.$pipelineStatus
+    private func setupPipelineStatusObservation() {
+        interactor.pipelineStatusPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] status in
                 guard let self = self else { return }
