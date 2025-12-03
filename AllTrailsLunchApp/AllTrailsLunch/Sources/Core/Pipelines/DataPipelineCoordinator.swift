@@ -24,7 +24,7 @@ import CoreLocation
 /// - Cache operations: background thread (processingQueue)
 /// - Data transformation: background thread (processingQueue)
 /// - Deduplication/merging: background thread (processingQueue)
-/// - @Published state updates: main thread only
+/// - @Published state updates: MainActor isolated for thread safety
 /// - Final delivery: main thread (receive(on:))
 ///
 /// Real-world applications:
@@ -32,6 +32,7 @@ import CoreLocation
 /// - AVL position updates merged with GIS layers
 /// - Real-time situational awareness with multiple data feeds
 /// - Synchronized state management across distributed sources
+@MainActor
 class DataPipelineCoordinator {
 
     // MARK: - Dependencies
@@ -41,31 +42,30 @@ class DataPipelineCoordinator {
     private let favoritesManager: FavoritesManager
     private let locationManager: LocationManager
 
-    // Background queue for expensive data processing
-    private let processingQueue = DispatchQueue(label: "com.alltrails.pipeline.processing", qos: .userInitiated)
+    // Background queue for expensive data processing (can be accessed from any isolation domain)
+    nonisolated private let processingQueue = DispatchQueue(label: "com.alltrails.pipeline.processing", qos: .userInitiated)
 
     // Cached publishers for thread-safe access
     private let userLocationPublisher: AnyPublisher<CLLocationCoordinate2D?, Never>
     private let favoriteIdsPublisher: AnyPublisher<Set<String>, Never>
 
-    // MARK: - Cancellables
+    // MARK: - Cancellables (MainActor isolated for thread safety)
 
     private var cancellables = Set<AnyCancellable>()
 
-    // MARK: - Published State (Main Thread Only)
+    // MARK: - Published State (MainActor Isolated)
 
-    /// Merged results from all sources - updated on main thread
+    /// Merged results from all sources - MainActor isolated for thread safety
     @Published private(set) var mergedResults: [Place] = []
 
-    /// Pipeline status - updated on main thread
+    /// Pipeline status - MainActor isolated for thread safety
     @Published private(set) var pipelineStatus: PipelineStatus = .idle
 
-    /// Aggregated errors from all sources - updated on main thread
+    /// Aggregated errors from all sources - MainActor isolated for thread safety
     @Published private(set) var errors: [PipelineError] = []
     
     // MARK: - Initialization
 
-    @MainActor
     init(
         combineService: CombinePlacesService,
         cache: LocalPlacesCache?,
@@ -86,13 +86,16 @@ class DataPipelineCoordinator {
     
     /// Execute multi-source data pipeline
     /// Demonstrates: merge, combineLatest, flatMap, error handling, thread coordination
-    func executePipeline(
+    nonisolated func executePipeline(
         query: String?,
         radius: Int = 1500
     ) -> AnyPublisher<[Place], Never> {
-        
-        pipelineStatus = .loading
-        errors.removeAll()
+
+        // Update state on main actor
+        Task { @MainActor in
+            self.pipelineStatus = .loading
+            self.errors.removeAll()
+        }
         
         // Source 1: Location stream
         let locationPublisher = createLocationPublisher()
@@ -193,15 +196,17 @@ class DataPipelineCoordinator {
             }
             .handleEvents(
                 receiveOutput: { [weak self] places in
-                    // Update UI state on main thread
-                    DispatchQueue.main.async {
+                    guard let self = self else { return }
+                    // Update UI state on main actor
+                    Task { @MainActor [weak self] in
                         self?.mergedResults = places
                         self?.pipelineStatus = .success(count: places.count)
                     }
                 },
                 receiveCompletion: { [weak self] completion in
-                    // Update UI state on main thread
-                    DispatchQueue.main.async {
+                    guard let self = self else { return }
+                    // Update UI state on main actor
+                    Task { @MainActor [weak self] in
                         if case .failure(let error) = completion {
                             self?.errors.append(error)
                             self?.pipelineStatus = .failed(error)
@@ -210,8 +215,11 @@ class DataPipelineCoordinator {
                 }
             )
             .catch { [weak self] error -> AnyPublisher<[Place], Never> in
+                guard let self = self else {
+                    return Just([]).eraseToAnyPublisher()
+                }
                 // Error recovery: return cached results or empty array
-                DispatchQueue.main.async {
+                Task { @MainActor [weak self] in
                     self?.errors.append(error)
                     self?.pipelineStatus = .failed(error)
                 }
@@ -225,7 +233,7 @@ class DataPipelineCoordinator {
     // MARK: - Helper Publishers
 
     /// Create location publisher with error handling
-    private func createLocationPublisher() -> AnyPublisher<CLLocationCoordinate2D, PipelineError> {
+    nonisolated private func createLocationPublisher() -> AnyPublisher<CLLocationCoordinate2D, PipelineError> {
         return Future<CLLocationCoordinate2D, PipelineError> { [weak self] promise in
             guard let self = self else {
                 promise(.failure(.serviceUnavailable))
@@ -246,7 +254,7 @@ class DataPipelineCoordinator {
 
     /// Debounced search pipeline for text queries
     /// Demonstrates: debounce, removeDuplicates, switchToLatest
-    func createDebouncedSearchPipeline(
+    nonisolated func createDebouncedSearchPipeline(
         queryPublisher: AnyPublisher<String, Never>,
         debounceInterval: TimeInterval = 0.5
     ) -> AnyPublisher<[Place], Never> {
@@ -266,7 +274,7 @@ class DataPipelineCoordinator {
 
     /// Throttled location updates pipeline
     /// Demonstrates: throttle, distinctUntilChanged
-    func createThrottledLocationPipeline(
+    nonisolated func createThrottledLocationPipeline(
         throttleInterval: TimeInterval = 2.0
     ) -> AnyPublisher<CLLocationCoordinate2D, Never> {
 
