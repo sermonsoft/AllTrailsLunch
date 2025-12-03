@@ -21,7 +21,8 @@ protocol DiscoveryInteractor:
     EventLoggingInteractor,
     NetworkStatusInteractor,
     FilterManagementInteractor,
-    SavedSearchInteractor {
+    SavedSearchInteractor,
+    ReactivePipelineInteractor {
     // This protocol composes all the smaller protocols needed for the Discovery feature
     // No additional methods needed - all functionality comes from composed protocols
 }
