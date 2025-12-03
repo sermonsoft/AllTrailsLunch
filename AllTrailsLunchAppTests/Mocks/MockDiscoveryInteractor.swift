@@ -132,6 +132,7 @@ final class MockDiscoveryInteractor: DiscoveryInteractor {
     func toggleFavorite(_ place: Place) async throws -> Bool {
         toggleFavoriteCallCount += 1
         lastToggledPlace = place
+        lastToggledPlaceId = place.id
         return true
     }
 
@@ -174,15 +175,18 @@ final class MockDiscoveryInteractor: DiscoveryInteractor {
     // MARK: - Event Logging
 
     func logEvent(_ event: LoggableEvent) {
-        // No-op for mock
+        // Delegate to container's event logger so tests can verify events
+        container.eventLogger.log(event)
     }
 
     func logScreenView(screenName: String, screenClass: String?) {
-        // No-op for mock
+        // Delegate to container's event logger so tests can verify events
+        container.eventLogger.logScreenView(screenName: screenName, screenClass: screenClass)
     }
 
     func logCustomEvent(name: String, parameters: [String: Any]?) {
-        // No-op for mock
+        // Delegate to container's event logger so tests can verify events
+        container.eventLogger.logEvent(name: name, parameters: parameters)
     }
 
     // MARK: - Network Status
