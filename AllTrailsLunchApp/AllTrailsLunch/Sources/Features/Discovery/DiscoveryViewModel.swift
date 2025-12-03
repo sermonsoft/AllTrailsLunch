@@ -8,6 +8,7 @@
 import Foundation
 import CoreLocation
 import Observation
+import Combine
 
 /// View mode for displaying restaurant results
 enum ViewMode {
@@ -139,7 +140,12 @@ extension DiscoveryViewModel {
 @MainActor
 @Observable
 class DiscoveryViewModel {
-    var searchText: String = ""
+    var searchText: String = "" {
+        didSet {
+            // Send to Combine pipeline if available
+            searchTextSubject.send(searchText)
+        }
+    }
     var results: [Place] = []
     var viewMode: ViewMode = .list {
         didSet {
@@ -165,6 +171,12 @@ class DiscoveryViewModel {
     var savedSearches: [SavedSearch] = []
 
     private let interactor: DiscoveryInteractor
+
+    // MARK: - Combine Support (NEW)
+
+    private var cancellables = Set<AnyCancellable>()
+    private var pipelineCoordinator: DataPipelineCoordinator?
+    private let searchTextSubject = PassthroughSubject<String, Never>()
 
     // MARK: - State (Exposed for UI Observation)
 
@@ -203,14 +215,20 @@ class DiscoveryViewModel {
     private var currentPage: Int = 0
     private var unfilteredResults: [Place] = [] // Store unfiltered results for client-side filtering
 
-    init(interactor: DiscoveryInteractor) {
+    init(interactor: DiscoveryInteractor, pipelineCoordinator: DataPipelineCoordinator? = nil) {
         self.interactor = interactor
+        self.pipelineCoordinator = pipelineCoordinator
 
         // Load saved filters from interactor
         self.filters = interactor.getFilters()
 
         // Load favorite IDs from interactor into ViewModel's observable state
         self.favoriteIds = interactor.getFavoriteIds()
+
+        // Setup Combine pipelines if available
+        if pipelineCoordinator != nil {
+            setupCombinePipelines()
+        }
 
         // Log screen view
         interactor.logEvent(Event.screenViewed)
@@ -584,5 +602,153 @@ class DiscoveryViewModel {
 
         // Reload saved searches into ViewModel's observable state
         await loadSavedSearches()
+    }
+
+    // MARK: - Combine Pipeline Setup (NEW)
+
+    private func setupCombinePipelines() {
+        guard let pipelineCoordinator = pipelineCoordinator else { return }
+
+        setupDebouncedSearch(coordinator: pipelineCoordinator)
+        setupThrottledLocation(coordinator: pipelineCoordinator)
+        setupFavoritesObservation()
+        setupPipelineStatusObservation(coordinator: pipelineCoordinator)
+    }
+
+    /// Setup debounced search pipeline for text input
+    private func setupDebouncedSearch(coordinator: DataPipelineCoordinator) {
+        // Create debounced pipeline from searchTextSubject
+        coordinator
+            .createDebouncedSearchPipeline(
+                queryPublisher: searchTextSubject.eraseToAnyPublisher(),
+                debounceInterval: 0.5
+            )
+            .sink { [weak self] places in
+                guard let self = self else { return }
+
+                // Update results
+                self.results = places
+                self.isShowingCachedData = false
+
+                // Log event
+                if !self.searchText.isEmpty {
+                    self.interactor.logEvent(
+                        Event.searchPerformed(
+                            query: self.searchText,
+                            resultCount: places.count
+                        )
+                    )
+                }
+            }
+            .store(in: &cancellables)
+    }
+
+    /// Setup throttled location updates pipeline
+    private func setupThrottledLocation(coordinator: DataPipelineCoordinator) {
+        coordinator
+            .createThrottledLocationPipeline()
+            .flatMap { [weak self] location -> AnyPublisher<[Place], Never> in
+                guard let self = self else {
+                    return Just([]).eraseToAnyPublisher()
+                }
+
+                // Update ViewModel location
+                Task { @MainActor in
+                    self.userLocation = location
+                }
+
+                // Only search if no active text search
+                if self.searchText.isEmpty {
+                    return coordinator.executePipeline(
+                        query: nil,
+                        radius: 1500
+                    )
+                } else {
+                    return Just([]).eraseToAnyPublisher()
+                }
+            }
+            .sink { [weak self] places in
+                guard let self = self else { return }
+
+                if !places.isEmpty && self.searchText.isEmpty {
+                    self.results = places
+                    self.interactor.logEvent(
+                        Event.nearbySearchPerformed(resultCount: places.count)
+                    )
+                }
+            }
+            .store(in: &cancellables)
+    }
+
+    /// Setup reactive favorites observation
+    private func setupFavoritesObservation() {
+        // Get FavoritesManager from interactor's container
+        guard let container = (interactor as? CoreInteractor)?.container else { return }
+
+        container.favoritesManager.$favoriteIds
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] favoriteIds in
+                guard let self = self else { return }
+
+                // Update local state
+                self.favoriteIds = favoriteIds
+
+                // Update existing results with new favorite status
+                self.results = self.results.map { place in
+                    var updatedPlace = place
+                    updatedPlace.isFavorite = favoriteIds.contains(place.id)
+                    return updatedPlace
+                }
+            }
+            .store(in: &cancellables)
+    }
+
+    /// Setup pipeline status observation for loading states
+    private func setupPipelineStatusObservation(coordinator: DataPipelineCoordinator) {
+        coordinator.$pipelineStatus
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] status in
+                guard let self = self else { return }
+
+                switch status {
+                case .idle:
+                    self.isLoading = false
+
+                case .loading:
+                    self.isLoading = true
+                    self.error = nil
+
+                case .success(let count):
+                    self.isLoading = false
+                    self.error = nil
+                    print("✅ Pipeline loaded \(count) places")
+
+                case .failed(let pipelineError):
+                    self.isLoading = false
+                    self.handlePipelineError(pipelineError)
+                }
+            }
+            .store(in: &cancellables)
+    }
+
+    /// Handle pipeline errors
+    private func handlePipelineError(_ pipelineError: PipelineError) {
+        switch pipelineError {
+        case .network(let placesError):
+            self.error = placesError
+            interactor.logEvent(Event.searchError(error: placesError.localizedDescription))
+
+        case .location(let error):
+            self.error = .unknown("Location error: \(error.localizedDescription)")
+            interactor.logEvent(Event.searchError(error: error.localizedDescription))
+
+        case .cache(let error):
+            // Cache errors are non-fatal, just log
+            print("⚠️ Cache error: \(error.localizedDescription)")
+
+        case .serviceUnavailable:
+            self.error = .unknown("Service unavailable")
+            interactor.logEvent(Event.searchError(error: "Service unavailable"))
+        }
     }
 }
