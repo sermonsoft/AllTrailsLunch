@@ -27,11 +27,6 @@ import CoreLocation
 /// - @Published state updates: MainActor isolated for thread safety
 /// - Final delivery: main thread (receive(on:))
 ///
-/// Real-world applications:
-/// - CAD event stream coordination (similar to AllTrails dispatch systems)
-/// - AVL position updates merged with GIS layers
-/// - Real-time situational awareness with multiple data feeds
-/// - Synchronized state management across distributed sources
 @MainActor
 class DataPipelineCoordinator {
 
@@ -254,6 +249,10 @@ class DataPipelineCoordinator {
 
     /// Debounced search pipeline for text queries
     /// Demonstrates: debounce, removeDuplicates, switchToLatest
+    ///
+    /// Thread Safety: Marked `nonisolated` to allow creation from any thread.
+    /// The publisher chain handles threading internally via schedulers.
+    /// State updates happen via `Task { @MainActor }` in executePipeline().
     nonisolated func createDebouncedSearchPipeline(
         queryPublisher: AnyPublisher<String, Never>,
         debounceInterval: TimeInterval = 0.5
@@ -274,6 +273,9 @@ class DataPipelineCoordinator {
 
     /// Throttled location updates pipeline
     /// Demonstrates: throttle, distinctUntilChanged
+    ///
+    /// Thread Safety: Marked `nonisolated` to allow creation from any thread.
+    /// The publisher chain handles threading internally via schedulers.
     nonisolated func createThrottledLocationPipeline(
         throttleInterval: TimeInterval = 2.0
     ) -> AnyPublisher<CLLocationCoordinate2D, Never> {
