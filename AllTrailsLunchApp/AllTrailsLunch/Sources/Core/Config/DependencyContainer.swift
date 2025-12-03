@@ -125,5 +125,22 @@ extension DependencyContainer {
     var savedSearchManager: SavedSearchManager {
         require(SavedSearchManager.self)
     }
+
+    // MARK: - Combine Services Access
+
+    /// Quick access to DataPipelineCoordinator
+    var dataPipelineCoordinator: DataPipelineCoordinator {
+        require(DataPipelineCoordinator.self)
+    }
+
+    /// Quick access to CombinePlacesService
+    var combinePlacesService: CombinePlacesService {
+        require(CombinePlacesService.self)
+    }
+
+    /// Quick access to LocalPlacesCache
+    var localPlacesCache: LocalPlacesCache {
+        require(LocalPlacesCache.self)
+    }
 }
 
