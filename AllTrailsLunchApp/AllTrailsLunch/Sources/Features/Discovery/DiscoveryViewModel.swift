@@ -214,7 +214,7 @@ class DiscoveryViewModel {
     private var currentPage: Int = 0
     private var unfilteredResults: [Place] = [] // Store unfiltered results for client-side filtering
 
-    init(interactor: DiscoveryInteractor) {
+    init(interactor: DiscoveryInteractor, enableCombinePipelines: Bool = true) {
         self.interactor = interactor
 
         // Load saved filters from interactor
@@ -223,8 +223,10 @@ class DiscoveryViewModel {
         // Load favorite IDs from interactor into ViewModel's observable state
         self.favoriteIds = interactor.getFavoriteIds()
 
-        // Setup Combine pipelines
-        setupCombinePipelines()
+        // Setup Combine pipelines (can be disabled for testing)
+        if enableCombinePipelines {
+            setupCombinePipelines()
+        }
 
         // Log screen view
         interactor.logEvent(Event.screenViewed)
