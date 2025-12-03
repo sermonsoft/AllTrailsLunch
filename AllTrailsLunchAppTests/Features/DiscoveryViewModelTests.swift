@@ -46,7 +46,8 @@ final class DiscoveryViewModelTests: XCTestCase {
         // Create mock interactor with the container
         mockInteractor = MockDiscoveryInteractor(container: container)
 
-        sut = DiscoveryViewModel(interactor: mockInteractor)
+        // Disable Combine pipelines in tests to avoid interference
+        sut = DiscoveryViewModel(interactor: mockInteractor, enableCombinePipelines: false)
     }
 
     override func tearDown() async throws {

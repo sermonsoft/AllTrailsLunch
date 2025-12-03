@@ -66,7 +66,8 @@ final class BookmarkToggleIntegrationTests: XCTestCase {
         coreInteractor = CoreInteractor(container: container)
 
         // Create ViewModel - it gets EventLogger from interactor
-        viewModel = DiscoveryViewModel(interactor: coreInteractor)
+        // Disable Combine pipelines in tests to avoid interference
+        viewModel = DiscoveryViewModel(interactor: coreInteractor, enableCombinePipelines: false)
     }
     
     override func tearDown() {
