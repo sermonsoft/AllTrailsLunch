@@ -7,6 +7,7 @@
 
 import Foundation
 import CoreLocation
+import Combine
 
 /// Core implementation of all Interactor protocols
 /// This is the production implementation that ViewModels will use
@@ -42,6 +43,10 @@ class CoreInteractor: DiscoveryInteractor, DetailInteractor {
 
     private var savedSearchManager: SavedSearchManager {
         container.savedSearchManager
+    }
+
+    private var pipelineCoordinator: DataPipelineCoordinator {
+        container.dataPipelineCoordinator
     }
 
     // MARK: - Initialization
@@ -225,12 +230,55 @@ class CoreInteractor: DiscoveryInteractor, DetailInteractor {
     }
 
     // MARK: - DetailInteractor Implementation
-    
+
     func getPlaceDetails(placeId: String) async throws -> PlaceDetail {
         return try await restaurantManager.getPlaceDetails(placeId: placeId)
     }
-    
+
     // Note: Favorites methods are shared between DiscoveryInteractor and DetailInteractor
     // They're already implemented above
+
+    // MARK: - ReactivePipelineInteractor Implementation
+
+    func executePipeline(
+        query: String?,
+        radius: Int = 1500
+    ) -> AnyPublisher<[Place], Never> {
+        return pipelineCoordinator.executePipeline(query: query, radius: radius)
+    }
+
+    func createDebouncedSearchPipeline(
+        queryPublisher: AnyPublisher<String, Never>,
+        debounceInterval: TimeInterval = 0.5
+    ) -> AnyPublisher<[Place], Never> {
+        return pipelineCoordinator.createDebouncedSearchPipeline(
+            queryPublisher: queryPublisher,
+            debounceInterval: debounceInterval
+        )
+    }
+
+    func createThrottledLocationPipeline(
+        throttleInterval: TimeInterval = 2.0
+    ) -> AnyPublisher<CLLocationCoordinate2D, Never> {
+        return pipelineCoordinator.createThrottledLocationPipeline(
+            throttleInterval: throttleInterval
+        )
+    }
+
+    var pipelineStatusPublisher: AnyPublisher<PipelineStatus, Never> {
+        return pipelineCoordinator.$pipelineStatus.eraseToAnyPublisher()
+    }
+
+    var mergedResultsPublisher: AnyPublisher<[Place], Never> {
+        return pipelineCoordinator.$mergedResults.eraseToAnyPublisher()
+    }
+
+    var pipelineErrorsPublisher: AnyPublisher<[PipelineError], Never> {
+        return pipelineCoordinator.$errors.eraseToAnyPublisher()
+    }
+
+    func cancelAllPipelines() {
+        pipelineCoordinator.cancelAllPipelines()
+    }
 }
 
