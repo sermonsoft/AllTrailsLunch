@@ -159,11 +159,14 @@ final class DependencyFactory {
         let container = DependencyContainer()
 
         // Register shared managers (singletons)
-        container.register(FavoritesManager.self, service: createFavoritesManager())
+        let favoritesManager = createFavoritesManager()
+        let locationManager = createLocationManager()
+
+        container.register(FavoritesManager.self, service: favoritesManager)
         container.register(PhotoManager.self, service: createPhotoManager())
         container.register(NetworkMonitor.self, service: createNetworkMonitor())
         container.register(EventLogger.self, service: createEventLogger())
-        container.register(LocationManager.self, service: createLocationManager())
+        container.register(LocationManager.self, service: locationManager)
         container.register(FilterPreferencesManager.self, service: createFilterPreferencesManager())
         container.register(SavedSearchManager.self, service: createSavedSearchManager())
 
@@ -173,6 +176,29 @@ final class DependencyFactory {
             cache: createPlacesCacheService(),
             container: container
         ))
+
+        // MARK: - Combine Services (NEW)
+
+        // Create Combine services
+        let placesClient = createPlacesClient()
+        let combineService = CombinePlacesService(
+            client: placesClient,
+            session: URLSession.shared
+        )
+        let cache = FileBasedPlacesCache()
+
+        // Create DataPipelineCoordinator with all dependencies
+        let pipelineCoordinator = DataPipelineCoordinator(
+            combineService: combineService,
+            cache: cache,
+            favoritesManager: favoritesManager,
+            locationManager: locationManager
+        )
+
+        // Register Combine services
+        container.register(CombinePlacesService.self, service: combineService)
+        container.register(LocalPlacesCache.self, service: cache)
+        container.register(DataPipelineCoordinator.self, service: pipelineCoordinator)
 
         return container
     }
