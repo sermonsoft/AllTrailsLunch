@@ -11,50 +11,65 @@ import CoreLocation
 
 /// Combine-based network service demonstrating reactive data pipelines.
 /// Showcases:
-/// - URLSession.dataTaskPublisher for network requests
+/// - URLSession.dataTaskPublisher for network requests (background thread)
 /// - Retry logic with exponential backoff
 /// - Error handling and transformation
-/// - Thread-safe publisher composition
+/// - Thread-safe publisher composition with proper thread coordination
 /// - Backpressure handling
-@MainActor
+/// - Background processing with main thread UI updates
+///
+/// Thread Safety:
+/// - Network operations execute on background threads (URLSession default)
+/// - @Published properties updated on main thread only
+/// - Publishers use subscribe(on:) for background work, receive(on:) for main thread delivery
 class CombinePlacesService {
     private let client: PlacesClient
     private let session: URLSession
     private var cancellables = Set<AnyCancellable>()
-    
-    // MARK: - Published State
-    
-    /// Network activity indicator
+
+    // Background queue for expensive operations
+    private let processingQueue = DispatchQueue(label: "com.alltrails.combine.processing", qos: .userInitiated)
+
+    // MARK: - Published State (Main Thread Only)
+
+    /// Network activity indicator - updated on main thread
     @Published private(set) var isLoading = false
-    
-    /// Last error encountered
+
+    /// Last error encountered - updated on main thread
     @Published private(set) var lastError: PlacesError?
-    
-    /// Request count for monitoring
+
+    /// Request count for monitoring - updated on main thread
     @Published private(set) var requestCount = 0
-    
+
     init(client: PlacesClient, session: URLSession = .shared) {
         self.client = client
         self.session = session
     }
     
     // MARK: - Combine Publishers
-    
+
     /// Search nearby restaurants using Combine pipeline
-    /// Demonstrates: dataTaskPublisher, retry, error handling, transformation
+    /// Demonstrates: dataTaskPublisher, retry, error handling, transformation, thread coordination
+    ///
+    /// Thread Strategy:
+    /// - Request building: background queue (processingQueue)
+    /// - Network call: URLSession background queue (automatic)
+    /// - JSON decoding: background queue (processingQueue)
+    /// - State updates: main thread (@Published properties)
+    /// - Final delivery: main thread (receive(on:))
     func searchNearbyPublisher(
         latitude: Double,
         longitude: Double,
         radius: Int,
         pageToken: String? = nil
     ) -> AnyPublisher<(results: [PlaceDTO], nextPageToken: String?), PlacesError> {
-        
+
         return Future<URLRequest, PlacesError> { [weak self] promise in
             guard let self = self else {
                 promise(.failure(.unknown("Service deallocated")))
                 return
             }
-            
+
             do {
                 let url = try self.client.buildNearbySearchURL(
                     latitude: latitude,
@@ -62,13 +77,13 @@ class CombinePlacesService {
                     radius: radius,
                     pageToken: pageToken
                 )
-                
+
                 let request = try PlacesRequestBuilder()
                     .setURL(url)
                     .setMethod(.get)
                     .build()
                     .toURLRequest()
-                
+
                 promise(.success(request))
             } catch let error as PlacesError {
                 promise(.failure(error))
@@ -76,14 +91,17 @@ class CombinePlacesService {
                 promise(.failure(.unknown(error.localizedDescription)))
             }
         }
+        .subscribe(on: processingQueue) // Build request on background thread
         .flatMap { [weak self] request -> AnyPublisher<(results: [PlaceDTO], nextPageToken: String?), PlacesError> in
             guard let self = self else {
                 return Fail(error: PlacesError.unknown("Service deallocated"))
                     .eraseToAnyPublisher()
             }
-            
+
+            // Network call happens on URLSession's background queue
             return self.executeRequest(request)
                 .decode(type: NearbySearchResponse.self, decoder: JSONDecoder())
+                .subscribe(on: self.processingQueue) // Decode on background thread
                 .mapError { error -> PlacesError in
                     if let placesError = error as? PlacesError {
                         return placesError
@@ -94,6 +112,7 @@ class CombinePlacesService {
                     }
                 }
                 .tryMap { response -> (results: [PlaceDTO], nextPageToken: String?) in
+                    // Response validation on background thread
                     guard response.status == "OK" || response.status == "ZERO_RESULTS" else {
                         throw PlacesError.invalidResponse("API returned status: \(response.status)")
                     }
@@ -110,13 +129,15 @@ class CombinePlacesService {
         }
         .handleEvents(
             receiveSubscription: { [weak self] _ in
-                Task { @MainActor in
+                // Update UI state on main thread
+                DispatchQueue.main.async {
                     self?.isLoading = true
                     self?.requestCount += 1
                 }
             },
             receiveCompletion: { [weak self] completion in
-                Task { @MainActor in
+                // Update UI state on main thread
+                DispatchQueue.main.async {
                     self?.isLoading = false
                     if case .failure(let error) = completion {
                         self?.lastError = error
@@ -125,7 +146,7 @@ class CombinePlacesService {
             }
         )
         .retry(2) // Retry up to 2 times on failure
-        .receive(on: DispatchQueue.main)
+        .receive(on: DispatchQueue.main) // Deliver final results on main thread
         .eraseToAnyPublisher()
     }
     
@@ -180,6 +201,7 @@ class CombinePlacesService {
     }
 
     /// Search text using Combine pipeline
+    /// Thread Strategy: Same as searchNearbyPublisher - background processing, main thread delivery
     func searchTextPublisher(
         query: String,
         latitude: Double?,
@@ -214,14 +236,17 @@ class CombinePlacesService {
                 promise(.failure(.unknown(error.localizedDescription)))
             }
         }
+        .subscribe(on: processingQueue) // Build request on background thread
         .flatMap { [weak self] request -> AnyPublisher<(results: [PlaceDTO], nextPageToken: String?), PlacesError> in
             guard let self = self else {
                 return Fail(error: PlacesError.unknown("Service deallocated"))
                     .eraseToAnyPublisher()
             }
 
+            // Network call happens on URLSession's background queue
             return self.executeRequest(request)
                 .decode(type: TextSearchResponse.self, decoder: JSONDecoder())
+                .subscribe(on: self.processingQueue) // Decode on background thread
                 .mapError { error -> PlacesError in
                     if let placesError = error as? PlacesError {
                         return placesError
@@ -232,6 +257,7 @@ class CombinePlacesService {
                     }
                 }
                 .tryMap { response -> (results: [PlaceDTO], nextPageToken: String?) in
+                    // Response validation on background thread
                     guard response.status == "OK" || response.status == "ZERO_RESULTS" else {
                         throw PlacesError.invalidResponse("API returned status: \(response.status)")
                     }
@@ -248,13 +274,15 @@ class CombinePlacesService {
         }
         .handleEvents(
             receiveSubscription: { [weak self] _ in
-                Task { @MainActor in
+                // Update UI state on main thread
+                DispatchQueue.main.async {
                     self?.isLoading = true
                     self?.requestCount += 1
                 }
             },
             receiveCompletion: { [weak self] completion in
-                Task { @MainActor in
+                // Update UI state on main thread
+                DispatchQueue.main.async {
                     self?.isLoading = false
                     if case .failure(let error) = completion {
                         self?.lastError = error
@@ -262,8 +290,8 @@ class CombinePlacesService {
                 }
             }
         )
-        .retry(2)
-        .receive(on: DispatchQueue.main)
+        .retry(2) // Retry up to 2 times on failure
+        .receive(on: DispatchQueue.main) // Deliver final results on main thread
         .eraseToAnyPublisher()
     }
 }
