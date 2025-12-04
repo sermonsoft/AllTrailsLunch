@@ -678,10 +678,9 @@ class DiscoveryViewModel {
 
     /// Setup reactive favorites observation
     private func setupFavoritesObservation() {
-        // Get FavoritesManager from interactor's container
-        guard let container = (interactor as? CoreInteractor)?.container else { return }
-
-        container.favoritesManager.$favoriteIds
+        // Use interactor's publisher instead of accessing FavoritesManager directly
+        // This maintains clean architecture where ViewModel only references interactor
+        interactor.favoriteIdsPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] favoriteIds in
                 guard let self = self else { return }

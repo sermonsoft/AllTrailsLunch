@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 
 /// Protocol for favorites management business logic
 /// Follows Interface Segregation Principle - focused on favorites only
@@ -47,5 +48,11 @@ protocol FavoritesInteractor {
     /// Get all favorite place IDs
     /// - Returns: Set of favorite place IDs
     func getFavoriteIds() -> Set<String>
+
+    // MARK: - Reactive Publishers
+
+    /// Publisher for favorite IDs changes
+    /// Use this for reactive UI updates instead of accessing FavoritesManager directly
+    var favoriteIdsPublisher: AnyPublisher<Set<String>, Never> { get }
 }
 

@@ -113,6 +113,10 @@ class CoreInteractor: DiscoveryInteractor, DetailInteractor {
         return favoritesManager.getFavoriteIds()
     }
 
+    var favoriteIdsPublisher: AnyPublisher<Set<String>, Never> {
+        return favoritesManager.$favoriteIds.eraseToAnyPublisher()
+    }
+
     // MARK: - NetworkStatusInteractor Implementation
 
     func isNetworkConnected() -> Bool {
