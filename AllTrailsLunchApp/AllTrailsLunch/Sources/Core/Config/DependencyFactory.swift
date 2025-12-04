@@ -38,7 +38,11 @@ final class DependencyFactory {
     }
     
     func createRemotePlacesService() -> RemotePlacesService {
-        GooglePlacesService(client: createPlacesClient())
+        // Use mock service in mock environment for UI testing
+        if config.environment == .mock {
+            return MockPlacesService()
+        }
+        return GooglePlacesService(client: createPlacesClient())
     }
     
     func createFavoritesService() -> FavoritesService {
@@ -181,10 +185,23 @@ final class DependencyFactory {
 
         // Create Combine services
         let placesClient = createPlacesClient()
-        let combineService = CombinePlacesService(
-            client: placesClient,
-            session: URLSession.shared
-        )
+        let combineService: CombinePlacesService
+
+        // Use mock data for Combine service in mock environment
+        if config.environment == .mock {
+            // In mock mode, CombinePlacesService will use the mock remote service
+            // We can still use the real CombinePlacesService since it delegates to the remote service
+            combineService = CombinePlacesService(
+                client: placesClient,
+                session: URLSession.shared
+            )
+        } else {
+            combineService = CombinePlacesService(
+                client: placesClient,
+                session: URLSession.shared
+            )
+        }
+
         let cache = FileBasedPlacesCache()
 
         // Create DataPipelineCoordinator with all dependencies

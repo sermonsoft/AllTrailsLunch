@@ -121,6 +121,7 @@ struct RestaurantRow: View {
             .foregroundColor(DesignSystem.Colors.textPrimary)
             .lineLimit(1)
             .multilineTextAlignment(.leading)
+            .accessibilityIdentifier("restaurant-name")
     }
 
     private var ratingAndReviews: some View {

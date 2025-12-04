@@ -114,7 +114,8 @@ final class EnvironmentConfiguration {
 
         // 2) Allow override via launch arguments
         let args = ProcessInfo.processInfo.arguments.map { $0.uppercased() }
-        if args.contains("MOCK") {
+        // UI-Testing argument triggers mock mode for UI tests
+        if args.contains("UI-TESTING") || args.contains("MOCK") {
             return .mock
         }
         if args.contains("DEV") || args.contains("DEVELOPMENT") {

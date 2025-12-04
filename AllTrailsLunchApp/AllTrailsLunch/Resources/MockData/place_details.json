@@ -1,0 +1,78 @@
+{
+  "html_attributions": [],
+  "result": {
+    "name": "Zuni Café",
+    "formatted_address": "1658 Market St, San Francisco, CA 94102-5949, USA",
+    "formatted_phone_number": "(415) 552-2522",
+    "website": "http://www.zunicafe.com/",
+    "rating": 4.4,
+    "user_ratings_total": 2100,
+    "price_level": 3,
+    "opening_hours": {
+      "open_now": true,
+      "weekday_text": [
+        "Monday: Closed",
+        "Tuesday: 5:00 – 9:30 PM",
+        "Wednesday: 5:00 – 9:30 PM",
+        "Thursday": 5:00 – 9:30 PM",
+        "Friday: 11:00 AM – 3:00 PM, 5:00 – 10:00 PM",
+        "Saturday: 11:00 AM – 3:00 PM, 5:00 – 10:00 PM",
+        "Sunday: 11:00 AM – 3:00 PM, 5:00 – 9:30 PM"
+      ]
+    },
+    "reviews": [
+      {
+        "author_name": "John Smith",
+        "rating": 5,
+        "text": "Amazing food and atmosphere! The roast chicken is a must-try. Service was excellent and the ambiance is perfect for a special dinner.",
+        "time": 1701388800
+      },
+      {
+        "author_name": "Sarah Johnson",
+        "rating": 4,
+        "text": "Great restaurant with classic San Francisco charm. The Caesar salad was delicious and the wine selection is impressive. Can get quite busy so make a reservation.",
+        "time": 1701302400
+      },
+      {
+        "author_name": "Michael Chen",
+        "rating": 5,
+        "text": "One of my favorite restaurants in SF. The brick oven roasted chicken is legendary. Everything is made with care and attention to detail.",
+        "time": 1701216000
+      },
+      {
+        "author_name": "Emily Davis",
+        "rating": 4,
+        "text": "Wonderful dining experience. The oysters were fresh and the burger was cooked perfectly. A bit pricey but worth it for the quality.",
+        "time": 1701129600
+      },
+      {
+        "author_name": "David Wilson",
+        "rating": 5,
+        "text": "Iconic SF restaurant that lives up to the hype. The food is consistently excellent and the service is professional. Highly recommend!",
+        "time": 1701043200
+      }
+    ],
+    "photos": [
+      {
+        "height": 2592,
+        "photo_reference": "AWn5SU68NoPWCaYcfyRsXWL-pSvNUYXVo23N7QA9VcSieAeVrxR_Dghkb7NxeJrsRBNp5YbDt6shS9z_s0hLKZK0OCT85fOJkL4CE1g96KnG32WHCFyfG63mUbhC7EubMU_UCt8W2jE_Zi_1X7dupMZJSGbAlPJpJFm_2Pf8H8H9_DA5Kou9zygYVHqExmxW-ES_Aun1u5r8SAFRD7K0_ArcVqfPI2XCjc9b6Mb402Y1n9RCFAii-8zFdKtmBtPxCJsXqRF_bD4HQClZ6gjAVYOcCF6QquK3EaE4z8QJtLew9SlFDepClN_XiOryFxbR20zAss1hmWH7BG2SBvKtnGaprLGOEAxPDepLx579PyNC7E-YmhAk1VtYQKLtZd8kF9xT99ftcvpqcItTYRlt1CK-UaFEaXAAxaHTUkV0H7wBoo4yUJzV2uyUrI9aRKm6t2o-P9rk6IGyFwgC2dZFxF1fb2GzlQeh3mz4AQEFFbVHUWSUz14aYgjLGp04OI7_4o5NHuiXYfngr0FydJbyq2EnRlMoFVqe7lDuOs2XCpcc-f6qhyQnrT8VvFOgjv3SPIw7hvk1apAIxzrPFrKM_nh7KBSHMN1bcs-Cy0H3IW8VLpBQfIubW0EESm2KReJfppioSfrQPA",
+        "width": 4608
+      }
+    ],
+    "geometry": {
+      "location": {
+        "lat": 37.7736,
+        "lng": -122.421608
+      }
+    },
+    "types": [
+      "restaurant",
+      "food",
+      "point_of_interest",
+      "establishment"
+    ],
+    "business_status": "OPERATIONAL"
+  },
+  "status": "OK"
+}
+
