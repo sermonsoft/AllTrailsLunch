@@ -32,7 +32,8 @@ class DataPipelineCoordinator {
 
     // MARK: - Dependencies
 
-    private let combineService: CombinePlacesService
+    // CombinePlacesService is not @MainActor at class level, so it can be nonisolated
+    nonisolated private let combineService: CombinePlacesService
     nonisolated private let cache: LocalPlacesCache?
     private let favoritesManager: FavoritesManager
     private let locationManager: LocationManager
