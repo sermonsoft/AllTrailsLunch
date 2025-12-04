@@ -193,13 +193,13 @@ This app uses a **VIPER-inspired clean architecture** with 5 distinct layers, en
 ```
 ┌─────────────────────────────────────────────────────────┐
 │  View Layer (SwiftUI)                                   │
-│  - DiscoveryView, RestaurantDetailView, MapResultsView │
+│  - DiscoveryView, RestaurantDetailView, MapResultsView  │
 └────────────────────┬────────────────────────────────────┘
                      ↓
 ┌─────────────────────────────────────────────────────────┐
 │  ViewModel Layer (@Observable)                          │
-│  - DiscoveryViewModel, DetailViewModel                 │
-│  - State management, UI logic                          │
+│  - DiscoveryViewModel, DetailViewModel                  │
+│  - State management, UI logic                           │
 └────────────────────┬────────────────────────────────────┘
                      ↓
 ┌─────────────────────────────────────────────────────────┐
@@ -210,14 +210,14 @@ This app uses a **VIPER-inspired clean architecture** with 5 distinct layers, en
                      ↓
 ┌─────────────────────────────────────────────────────────┐
 │  Manager Layer (@Observable)                            │
-│  - RestaurantManager, FavoritesManager, PhotoManager   │
-│  - High-level operations, state coordination           │
+│  - RestaurantManager, FavoritesManager, PhotoManager    │
+│  - High-level operations, state coordination            │
 └────────────────────┬────────────────────────────────────┘
                      ↓
 ┌─────────────────────────────────────────────────────────┐
 │  Service Layer (Protocol)                               │
-│  - RemotePlacesService, FavoritesService               │
-│  - Data access, external APIs                          │
+│  - RemotePlacesService, FavoritesService                │
+│  - Data access, external APIs                           │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -290,13 +290,6 @@ AllTrailsLunchApp/
 │   └── Performance/                # Performance tests (13 tests)
 │
 ├── AllTrailsLunchAppUITests/       # UI tests
-│
-├── docs/                           # 📁 Documentation
-│   ├── README.md                   # Documentation index
-│   ├── EXAMINER_GUIDE.md           # Review guide with grading rubric
-│   ├── ARCHITECTURE.md             # Architecture patterns & design
-│   ├── TESTING.md                  # Testing strategy & coverage
-│   └── CODE_EXAMPLES.md            # Implementation examples
 │
 ├── GETTING_STARTED.md              # Quick start guide (2 min)
 └── README.md                       # This file
