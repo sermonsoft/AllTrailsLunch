@@ -68,9 +68,10 @@ final class FavoritesManagerTests: XCTestCase {
         sut = FavoritesManager(service: mockService)
 
         // When
-        try await sut.toggleFavorite("place1")
+        let isFavorited = try await sut.toggleFavorite("place1")
 
         // Then
+        XCTAssertTrue(isFavorited, "Should return true when adding favorite")
         XCTAssertTrue(sut.getFavoriteIds().contains("place1"))
         XCTAssertEqual(mockService.addFavoriteCallCount, 1)
         XCTAssertEqual(mockService.lastAddedPlaceId, "place1")
@@ -82,9 +83,10 @@ final class FavoritesManagerTests: XCTestCase {
         sut = FavoritesManager(service: mockService)
 
         // When
-        try await sut.toggleFavorite("place1")
+        let isFavorited = try await sut.toggleFavorite("place1")
 
         // Then
+        XCTAssertFalse(isFavorited, "Should return false when removing favorite")
         XCTAssertFalse(sut.getFavoriteIds().contains("place1"))
         XCTAssertEqual(mockService.removeFavoriteCallCount, 1)
         XCTAssertEqual(mockService.lastRemovedPlaceId, "place1")

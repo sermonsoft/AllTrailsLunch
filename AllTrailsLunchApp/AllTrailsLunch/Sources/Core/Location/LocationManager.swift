@@ -87,9 +87,9 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
 
     /// CLLocationManagerDelegate methods are called on an arbitrary thread by CoreLocation.
     /// Since CLLocationManagerDelegate is a pre-concurrency Objective-C protocol, these methods
-    /// are implicitly nonisolated. We use Task { @MainActor } to safely hop to the main actor
-    /// to update our @MainActor-isolated properties.
-    func locationManager(
+    /// are implicitly nonisolated. We explicitly mark them as nonisolated and use Task { @MainActor }
+    /// to safely hop to the main actor to update our @MainActor-isolated properties.
+    nonisolated func locationManager(
         _ manager: CLLocationManager,
         didUpdateLocations locations: [CLLocation]
     ) {
@@ -102,7 +102,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
         }
     }
 
-    func locationManager(
+    nonisolated func locationManager(
         _ manager: CLLocationManager,
         didFailWithError error: Error
     ) {
@@ -112,7 +112,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
         }
     }
 
-    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+    nonisolated func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         Task { @MainActor in
             self.authorizationStatus = manager.authorizationStatus
         }

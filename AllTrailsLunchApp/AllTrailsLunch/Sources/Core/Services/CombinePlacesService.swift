@@ -23,29 +23,26 @@ import CoreLocation
 /// - @Published properties are @MainActor isolated for thread safety
 /// - Publishers use subscribe(on:) for background work, receive(on:) for main thread delivery
 /// - Cancellables stored in thread-safe @MainActor isolated property
-@MainActor
+/// - Class is not @MainActor to allow nonisolated publisher creation
 class CombinePlacesService {
     private let client: PlacesClient
     private let session: URLSession
 
-    // Thread-safe cancellables storage (MainActor isolated)
-    private var cancellables = Set<AnyCancellable>()
-
     // Background queue for expensive operations (can be accessed from any isolation domain)
-    nonisolated private let processingQueue = DispatchQueue(label: "com.alltrails.combine.processing", qos: .userInitiated)
+    private let processingQueue = DispatchQueue(label: "com.alltrails.combine.processing", qos: .userInitiated)
 
     // MARK: - Published State (Main Actor Isolated)
 
     /// Network activity indicator - MainActor isolated for thread safety
-    @Published private(set) var isLoading = false
+    @MainActor @Published private(set) var isLoading = false
 
     /// Last error encountered - MainActor isolated for thread safety
-    @Published private(set) var lastError: PlacesError?
+    @MainActor @Published private(set) var lastError: PlacesError?
 
     /// Request count for monitoring - MainActor isolated for thread safety
-    @Published private(set) var requestCount = 0
+    @MainActor @Published private(set) var requestCount = 0
 
-    nonisolated init(client: PlacesClient, session: URLSession = .shared) {
+    init(client: PlacesClient, session: URLSession = .shared) {
         self.client = client
         self.session = session
     }
@@ -61,7 +58,7 @@ class CombinePlacesService {
     /// - JSON decoding: background queue (processingQueue)
     /// - State updates: main thread (@Published properties via MainActor isolation)
     /// - Final delivery: main thread (receive(on:))
-    nonisolated func searchNearbyPublisher(
+    func searchNearbyPublisher(
         latitude: Double,
         longitude: Double,
         radius: Int,
@@ -158,7 +155,7 @@ class CombinePlacesService {
     
     /// Execute URLRequest with dataTaskPublisher
     /// Demonstrates: URLSession.dataTaskPublisher, error mapping, thread safety
-    nonisolated private func executeRequest(_ request: URLRequest) -> AnyPublisher<Data, PlacesError> {
+    private func executeRequest(_ request: URLRequest) -> AnyPublisher<Data, PlacesError> {
         let context = NetworkLogger.shared.logRequest(request)
 
         return session.dataTaskPublisher(for: request)
@@ -208,7 +205,7 @@ class CombinePlacesService {
 
     /// Search text using Combine pipeline
     /// Thread Strategy: Same as searchNearbyPublisher - background processing, main thread delivery
-    nonisolated func searchTextPublisher(
+    func searchTextPublisher(
         query: String,
         latitude: Double?,
         longitude: Double?,
