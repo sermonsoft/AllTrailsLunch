@@ -204,8 +204,8 @@ This app uses a **VIPER-inspired clean architecture** with 5 distinct layers, en
                      ↓
 ┌─────────────────────────────────────────────────────────┐
 │  Interactor Layer (Protocol)                            │
-│  - DiscoveryInteractor, DetailInteractor               │
-│  - Business logic, use cases                           │
+│  - DiscoveryInteractor, DetailInteractor                │
+│  - Business logic, use cases                            │
 └────────────────────┬────────────────────────────────────┘
                      ↓
 ┌─────────────────────────────────────────────────────────┐
