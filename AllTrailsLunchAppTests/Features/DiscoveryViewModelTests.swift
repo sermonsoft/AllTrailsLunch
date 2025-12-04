@@ -15,30 +15,47 @@ final class DiscoveryViewModelTests: XCTestCase {
     var sut: DiscoveryViewModel!
     var mockInteractor: MockDiscoveryInteractor!
     var mockEventLogger: MockEventLogger!
-    var mockFilterPreferences: MockFilterPreferencesService!
-    var mockSavedSearchService: MockSavedSearchService!
-    
+    var mockFilterPreferencesManager: FilterPreferencesManager!
+    var mockSavedSearchManager: SavedSearchManager!
+
     override func setUp() async throws {
         try await super.setUp()
-        mockInteractor = MockDiscoveryInteractor()
+
+        // Create mock event logger first
         mockEventLogger = MockEventLogger()
-        mockFilterPreferences = MockFilterPreferencesService()
-        mockSavedSearchService = MockSavedSearchService()
-        
-        sut = DiscoveryViewModel(
-            interactor: mockInteractor,
-            eventLogger: mockEventLogger,
-            filterPreferences: mockFilterPreferences,
-            savedSearchService: mockSavedSearchService
-        )
+
+        // Create mock managers
+        mockFilterPreferencesManager = FilterPreferencesManager(service: MockFilterPreferencesService())
+        mockSavedSearchManager = SavedSearchManager(service: MockSavedSearchService())
+
+        // Create container with mock event logger
+        let container = DependencyContainer()
+        container.register(EventLogger.self, service: mockEventLogger)
+        container.register(FavoritesManager.self, service: AppConfiguration.shared.createFavoritesManager())
+        container.register(PhotoManager.self, service: AppConfiguration.shared.createPhotoManager())
+        container.register(NetworkMonitor.self, service: AppConfiguration.shared.createNetworkMonitor())
+        container.register(LocationManager.self, service: AppConfiguration.shared.createLocationManager())
+        container.register(RestaurantManager.self, service: RestaurantManager(
+            remote: AppConfiguration.shared.createRemotePlacesService(),
+            cache: AppConfiguration.shared.createPlacesCacheService(),
+            container: container
+        ))
+        container.register(FilterPreferencesManager.self, service: mockFilterPreferencesManager)
+        container.register(SavedSearchManager.self, service: mockSavedSearchManager)
+
+        // Create mock interactor with the container
+        mockInteractor = MockDiscoveryInteractor(container: container)
+
+        // Disable Combine pipelines in tests to avoid interference
+        sut = DiscoveryViewModel(interactor: mockInteractor, enableCombinePipelines: false)
     }
-    
+
     override func tearDown() async throws {
         sut = nil
         mockInteractor = nil
         mockEventLogger = nil
-        mockFilterPreferences = nil
-        mockSavedSearchService = nil
+        mockFilterPreferencesManager = nil
+        mockSavedSearchManager = nil
         try await super.tearDown()
     }
     
@@ -231,26 +248,26 @@ final class DiscoveryViewModelTests: XCTestCase {
         let place = PlaceFixtures.sampleRestaurant
 
         // When
-        sut.toggleFavorite(place)
+        await sut.toggleFavorite(place)
 
         // Then
         XCTAssertEqual(mockInteractor.toggleFavoriteCallCount, 1)
         XCTAssertEqual(mockInteractor.lastToggledPlaceId, place.id)
         XCTAssertTrue(mockEventLogger.didLog(eventName: "favorite_toggled"))
     }
-    
+
     // MARK: - View Mode Tests
-    
+
     func testViewMode_Change_LogsEvent() {
         // When
         sut.viewMode = .map
-        
+
         // Then
         XCTAssertTrue(mockEventLogger.didLog(eventName: "view_mode_changed"))
         let params = mockEventLogger.parameters(for: "view_mode_changed")
         XCTAssertEqual(params?["mode"] as? String, "map")
     }
-    
+
     // MARK: - Filter Tests
 
     func testApplyFilters_FiltersResults() async {
@@ -260,7 +277,7 @@ final class DiscoveryViewModelTests: XCTestCase {
         await sut.initialize()
 
         // When
-        sut.applyFilters(SearchFiltersFixtures.highRatingFilter)
+        await sut.applyFilters(SearchFiltersFixtures.highRatingFilter)
 
         // Then
         XCTAssertTrue(sut.results.allSatisfy { ($0.rating ?? 0) >= 4.5 })
@@ -273,15 +290,53 @@ final class DiscoveryViewModelTests: XCTestCase {
         mockInteractor.placesToReturn = PlaceFixtures.samplePlaces
         await sut.initialize()
 
-        sut.applyFilters(SearchFiltersFixtures.highRatingFilter)
+        await sut.applyFilters(SearchFiltersFixtures.highRatingFilter)
 
         // When
-        sut.clearFilters()
+        await sut.clearFilters()
 
         // Then
         XCTAssertEqual(sut.filters, .default)
         XCTAssertEqual(sut.results.count, PlaceFixtures.samplePlaces.count)
         XCTAssertTrue(mockEventLogger.didLog(eventName: "filters_cleared"))
+    }
+
+    // MARK: - Search Restriction Tests
+
+    func testSaveSearch_WithInvalidCategory_ThrowsError() async {
+        // Given
+        mockInteractor.locationToReturn = PlaceFixtures.sanFranciscoLocation
+        await sut.initialize()
+
+        sut.searchText = "car repair shop"
+
+        // When/Then
+        do {
+            try await sut.saveCurrentSearch(name: "My Car Search")
+            XCTFail("Should throw error for invalid search category")
+        } catch let error as PlacesError {
+            if case .invalidSearchCategory = error {
+                // Success
+            } else {
+                XCTFail("Expected invalidSearchCategory error, got \(error)")
+            }
+        } catch {
+            XCTFail("Expected PlacesError, got \(error)")
+        }
+    }
+
+    func testSaveSearch_WithValidFoodQuery_Succeeds() async throws {
+        // Given
+        mockInteractor.locationToReturn = PlaceFixtures.sanFranciscoLocation
+        await sut.initialize()
+
+        sut.searchText = "italian restaurant"
+
+        // When
+        try await sut.saveCurrentSearch(name: "Italian Places")
+
+        // Then - Should not throw
+        XCTAssertTrue(mockEventLogger.didLog(eventName: "search_saved"))
     }
 }
 

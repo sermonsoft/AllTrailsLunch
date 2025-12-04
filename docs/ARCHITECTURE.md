@@ -11,50 +11,56 @@
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    VIEW LAYER (SwiftUI)                     │
-│  ┌─────────────────┐  ┌──────────────────┐  ┌────────────┐ │
-│  │ DiscoveryView   │  │ DetailView       │  │ MapView    │ │
-│  │ - UI Components │  │ - Restaurant     │  │ - Map      │ │
-│  │ - User Input    │  │   Details        │  │   Display  │ │
-│  └─────────────────┘  └──────────────────┘  └────────────┘ │
+│  ┌─────────────────┐  ┌──────────────────┐  ┌────────────┐  │
+│  │ DiscoveryView   │  │ DetailView       │  │ MapView    │  │
+│  │ - UI Components │  │ - Restaurant     │  │ - Map      │  │
+│  │ - User Input    │  │   Details        │  │   Display  │  │
+│  └─────────────────┘  └──────────────────┘  └────────────┘  │
 └─────────────────────────────────────────────────────────────┘
                             ↓ ↑
 ┌─────────────────────────────────────────────────────────────┐
 │              VIEWMODEL LAYER (@Observable)                  │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │ DiscoveryViewModel                                  │   │
-│  │ - @Published state properties                       │   │
-│  │ - User action handlers                              │   │
-│  │ - UI state transformations                          │   │
-│  └─────────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │ DiscoveryViewModel                                  │    │
+│  │ - @Published state properties                       │    │
+│  │ - User action handlers                              │    │
+│  │ - UI state transformations                          │    │
+│  └─────────────────────────────────────────────────────┘    │
 └─────────────────────────────────────────────────────────────┘
                             ↓ ↑
 ┌─────────────────────────────────────────────────────────────┐
 │               INTERACTOR LAYER (Business Logic)             │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │ CoreInteractor (Protocol)                           │   │
-│  │ - Coordinates between managers                      │   │
-│  │ - Implements business rules                         │   │
-│  │ - Handles complex workflows                         │   │
-│  └─────────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │ CoreInteractor (Protocol)                           │    │
+│  │ - Coordinates between managers                      │    │
+│  │ - Implements business rules                         │    │
+│  │ - Handles complex workflows                         │    │
+│  └─────────────────────────────────────────────────────┘    │
 └─────────────────────────────────────────────────────────────┘
                             ↓ ↑
-┌─────────────────────────────────────────────────────────────┐
-│            MANAGER LAYER (Data Coordination)                │
-│  ┌──────────────┐  ┌──────────────┐  ┌─────────────────┐  │
-│  │ Restaurant   │  │ Favorites    │  │ Photo           │  │
-│  │ Manager      │  │ Manager      │  │ Manager         │  │
-│  │ - Search     │  │ - Add/Remove │  │ - Load/Cache    │  │
-│  │ - Details    │  │ - Persist    │  │ - Memory Mgmt   │  │
-│  └──────────────┘  └──────────────┘  └─────────────────┘  │
-└─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                    MANAGER LAYER (Data Coordination)                            │
+│  ┌──────────────┐  ┌──────────────┐  ┌─────────────────┐  ┌─────────────────┐   │
+│  │ Restaurant   │  │ Favorites    │  │ Photo           │  │ Location        │   │
+│  │ Manager      │  │ Manager      │  │ Manager         │  │ Manager         │   │
+│  │ - Search     │  │ - Add/Remove │  │ - Load/Cache    │  │ - GPS           │   │
+│  │ - Details    │  │ - Persist    │  │ - Memory Mgmt   │  │ - Permissions   │   │
+│  └──────────────┘  └──────────────┘  └─────────────────┘  └─────────────────┘   │
+│  ┌──────────────┐  ┌──────────────┐  ┌─────────────────┐  ┌─────────────────┐   │
+│  │ Filter       │  │ SavedSearch  │  │ EventLogger     │  │ Network         │   │
+│  │ Preferences  │  │ Manager      │  │ (Analytics)     │  │ Monitor         │   │
+│  │ Manager      │  │ - Save       │  │ - Track Events  │  │ - Connectivity  │   │
+│  │ - Filters    │  │ - Load       │  │ - Log Actions   │  │ - Status        │   │
+│  └──────────────┘  └──────────────┘  └─────────────────┘  └─────────────────┘   │
+└─────────────────────────────────────────────────────────────────────────────────┘
                             ↓ ↑
 ┌─────────────────────────────────────────────────────────────┐
 │              SERVICE LAYER (External APIs)                  │
-│  ┌──────────────┐  ┌──────────────┐  ┌─────────────────┐  │
-│  │ Places       │  │ SwiftData    │  │ Location        │  │
-│  │ Service      │  │ Service      │  │ Service         │  │
-│  │ - API calls  │  │ - Persistence│  │ - GPS           │  │
-│  └──────────────┘  └──────────────┘  └─────────────────┘  │
+│  ┌──────────────┐  ┌──────────────┐  ┌─────────────────┐    │
+│  │ Places       │  │ SwiftData    │  │ Location        │    │
+│  │ Service      │  │ Service      │  │ Service         │    │
+│  │ - API calls  │  │ - Persistence│  │ - GPS           │    │
+│  └──────────────┘  └──────────────┘  └─────────────────┘    │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -111,23 +117,52 @@ class MockPlacesService: PlacesService { ... }
 
 ### 4. Observable State Management
 
-Uses modern `@Observable` macro for reactive UI:
+Uses modern `@Observable` macro for reactive UI - **ONLY on ViewModels**:
 
 ```swift
+// ✅ CORRECT: ViewModel is @Observable
 @Observable
-class FavoritesManager {
-    var favoriteIds: Set<String> = []  // Auto-publishes changes
-    
-    func toggle(_ placeId: String) {
-        if favoriteIds.contains(placeId) {
-            favoriteIds.remove(placeId)
+@MainActor
+class DiscoveryViewModel {
+    var favoriteIds: Set<String> = []  // Auto-publishes changes to views
+
+    private let interactor: DiscoveryInteractor
+
+    func toggleFavorite(_ place: Place) async {
+        let isFavorite = try await interactor.toggleFavorite(place)
+        // Update ViewModel's observable state
+        if isFavorite {
+            favoriteIds.insert(place.id)
         } else {
-            favoriteIds.insert(placeId)
+            favoriteIds.remove(place.id)
         }
-        // UI automatically updates
+    }
+}
+
+// ❌ WRONG: Manager should NOT be @Observable
+// Managers return data via async/await, NOT observable state
+@MainActor
+class FavoritesManager {
+    private var favoriteIdsCache: Set<String> = []  // Private cache
+
+    func toggleFavorite(_ place: Place) async throws -> Bool {
+        // Returns data via async/await
+        let isFavorite = favoriteIdsCache.contains(place.id)
+        if isFavorite {
+            favoriteIdsCache.remove(place.id)
+            return false
+        } else {
+            favoriteIdsCache.insert(place.id)
+            return true
+        }
     }
 }
 ```
+
+**Key Principle**:
+- ✅ **ViewModels are @Observable** - They manage UI state
+- ❌ **Managers are NOT @Observable** - They return data via async/await
+- ✅ **Views ONLY observe ViewModels** - Never managers or interactors
 
 ---
 
@@ -176,9 +211,10 @@ struct DiscoveryView: View {
 - `Features/Discovery/DiscoveryViewModel.swift`
 
 **Characteristics**:
-- `@Observable` for reactive updates
+- `@Observable` for reactive UI updates (ONLY ViewModels should be @Observable)
 - `@MainActor` for main thread execution
 - Transforms domain models to UI models
+- Manages observable state by calling interactor methods and updating local properties
 - Handles debouncing, loading states
 
 **Example**:
@@ -243,30 +279,47 @@ class CoreInteractor: CoreInteracting {
 **Responsibility**: Coordinate data operations and maintain state
 
 **Key Files**:
-- `Core/Managers/RestaurantManager.swift`
-- `Core/Managers/FavoritesManager.swift`
-- `Core/Managers/PhotoManager.swift`
+- `Core/Managers/RestaurantManager.swift` - Restaurant search and details
+- `Core/Managers/FavoritesManager.swift` - Favorite places management
+- `Core/Managers/PhotoManager.swift` - Photo loading and caching
+- `Core/Managers/LocationManager.swift` - GPS and location services
+- `Core/Managers/FilterPreferencesManager.swift` - Search filter preferences
+- `Core/Managers/SavedSearchManager.swift` - Saved search management
+- `Core/Analytics/EventLogger.swift` - Analytics event tracking
+- `Core/Utilities/NetworkMonitor.swift` - Network connectivity monitoring
 
 **Characteristics**:
 - `@Observable` for shared state
 - Coordinates service calls
 - Applies business rules
 - Caches data
+- All managers initialized once in DependencyContainer
+- Accessed through Interactor layer only
+
+**Characteristics**:
+- **NOT @Observable** - Returns data via async/await instead
+- Coordinates service calls
+- Applies business rules
+- Caches data internally when appropriate
+- Thread-safe for concurrent access
+- Methods return data to ViewModels, which update their own observable state
 
 **Example**:
 ```swift
-@Observable
+// ✅ CORRECT: Manager is NOT @Observable
+@MainActor
 class RestaurantManager {
     private let placesService: PlacesService
     private let favoritesManager: FavoritesManager
-    
+
+    // Returns data via async/await
     func searchNearby(location: CLLocationCoordinate2D) async throws -> [Place] {
         var places = try await placesService.searchNearby(location: location)
-        
+
         // Apply favorite status
         places = favoritesManager.applyFavoriteStatus(to: places)
-        
-        return places
+
+        return places  // Returns data, doesn't publish it
     }
 }
 ```
@@ -299,6 +352,156 @@ class GooglePlacesService: PlacesService {
         return try decode(response)
     }
 }
+```
+
+---
+
+## 🏗️ Complete Dependency Architecture
+
+### DependencyContainer Pattern
+
+All managers and services are initialized **once** in the `DependencyContainer` at app startup:
+
+```swift
+// AppConfiguration.swift
+func createDependencyContainer() -> DependencyContainer {
+    let container = DependencyContainer()
+
+    // Register all managers (singletons)
+    container.register(FavoritesManager.self, service: createFavoritesManager())
+    container.register(PhotoManager.self, service: createPhotoManager())
+    container.register(RestaurantManager.self, service: createRestaurantManager())
+    container.register(LocationManager.self, service: createLocationManager())
+    container.register(FilterPreferencesManager.self, service: createFilterPreferencesManager())
+    container.register(SavedSearchManager.self, service: createSavedSearchManager())
+    container.register(EventLogger.self, service: createEventLogger())
+    container.register(NetworkMonitor.self, service: createNetworkMonitor())
+
+    return container
+}
+```
+
+### CoreInteractor Singleton Pattern
+
+The `CoreInteractor` is created **once** as a singleton and holds the `DependencyContainer`:
+
+```swift
+// CoreInteractor.swift
+class CoreInteractor: DiscoveryInteractor, DetailInteractor {
+    private let container: DependencyContainer
+
+    // Thread-safe singleton
+    private static var _shared: CoreInteractor?
+    private static let lock = NSLock()
+
+    static var shared: CoreInteractor {
+        lock.lock()
+        defer { lock.unlock() }
+
+        if let instance = _shared {
+            return instance
+        }
+
+        let instance = CoreInteractor(container: AppConfiguration.shared.createDependencyContainer())
+        _shared = instance
+        return instance
+    }
+
+    // Private computed properties to access managers from container
+    private var favoritesManager: FavoritesManager {
+        container.favoritesManager
+    }
+
+    private var filterPreferencesManager: FilterPreferencesManager {
+        container.filterPreferencesManager
+    }
+
+    // Public methods to expose managers to ViewModels
+    func getFavoritesManager() -> FavoritesManager {
+        return favoritesManager
+    }
+
+    func getFilterPreferencesManager() -> FilterPreferencesManager {
+        return filterPreferencesManager
+    }
+}
+```
+
+### ViewModel Dependency Flow
+
+ViewModels **only** receive the `Interactor` - all other dependencies come through it:
+
+```swift
+// DiscoveryViewModel.swift
+@Observable
+@MainActor
+class DiscoveryViewModel {
+    private let interactor: DiscoveryInteractor
+
+    // ✅ CORRECT: Only interactor parameter
+    init(interactor: DiscoveryInteractor) {
+        self.interactor = interactor
+
+        // Get managers from interactor
+        self.filters = interactor.getFilterPreferencesManager().getFilters()
+    }
+
+    // Computed properties to access managers
+    private var filterPreferencesManager: FilterPreferencesManager {
+        interactor.getFilterPreferencesManager()
+    }
+
+    private var savedSearchManager: SavedSearchManager {
+        interactor.getSavedSearchManager()
+    }
+
+    func saveFilters(_ filters: SearchFilters) {
+        filterPreferencesManager.saveFilters(filters)
+    }
+}
+```
+
+### Complete Dependency Chain
+
+```
+App Startup
+    ↓
+AppConfiguration.createDependencyContainer()
+    ↓
+DependencyContainer registers all managers (once)
+    ↓
+CoreInteractor.shared created with container
+    ↓
+DiscoveryViewModel(interactor: CoreInteractor.shared)
+    ↓
+ViewModel accesses managers via interactor.getXxxManager()
+    ↓
+Managers access services (injected in constructor)
+    ↓
+Services make API calls / persist data
+```
+
+### Key Principles
+
+1. **Single Source of Truth**: All managers initialized once in `DependencyContainer`
+2. **No Direct Manager Access**: ViewModels NEVER directly access managers - always through interactor
+3. **No Redundant Parameters**: If a dependency is available through interactor, don't pass it separately
+4. **Observable State**: ONLY ViewModels use `@Observable` for reactive UI updates (Managers use async/await)
+5. **Protocol-Based**: All services and interactors defined as protocols for testability
+6. **Views Observe ViewModels Only**: Views NEVER observe Managers or Interactors directly
+
+### Example: Complete Flow
+
+```swift
+// ❌ WRONG: Passing managers directly to ViewModel
+DiscoveryViewModel(
+    interactor: interactor,
+    filterPreferences: FilterPreferencesService(),  // ❌ Redundant!
+    savedSearchService: SavedSearchService(...)     // ❌ Redundant!
+)
+
+// ✅ CORRECT: Only interactor, everything else comes through it
+DiscoveryViewModel(interactor: interactor)
 ```
 
 ---
@@ -358,27 +561,52 @@ class FavoritesManager {
 
 ### 3. Observer Pattern
 
-**Pattern**: `@Observable` for reactive state
+**Pattern**: `@Observable` for reactive state - **ONLY on ViewModels**
 
 **Benefits**:
-- Automatic UI updates
+- Automatic UI updates when ViewModel state changes
 - Better performance than `@Published`
 - Type-safe
+- Clear separation: Views observe ViewModels, ViewModels call Managers
 
 **Example**:
 ```swift
+// ✅ CORRECT: ViewModel is @Observable
 @Observable
-class FavoritesManager {
-    var favoriteIds: Set<String> = []  // Changes auto-publish
+@MainActor
+class DiscoveryViewModel {
+    var favoriteIds: Set<String> = []  // Changes auto-publish to views
+
+    private let interactor: DiscoveryInteractor
+
+    func toggleFavorite(_ place: Place) async {
+        let isFavorite = try await interactor.toggleFavorite(place)
+        // Update ViewModel's observable state
+        if isFavorite {
+            favoriteIds.insert(place.id)
+        } else {
+            favoriteIds.remove(place.id)
+        }
+    }
 }
 
-// In View
+// ❌ WRONG: Manager should NOT be @Observable
+@MainActor
+class FavoritesManager {
+    private var favoriteIdsCache: Set<String> = []  // Private, not observable
+
+    func toggleFavorite(_ place: Place) async throws -> Bool {
+        // Returns data via async/await
+    }
+}
+
+// In View - ONLY observe ViewModel
 struct FavoritesView: View {
-    @State private var manager: FavoritesManager
-    
+    @Bindable var viewModel: DiscoveryViewModel
+
     var body: some View {
-        Text("Favorites: \(manager.favoriteIds.count)")
-        // Auto-updates when favoriteIds changes
+        Text("Favorites: \(viewModel.favoriteIds.count)")
+        // Auto-updates when ViewModel state changes
     }
 }
 ```
@@ -420,19 +648,25 @@ User taps heart icon
     ↓
 DiscoveryView calls viewModel.toggleFavorite(place)
     ↓
-DiscoveryViewModel calls interactor.toggleFavorite(place)
+DiscoveryViewModel calls interactor.toggleFavorite(place) (async)
     ↓
-CoreInteractor calls favoritesManager.toggle(place.id)
+CoreInteractor calls favoritesManager.toggleFavorite(place) (async)
     ↓
-FavoritesManager updates favoriteIds Set
-    ↓
-@Observable publishes change
-    ↓
-All views observing FavoritesManager update
-    ↓
-CoreInteractor logs analytics event
+FavoritesManager updates internal favoriteIdsCache
     ↓
 FavoritesManager persists to SwiftData
+    ↓
+FavoritesManager returns new status (true/false) via async/await
+    ↓
+CoreInteractor returns new status to ViewModel
+    ↓
+ViewModel updates its observable favoriteIds property
+    ↓
+@Observable publishes change from ViewModel
+    ↓
+All views observing ViewModel update automatically
+    ↓
+ViewModel logs analytics event
 ```
 
 ---
@@ -446,6 +680,8 @@ FavoritesManager persists to SwiftData
 3. **Scalability**: Add features without touching existing code
 4. **Type Safety**: Compile-time checks prevent runtime errors
 5. **Performance**: @Observable is more efficient than @Published
+6. **Clear Data Flow**: Views → ViewModels → Interactors → Managers → Services (no layer skipping)
+7. **Proper Observable Pattern**: Only ViewModels are @Observable, ensuring Views never directly observe Managers
 
 ### Trade-offs
 

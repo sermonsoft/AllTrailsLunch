@@ -18,29 +18,16 @@ import SwiftUI
 /// - Offline indicator
 struct DiscoveryView: View {
     @Bindable var viewModel: DiscoveryViewModel
-    @Environment(FavoritesManager.self) var favoritesManager
-    @State private var photoManager: PhotoManager
-    @State private var networkMonitor: NetworkMonitor
-
-    init(
-        viewModel: DiscoveryViewModel,
-        photoManager: PhotoManager? = nil,
-        networkMonitor: NetworkMonitor? = nil
-    ) {
-        self.viewModel = viewModel
-        self._photoManager = State(initialValue: photoManager ?? AppConfiguration.shared.createPhotoManager())
-        self._networkMonitor = State(initialValue: networkMonitor ?? AppConfiguration.shared.createNetworkMonitor())
-    }
 
     var body: some View {
         NavigationStack {
             ZStack {
                 VStack(spacing: 0) {
                     OfflineIndicatorView(
-                        isOffline: !networkMonitor.isConnected,
+                        isOffline: !viewModel.isNetworkConnected,
                         isShowingCachedData: viewModel.isShowingCachedData
                     )
-                    .animation(.easeInOut, value: networkMonitor.isConnected)
+                    .animation(.easeInOut, value: viewModel.isNetworkConnected)
                     .animation(.easeInOut, value: viewModel.isShowingCachedData)
 
                     ZStack {
@@ -56,9 +43,8 @@ struct DiscoveryView: View {
                 .toolbarBackground(.visible, for: .navigationBar)
                 .toolbarBackground(Color.white, for: .navigationBar)
                 .background(DesignSystem.Colors.background)
-                .photoManager(photoManager)
                 .sheet(isPresented: $viewModel.showSavedSearchesSheet) {
-                    SavedSearchesView(savedSearchService: viewModel.savedSearchService) { savedSearch in
+                    SavedSearchesView(viewModel: viewModel) { savedSearch in
                         Task {
                             await viewModel.loadSavedSearch(savedSearch)
                         }
@@ -69,7 +55,7 @@ struct DiscoveryView: View {
                         query: viewModel.searchText,
                         location: viewModel.userLocation.map { (latitude: $0.latitude, longitude: $0.longitude) },
                         filters: viewModel.filters,
-                        savedSearchService: viewModel.savedSearchService,
+                        viewModel: viewModel,
                         onSave: {}
                     )
                 }
@@ -130,7 +116,11 @@ struct DiscoveryView: View {
         .sheet(isPresented: $viewModel.showFilterSheet) {
             FilterSheet(filters: Binding(
                 get: { viewModel.filters },
-                set: { viewModel.applyFilters($0) }
+                set: { newFilters in
+                    Task {
+                        await viewModel.applyFilters(newFilters)
+                    }
+                }
             ))
         }
     }
@@ -161,15 +151,21 @@ struct DiscoveryView: View {
             ListResultsView(
                 places: viewModel.results,
                 isLoading: viewModel.isLoading,
+                favoriteIds: viewModel.favoriteIds,
                 onToggleFavorite: viewModel.toggleFavorite,
                 onLoadMore: { await viewModel.loadNextPage() },
-                onRefresh: { await viewModel.refresh() }
+                onRefresh: { await viewModel.refresh() },
+                loadPhoto: viewModel.loadPhoto,
+                loadPlaceDetails: viewModel.loadPlaceDetails
             )
         case .map:
             MapResultsView(
                 places: viewModel.results,
+                favoriteIds: viewModel.favoriteIds,
                 onToggleFavorite: viewModel.toggleFavorite,
-                isSearchActive: !viewModel.searchText.isEmpty
+                isSearchActive: !viewModel.searchText.isEmpty,
+                loadPhoto: viewModel.loadPhoto,
+                loadPlaceDetails: viewModel.loadPlaceDetails
             )
         }
     }
@@ -422,10 +418,9 @@ struct ViewModeToggleButton: View {
 
 #Preview {
     let config = AppConfiguration.shared
-    return DiscoveryView(
-        viewModel: config.createDiscoveryViewModel(),
-        photoManager: config.createPhotoManager()
-    )
-    .environment(config.createFavoritesManager())
+    let container = config.createDependencyContainer()
+
+    DiscoveryView(viewModel: config.createDiscoveryViewModel())
+        .dependencyContainer(container)
 }
 

@@ -8,6 +8,7 @@
 import Foundation
 import CoreLocation
 import Observation
+import Combine
 
 /// View mode for displaying restaurant results
 enum ViewMode {
@@ -139,12 +140,17 @@ extension DiscoveryViewModel {
 @MainActor
 @Observable
 class DiscoveryViewModel {
-    var searchText: String = ""
+    var searchText: String = "" {
+        didSet {
+            // Send to Combine pipeline if available
+            searchTextSubject.send(searchText)
+        }
+    }
     var results: [Place] = []
     var viewMode: ViewMode = .list {
         didSet {
             if viewMode != oldValue {
-                eventLogger.log(Event.viewModeChanged(mode: viewMode))
+                interactor.logEvent(Event.viewModeChanged(mode: viewMode))
             }
         }
     }
@@ -158,53 +164,107 @@ class DiscoveryViewModel {
     var showSaveSearchSheet: Bool = false
     var isShowingCachedData: Bool = false // Track if current results are from cache
 
+    // Observable state for favorites (managed by ViewModel, not Manager)
+    var favoriteIds: Set<String> = []
+
+    // Observable state for saved searches (managed by ViewModel, not Manager)
+    var savedSearches: [SavedSearch] = []
+
     private let interactor: DiscoveryInteractor
-    private let eventLogger: EventLogger
-    private let filterPreferences: FilterPreferencesService
-    let savedSearchService: SavedSearchService
+
+    // MARK: - Combine Support (NEW)
+
+    private var cancellables = Set<AnyCancellable>()
+    private let searchTextSubject = PassthroughSubject<String, Never>()
+
+    // MARK: - State (Exposed for UI Observation)
+
+    /// Check if network is connected
+    /// Accessed through interactor behavior method
+    var isNetworkConnected: Bool {
+        interactor.isNetworkConnected()
+    }
+
+    /// Photo loading closure for views
+    /// Views should use this closure instead of accessing PhotoManager directly
+    var loadPhoto: ([String], Int, Int) async -> Data? {
+        { [weak self] photoReferences, maxWidth, maxHeight in
+            guard let self = self else { return nil }
+            return await self.interactor.loadFirstPhoto(
+                from: photoReferences,
+                maxWidth: maxWidth,
+                maxHeight: maxHeight
+            )
+        }
+    }
+
+    /// Place details loading closure for views
+    /// Views should use this closure instead of accessing RestaurantManager directly
+    var loadPlaceDetails: (String) async throws -> PlaceDetail {
+        { [weak self] placeId in
+            guard let self = self else {
+                throw PlacesError.invalidResponse("ViewModel deallocated")
+            }
+            return try await self.interactor.getPlaceDetails(placeId: placeId)
+        }
+    }
+
     private var searchTask: Task<Void, Never>?
     private var debounceTimer: Timer?
     private var currentPage: Int = 0
     private var unfilteredResults: [Place] = [] // Store unfiltered results for client-side filtering
 
-    init(
-        interactor: DiscoveryInteractor,
-        eventLogger: EventLogger,
-        filterPreferences: FilterPreferencesService = FilterPreferencesService(),
-        savedSearchService: SavedSearchService? = nil
-    ) {
+    init(interactor: DiscoveryInteractor, enableCombinePipelines: Bool = true) {
         self.interactor = interactor
-        self.eventLogger = eventLogger
-        self.filterPreferences = filterPreferences
-        self.savedSearchService = savedSearchService ?? SavedSearchService(modelContext: SwiftDataStorageManager.shared.mainContext)
 
-        // Load saved filters
-        self.filters = filterPreferences.loadFilters()
+        // Load saved filters from interactor
+        self.filters = interactor.getFilters()
+
+        // Load favorite IDs from interactor into ViewModel's observable state
+        self.favoriteIds = interactor.getFavoriteIds()
+
+        // Setup Combine pipelines (can be disabled for testing)
+        if enableCombinePipelines {
+            setupCombinePipelines()
+        }
 
         // Log screen view
-        eventLogger.log(Event.screenViewed)
+        interactor.logEvent(Event.screenViewed)
     }
-    
+
     // MARK: - Initialization
 
     func initialize() async {
-        eventLogger.log(Event.locationPermissionRequested)
+        interactor.logEvent(Event.locationPermissionRequested)
+
+        // Load saved searches into ViewModel's observable state
+        await loadSavedSearches()
 
         do {
             let location = try await interactor.requestLocationPermission()
             self.userLocation = location
-            eventLogger.log(Event.locationPermissionGranted)
+            interactor.logEvent(Event.locationPermissionGranted)
             await searchNearby()
         } catch let error as PlacesError {
             self.error = error
             if error == .locationPermissionDenied {
-                eventLogger.log(Event.locationPermissionDenied)
+                interactor.logEvent(Event.locationPermissionDenied)
             } else {
-                eventLogger.log(Event.searchError(error: error.localizedDescription))
+                interactor.logEvent(Event.searchError(error: error.localizedDescription))
             }
         } catch {
             self.error = .unknown(error.localizedDescription)
-            eventLogger.log(Event.searchError(error: error.localizedDescription))
+            interactor.logEvent(Event.searchError(error: error.localizedDescription))
+        }
+    }
+
+    // MARK: - Saved Searches Loading
+
+    func loadSavedSearches() async {
+        do {
+            savedSearches = try await interactor.getAllSavedSearches()
+        } catch {
+            savedSearches = []
         }
     }
     
@@ -258,21 +318,32 @@ class DiscoveryViewModel {
             self.isShowingCachedData = isFromCache
 
             // Log successful search
-            eventLogger.log(Event.nearbySearchPerformed(resultCount: results.count))
+            interactor.logEvent(Event.nearbySearchPerformed(resultCount: results.count))
         } catch let error as PlacesError {
             self.error = error
             self.isShowingCachedData = false
-            eventLogger.log(Event.searchError(error: error.localizedDescription))
+            interactor.logEvent(Event.searchError(error: error.localizedDescription))
         } catch {
             self.error = .unknown(error.localizedDescription)
             self.isShowingCachedData = false
-            eventLogger.log(Event.searchError(error: error.localizedDescription))
+            interactor.logEvent(Event.searchError(error: error.localizedDescription))
         }
 
         isLoading = false
     }
 
     private func searchText(_ query: String) async {
+        // Validate search query before performing search
+        let validationResult = SearchQueryValidator.validate(query)
+        guard validationResult.isValid else {
+            // Set error and notify user of invalid search category
+            if let errorMessage = validationResult.errorMessage {
+                self.error = .invalidSearchCategory(errorMessage)
+                interactor.logEvent(Event.searchError(error: "Invalid search category: \(query)"))
+            }
+            return
+        }
+
         isLoading = true
         error = nil
         currentPage = 0
@@ -288,15 +359,15 @@ class DiscoveryViewModel {
             self.isShowingCachedData = isFromCache
 
             // Log successful search
-            eventLogger.log(Event.searchPerformed(query: query, resultCount: results.count))
+            interactor.logEvent(Event.searchPerformed(query: query, resultCount: results.count))
         } catch let error as PlacesError {
             self.error = error
             self.isShowingCachedData = false
-            eventLogger.log(Event.searchError(error: error.localizedDescription))
+            interactor.logEvent(Event.searchError(error: error.localizedDescription))
         } catch {
             self.error = .unknown(error.localizedDescription)
             self.isShowingCachedData = false
-            eventLogger.log(Event.searchError(error: error.localizedDescription))
+            interactor.logEvent(Event.searchError(error: error.localizedDescription))
         }
 
         isLoading = false
@@ -319,13 +390,13 @@ class DiscoveryViewModel {
             // Pagination always loads from network, so don't update cache flag
 
             // Log pagination
-            eventLogger.log(Event.loadMoreResults(pageNumber: currentPage))
+            interactor.logEvent(Event.loadMoreResults(pageNumber: currentPage))
         } catch let error as PlacesError {
             self.error = error
-            eventLogger.log(Event.searchError(error: error.localizedDescription))
+            interactor.logEvent(Event.searchError(error: error.localizedDescription))
         } catch {
             self.error = .unknown(error.localizedDescription)
-            eventLogger.log(Event.searchError(error: error.localizedDescription))
+            interactor.logEvent(Event.searchError(error: error.localizedDescription))
         }
 
         isLoading = false
@@ -333,48 +404,70 @@ class DiscoveryViewModel {
 
     // MARK: - Favorites
 
-    func toggleFavorite(_ place: Place) {
-        // Update via interactor (FavoritesManager + SwiftData)
-        // FavoritesManager is @Observable, so UI will react automatically
-        interactor.toggleFavorite(place.id)
+    func toggleFavorite(_ place: Place) async {
+        do {
+            // Update via interactor (FavoritesManager + SwiftData)
+            let isFavorite = try await interactor.toggleFavorite(place)
 
-        if let index = results.firstIndex(where: { $0.id == place.id }) {
-            let isFavorite = interactor.isFavorite(place.id)
-            results[index].isFavorite = isFavorite
+            // Update ViewModel's observable state
+            if isFavorite {
+                favoriteIds.insert(place.id)
+            } else {
+                favoriteIds.remove(place.id)
+            }
+
+            // Update results array
+            if let index = results.firstIndex(where: { $0.id == place.id }) {
+                results[index].isFavorite = isFavorite
+            }
 
             // Log favorite toggle
-            eventLogger.log(Event.favoriteToggled(placeId: place.id, isFavorite: isFavorite))
+            interactor.logEvent(Event.favoriteToggled(placeId: place.id, isFavorite: isFavorite))
+        } catch {
+            // Handle error silently or show to user
+            print("❌ Failed to toggle favorite: \(error)")
         }
     }
 
     // MARK: - Navigation
 
     func didSelectPlace(_ place: Place) {
-        eventLogger.log(Event.placeSelected(placeId: place.id, placeName: place.name))
+        interactor.logEvent(Event.placeSelected(placeId: place.id, placeName: place.name))
     }
 
     // MARK: - Filters
 
-    func applyFilters(_ newFilters: SearchFilters) {
+    func applyFilters(_ newFilters: SearchFilters) async {
         filters = newFilters
-        filterPreferences.saveFilters(newFilters)
+
+        do {
+            try await interactor.saveFilters(newFilters)
+        } catch {
+            print("❌ Failed to save filters: \(error)")
+        }
 
         // Apply filters to current results
         applyFiltersToResults()
 
         // Log filter application
         if newFilters.hasActiveFilters {
-            eventLogger.log(Event.filtersApplied(filterCount: newFilters.activeFilterCount))
+            interactor.logEvent(Event.filtersApplied(filterCount: newFilters.activeFilterCount))
         } else {
-            eventLogger.log(Event.filtersCleared)
+            interactor.logEvent(Event.filtersCleared)
         }
     }
 
-    func clearFilters() {
+    func clearFilters() async {
         filters = .default
-        filterPreferences.clearFilters()
+
+        do {
+            try await interactor.resetFilters()
+        } catch {
+            print("❌ Failed to clear filters: \(error)")
+        }
+
         applyFiltersToResults()
-        eventLogger.log(Event.filtersCleared)
+        interactor.logEvent(Event.filtersCleared)
     }
 
     private func applyFiltersToResults() {
@@ -403,13 +496,18 @@ class DiscoveryViewModel {
     func loadSavedSearch(_ savedSearch: SavedSearch) async {
         // Apply filters from saved search
         filters = savedSearch.filters
-        filterPreferences.saveFilters(filters)
+
+        do {
+            try await interactor.saveFilters(filters)
+        } catch {
+            print("❌ Failed to save filters: \(error)")
+        }
 
         // Set search text
         searchText = savedSearch.query
 
         // Log event
-        eventLogger.log(Event.savedSearchLoaded(name: savedSearch.displayName))
+        interactor.logEvent(Event.savedSearchLoaded(name: savedSearch.displayName))
 
         // Perform search
         if savedSearch.query.isEmpty {
@@ -419,7 +517,16 @@ class DiscoveryViewModel {
         }
     }
 
-    func saveCurrentSearch(name: String) throws {
+    func saveCurrentSearch(name: String) async throws {
+        // Validate search query before saving
+        let validationResult = SearchQueryValidator.validate(searchText)
+        guard validationResult.isValid else {
+            if let errorMessage = validationResult.errorMessage {
+                throw PlacesError.invalidSearchCategory(errorMessage)
+            }
+            throw PlacesError.invalidSearchCategory("Cannot save non-food/restaurant searches")
+        }
+
         let savedSearch = SavedSearch(
             name: name,
             query: searchText,
@@ -427,10 +534,217 @@ class DiscoveryViewModel {
             filters: filters
         )
 
-        try savedSearchService.saveSearch(savedSearch)
+        try await interactor.saveSearch(savedSearch)
+
+        // Reload saved searches into ViewModel's observable state
+        await loadSavedSearches()
 
         // Log event
-        eventLogger.log(Event.searchSaved(name: name))
+        interactor.logEvent(Event.searchSaved(name: name))
+    }
+
+    func saveSearch(
+        name: String,
+        query: String,
+        location: (latitude: Double, longitude: Double)?,
+        filters: SearchFilters
+    ) async throws {
+        // Validate search query before saving
+        let validationResult = SearchQueryValidator.validate(query)
+        guard validationResult.isValid else {
+            if let errorMessage = validationResult.errorMessage {
+                throw PlacesError.invalidSearchCategory(errorMessage)
+            }
+            throw PlacesError.invalidSearchCategory("Cannot save non-food/restaurant searches")
+        }
+
+        let savedSearch = SavedSearch(
+            name: name,
+            query: query,
+            location: location,
+            filters: filters
+        )
+
+        try await interactor.saveSearch(savedSearch)
+
+        // Reload saved searches into ViewModel's observable state
+        await loadSavedSearches()
+
+        // Log event
+        interactor.logEvent(Event.searchSaved(name: name))
+    }
+
+    func deleteSavedSearch(_ search: SavedSearch) async throws {
+        try await interactor.deleteSearch(search)
+
+        // Reload saved searches into ViewModel's observable state
+        await loadSavedSearches()
+    }
+
+    func findDuplicateSearch(
+        query: String,
+        latitude: Double?,
+        longitude: Double?,
+        filters: SearchFilters
+    ) async throws -> SavedSearch? {
+        return try await interactor.findDuplicateSearch(
+            query: query,
+            latitude: latitude,
+            longitude: longitude,
+            filters: filters
+        )
+    }
+
+    func clearAllSavedSearches() async throws {
+        try await interactor.clearAllSavedSearches()
+
+        // Reload saved searches into ViewModel's observable state
+        await loadSavedSearches()
+    }
+
+    // MARK: - Combine Pipeline Setup (NEW)
+
+    private func setupCombinePipelines() {
+        setupDebouncedSearch()
+        setupThrottledLocation()
+        setupFavoritesObservation()
+        setupPipelineStatusObservation()
+    }
+
+    /// Setup debounced search pipeline for text input
+    private func setupDebouncedSearch() {
+        // Create debounced pipeline from searchTextSubject using interactor
+        interactor
+            .createDebouncedSearchPipeline(
+                queryPublisher: searchTextSubject.eraseToAnyPublisher(),
+                debounceInterval: 0.5
+            )
+            .sink { [weak self] places in
+                guard let self = self else { return }
+
+                // Update results
+                self.results = places
+                self.isShowingCachedData = false
+
+                // Log event
+                if !self.searchText.isEmpty {
+                    self.interactor.logEvent(
+                        Event.searchPerformed(
+                            query: self.searchText,
+                            resultCount: places.count
+                        )
+                    )
+                }
+            }
+            .store(in: &cancellables)
+    }
+
+    /// Setup throttled location updates pipeline
+    private func setupThrottledLocation() {
+        interactor
+            .createThrottledLocationPipeline(throttleInterval: 2.0)
+            .flatMap { [weak self] location -> AnyPublisher<[Place], Never> in
+                guard let self = self else {
+                    return Just([]).eraseToAnyPublisher()
+                }
+
+                // Update ViewModel location
+                Task { @MainActor in
+                    self.userLocation = location
+                }
+
+                // Only search if no active text search
+                if self.searchText.isEmpty {
+                    return self.interactor.executePipeline(
+                        query: nil,
+                        radius: 1500
+                    )
+                } else {
+                    return Just([]).eraseToAnyPublisher()
+                }
+            }
+            .sink { [weak self] places in
+                guard let self = self else { return }
+
+                if !places.isEmpty && self.searchText.isEmpty {
+                    self.results = places
+                    self.interactor.logEvent(
+                        Event.nearbySearchPerformed(resultCount: places.count)
+                    )
+                }
+            }
+            .store(in: &cancellables)
+    }
+
+    /// Setup reactive favorites observation
+    private func setupFavoritesObservation() {
+        // Get FavoritesManager from interactor's container
+        guard let container = (interactor as? CoreInteractor)?.container else { return }
+
+        container.favoritesManager.$favoriteIds
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] favoriteIds in
+                guard let self = self else { return }
+
+                // Update local state
+                self.favoriteIds = favoriteIds
+
+                // Update existing results with new favorite status
+                self.results = self.results.map { place in
+                    var updatedPlace = place
+                    updatedPlace.isFavorite = favoriteIds.contains(place.id)
+                    return updatedPlace
+                }
+            }
+            .store(in: &cancellables)
+    }
+
+    /// Setup pipeline status observation for loading states
+    private func setupPipelineStatusObservation() {
+        interactor.pipelineStatusPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] status in
+                guard let self = self else { return }
+
+                switch status {
+                case .idle:
+                    self.isLoading = false
+
+                case .loading:
+                    self.isLoading = true
+                    self.error = nil
+
+                case .success(let count):
+                    self.isLoading = false
+                    self.error = nil
+                    print("✅ Pipeline loaded \(count) places")
+
+                case .failed(let pipelineError):
+                    self.isLoading = false
+                    self.handlePipelineError(pipelineError)
+                }
+            }
+            .store(in: &cancellables)
+    }
+
+    /// Handle pipeline errors
+    private func handlePipelineError(_ pipelineError: PipelineError) {
+        switch pipelineError {
+        case .network(let placesError):
+            self.error = placesError
+            interactor.logEvent(Event.searchError(error: placesError.localizedDescription))
+
+        case .location(let error):
+            self.error = .unknown("Location error: \(error.localizedDescription)")
+            interactor.logEvent(Event.searchError(error: error.localizedDescription))
+
+        case .cache(let error):
+            // Cache errors are non-fatal, just log
+            print("⚠️ Cache error: \(error.localizedDescription)")
+
+        case .serviceUnavailable:
+            self.error = .unknown("Service unavailable")
+            interactor.logEvent(Event.searchError(error: "Service unavailable"))
+        }
     }
 }
-

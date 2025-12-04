@@ -37,7 +37,10 @@ enum PlacesError: LocalizedError, Equatable {
     
     /// Location permission denied
     case locationPermissionDenied
-    
+
+    /// Invalid search category (non-food/restaurant search)
+    case invalidSearchCategory(String)
+
     /// Unknown error
     case unknown(String)
     
@@ -63,6 +66,8 @@ enum PlacesError: LocalizedError, Equatable {
             return "No results found for your search."
         case .locationPermissionDenied:
             return "Location permission is required to search nearby restaurants."
+        case .invalidSearchCategory(let message):
+            return message
         case .unknown(let message):
             return "An unknown error occurred: \(message)"
         }
@@ -81,6 +86,8 @@ enum PlacesError: LocalizedError, Equatable {
             return "Please try again later."
         case .locationPermissionDenied:
             return "Please enable location permission in Settings to search nearby restaurants."
+        case .invalidSearchCategory:
+            return "Try searching for restaurants, cuisines, or food items instead."
         case .invalidAPIKey:
             return "Please configure your Google Places API key in the app settings."
         default:

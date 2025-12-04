@@ -10,25 +10,12 @@ import SwiftUI
 struct ListResultsView: View {
     let places: [Place]
     let isLoading: Bool
-    let onToggleFavorite: (Place) -> Void
+    let favoriteIds: Set<String>
+    let onToggleFavorite: (Place) async -> Void
     let onLoadMore: () async -> Void
     let onRefresh: (() async -> Void)?
-
-    @Environment(\.photoManager) private var photoManager
-
-    init(
-        places: [Place],
-        isLoading: Bool,
-        onToggleFavorite: @escaping (Place) -> Void,
-        onLoadMore: @escaping () async -> Void,
-        onRefresh: (() async -> Void)? = nil
-    ) {
-        self.places = places
-        self.isLoading = isLoading
-        self.onToggleFavorite = onToggleFavorite
-        self.onLoadMore = onLoadMore
-        self.onRefresh = onRefresh
-    }
+    let loadPhoto: ([String], Int, Int) async -> Data?
+    let loadPlaceDetails: (String) async throws -> PlaceDetail
 
     var body: some View {
         ScrollView {
@@ -51,12 +38,18 @@ struct ListResultsView: View {
     private var restaurantList: some View {
         ForEach(Array(places.enumerated()), id: \.element.id) { index, place in
             NavigationLink(destination:
-                RestaurantDetailView(place: place, onToggleFavorite: onToggleFavorite)
-                    .photoManager(photoManager ?? AppConfiguration.shared.createPhotoManager())
+                RestaurantDetailView(
+                    place: place,
+                    onToggleFavorite: onToggleFavorite,
+                    loadPhoto: loadPhoto,
+                    loadPlaceDetails: loadPlaceDetails
+                )
             ) {
                 RestaurantRow(
                     place: place,
-                    onToggleFavorite: { onToggleFavorite(place) }
+                    isFavorite: favoriteIds.contains(place.id),
+                    onToggleFavorite: { await onToggleFavorite(place) },
+                    loadPhoto: loadPhoto
                 )
             }
             .buttonStyle(.plain)
@@ -81,16 +74,13 @@ struct ListResultsView: View {
 
 struct RestaurantRow: View {
     let place: Place
-    let onToggleFavorite: () -> Void
-    @Environment(FavoritesManager.self) private var favoritesManager
+    let isFavorite: Bool
+    let onToggleFavorite: () async -> Void
+    let loadPhoto: ([String], Int, Int) async -> Data?
     @State private var isBookmarkAnimating = false
 
     var body: some View {
-        // CRITICAL: Access favoriteIds at the TOP of body to establish observation
-        let favoriteIds = favoritesManager.favoriteIds
-        let isFavorite = favoriteIds.contains(place.id)
-
-        return HStack(alignment: .top, spacing: DesignSystem.Spacing.md) {
+        HStack(alignment: .top, spacing: DesignSystem.Spacing.md) {
             restaurantImage
             restaurantInfo
             Spacer(minLength: DesignSystem.Spacing.sm)
@@ -107,7 +97,8 @@ struct RestaurantRow: View {
             photoReferences: place.photoReferences,
             maxWidth: 160, // 2x for retina
             maxHeight: 160,
-            contentMode: .fill
+            contentMode: .fill,
+            loadPhoto: loadPhoto
         )
         .frame(width: 80, height: 80)
         .clipped()
@@ -208,7 +199,9 @@ struct RestaurantRow: View {
         isBookmarkAnimating = true
 
         // Call the toggle action
-        onToggleFavorite()
+        Task {
+            await onToggleFavorite()
+        }
 
         // Reset animation after delay
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
@@ -232,9 +225,10 @@ struct RestaurantRow: View {
                 photoReferences: [],
                 isFavorite: false
             ),
-            onToggleFavorite: {}
+            isFavorite: false,
+            onToggleFavorite: {},
+            loadPhoto: { _, _, _ in nil }
         )
     }
-    .environment(AppConfiguration.shared.createFavoritesManager())
 }
 

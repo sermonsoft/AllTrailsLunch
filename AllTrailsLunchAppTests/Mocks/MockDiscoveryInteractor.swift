@@ -7,14 +7,17 @@
 
 import Foundation
 import CoreLocation
+import Combine
 @testable import AllTrailsLunchApp
 
 @MainActor
 final class MockDiscoveryInteractor: DiscoveryInteractor {
 
-    // MARK: - FavoritesManager Access
+    // MARK: - Private Dependencies (Not exposed to ViewModels)
 
-    let favoritesManager: FavoritesManager
+    private let container: DependencyContainer
+    private let favoritesManager: FavoritesManager
+    private let networkMonitor: NetworkMonitor
 
     // MARK: - Mock Configuration
 
@@ -28,8 +31,10 @@ final class MockDiscoveryInteractor: DiscoveryInteractor {
 
     // MARK: - Initialization
 
-    init(favoritesManager: FavoritesManager? = nil) {
+    init(favoritesManager: FavoritesManager? = nil, container: DependencyContainer? = nil) {
         self.favoritesManager = favoritesManager ?? AppConfiguration.shared.createFavoritesManager()
+        self.container = container ?? AppConfiguration.shared.createDependencyContainer()
+        self.networkMonitor = self.container.networkMonitor
     }
     
     // MARK: - Call Tracking
@@ -112,26 +117,34 @@ final class MockDiscoveryInteractor: DiscoveryInteractor {
 
         return details
     }
-    
-    func toggleFavorite(_ place: Place) {
-        toggleFavoriteCallCount += 1
-        lastToggledPlace = place
-    }
+
+    // MARK: - Favorites
 
     func isFavorite(_ placeId: String) -> Bool {
         return false
     }
 
-    func toggleFavorite(_ placeId: String) {
+    func toggleFavorite(_ placeId: String) async throws {
         toggleFavoriteCallCount += 1
         lastToggledPlaceId = placeId
     }
 
-    func addFavorite(_ placeId: String) {
+    func toggleFavorite(_ place: Place) async throws -> Bool {
+        toggleFavoriteCallCount += 1
+        lastToggledPlace = place
+        lastToggledPlaceId = place.id
+        return true
+    }
+
+    func addFavorite(_ placeId: String) async throws {
         // No-op for mock
     }
 
-    func removeFavorite(_ placeId: String) {
+    func addFavorite(_ place: Place) async throws {
+        // No-op for mock
+    }
+
+    func removeFavorite(_ placeId: String) async throws {
         // No-op for mock
     }
 
@@ -139,8 +152,150 @@ final class MockDiscoveryInteractor: DiscoveryInteractor {
         return []
     }
 
+    // MARK: - Photo Loading
+
+    nonisolated func loadPhoto(
+        photoReference: String,
+        maxWidth: Int,
+        maxHeight: Int
+    ) async -> Data? {
+        // Return nil for mock - tests don't need actual images
+        return nil
+    }
+
+    nonisolated func loadFirstPhoto(
+        from photoReferences: [String],
+        maxWidth: Int,
+        maxHeight: Int
+    ) async -> Data? {
+        // Return nil for mock - tests don't need actual images
+        return nil
+    }
+
+    // MARK: - Event Logging
+
+    func logEvent(_ event: LoggableEvent) {
+        // Delegate to container's event logger so tests can verify events
+        container.eventLogger.log(event)
+    }
+
+    func logScreenView(screenName: String, screenClass: String?) {
+        // Delegate to container's event logger so tests can verify events
+        container.eventLogger.logScreenView(screenName: screenName, screenClass: screenClass)
+    }
+
+    func logCustomEvent(name: String, parameters: [String: Any]?) {
+        // Delegate to container's event logger so tests can verify events
+        container.eventLogger.logEvent(name: name, parameters: parameters)
+    }
+
+    // MARK: - Network Status
+
+    func isNetworkConnected() -> Bool {
+        return networkMonitor.isConnected
+    }
+
+    func getConnectionType() -> NetworkMonitor.ConnectionType {
+        return networkMonitor.connectionType
+    }
+
+    // MARK: - Filter Management
+
+    func getFilters() -> SearchFilters {
+        return container.filterPreferencesManager.getFilters()
+    }
+
+    func saveFilters(_ filters: SearchFilters) async throws {
+        try await container.filterPreferencesManager.saveFilters(filters)
+    }
+
+    func loadFilters() -> SearchFilters {
+        return container.filterPreferencesManager.loadFilters()
+    }
+
+    func resetFilters() async throws {
+        try await container.filterPreferencesManager.clearFilters()
+    }
+
+    // MARK: - Saved Search Management
+
+    func getAllSavedSearches() async throws -> [SavedSearch] {
+        return try await container.savedSearchManager.getAllSavedSearches()
+    }
+
+    func getSavedSearch(id: UUID) async throws -> SavedSearch? {
+        return try await container.savedSearchManager.getSavedSearch(id: id)
+    }
+
+    func saveSearch(_ search: SavedSearch) async throws {
+        try await container.savedSearchManager.saveSearch(search)
+    }
+
+    func deleteSearch(id: UUID) async throws {
+        try await container.savedSearchManager.deleteSearch(id: id)
+    }
+
+    func deleteSearch(_ search: SavedSearch) async throws {
+        try await container.savedSearchManager.deleteSearch(search)
+    }
+
+    func updateLastUsed(id: UUID) async throws {
+        try await container.savedSearchManager.updateLastUsed(id: id)
+    }
+
+    func findDuplicateSearch(query: String, latitude: Double?, longitude: Double?, filters: SearchFilters) async throws -> SavedSearch? {
+        return try await container.savedSearchManager.findDuplicateSearch(query: query, latitude: latitude, longitude: longitude, filters: filters)
+    }
+
+    func clearAllSavedSearches() async throws {
+        try await container.savedSearchManager.clearAllSavedSearches()
+    }
+
+    // MARK: - ReactivePipelineInteractor Implementation
+
+    func executePipeline(
+        query: String?,
+        radius: Int = 1500
+    ) -> AnyPublisher<[Place], Never> {
+        // Return mock data as publisher
+        return Just(placesToReturn).eraseToAnyPublisher()
+    }
+
+    func createDebouncedSearchPipeline(
+        queryPublisher: AnyPublisher<String, Never>,
+        debounceInterval: TimeInterval = 0.5
+    ) -> AnyPublisher<[Place], Never> {
+        // Return empty publisher that never emits (mock doesn't need to emit)
+        // This prevents immediate completion which could cause issues in tests
+        return Empty<[Place], Never>().eraseToAnyPublisher()
+    }
+
+    func createThrottledLocationPipeline(
+        throttleInterval: TimeInterval = 2.0
+    ) -> AnyPublisher<CLLocationCoordinate2D, Never> {
+        // Return empty publisher that never emits (mock doesn't need to emit)
+        // This prevents immediate completion which could cause issues in tests
+        return Empty<CLLocationCoordinate2D, Never>().eraseToAnyPublisher()
+    }
+
+    var pipelineStatusPublisher: AnyPublisher<PipelineStatus, Never> {
+        return Just(.idle).eraseToAnyPublisher()
+    }
+
+    var mergedResultsPublisher: AnyPublisher<[Place], Never> {
+        return Empty<[Place], Never>().eraseToAnyPublisher()
+    }
+
+    var pipelineErrorsPublisher: AnyPublisher<[PipelineError], Never> {
+        return Empty<[PipelineError], Never>().eraseToAnyPublisher()
+    }
+
+    func cancelAllPipelines() {
+        // No-op for mock
+    }
+
     // MARK: - Test Helpers
-    
+
     func reset() {
         shouldFailLocationPermission = false
         shouldFailSearch = false
@@ -149,21 +304,21 @@ final class MockDiscoveryInteractor: DiscoveryInteractor {
         nextPageTokenToReturn = nil
         errorToThrow = nil
         placeDetailsToReturn = nil
-        
+
         requestLocationPermissionCallCount = 0
         searchNearbyCallCount = 0
         searchTextCallCount = 0
         getPlaceDetailsCallCount = 0
         toggleFavoriteCallCount = 0
-        
+
         lastSearchNearbyLocation = nil
         lastSearchNearbyRadius = nil
         lastSearchNearbyPageToken = nil
-        
+
         lastSearchTextQuery = nil
         lastSearchTextLocation = nil
         lastSearchTextPageToken = nil
-        
+
         lastPlaceDetailsId = nil
         lastToggledPlace = nil
         lastToggledPlaceId = nil

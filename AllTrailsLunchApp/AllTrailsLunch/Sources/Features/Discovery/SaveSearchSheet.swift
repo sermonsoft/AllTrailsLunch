@@ -12,11 +12,11 @@ struct SaveSearchSheet: View {
     @State private var searchName: String = ""
     @State private var showError: Bool = false
     @State private var errorMessage: String = ""
-    
+
     let query: String
     let location: (latitude: Double, longitude: Double)?
     let filters: SearchFilters
-    let savedSearchService: SavedSearchService
+    @Bindable var viewModel: DiscoveryViewModel
     let onSave: () -> Void
     
     var body: some View {
@@ -112,54 +112,53 @@ struct SaveSearchSheet: View {
     @MainActor
     private func saveSearch() {
         let trimmedName = searchName.trimmingCharacters(in: .whitespacesAndNewlines)
-        
+
         guard !trimmedName.isEmpty else {
             errorMessage = "Please enter a name for this search"
             showError = true
             return
         }
-        
-        // Check for duplicate
-        do {
-            if let duplicate = try savedSearchService.findDuplicateSearch(
-                query: query,
-                latitude: location?.latitude,
-                longitude: location?.longitude,
-                filters: filters
-            ) {
-                errorMessage = "A search with these parameters already exists: \"\(duplicate.displayName)\""
+
+        Task {
+            do {
+                // Check for duplicate
+                if let duplicate = try await viewModel.findDuplicateSearch(
+                    query: query,
+                    latitude: location?.latitude,
+                    longitude: location?.longitude,
+                    filters: filters
+                ) {
+                    errorMessage = "A search with these parameters already exists: \"\(duplicate.displayName)\""
+                    showError = true
+                    return
+                }
+
+                // Save through ViewModel (which will update observable state)
+                try await viewModel.saveSearch(
+                    name: trimmedName,
+                    query: query,
+                    location: location,
+                    filters: filters
+                )
+                onSave()
+                dismiss()
+            } catch {
+                errorMessage = "Failed to save search: \(error.localizedDescription)"
                 showError = true
-                return
             }
-        } catch {
-            print("Error checking for duplicates: \(error)")
-        }
-        
-        // Create and save the search
-        let savedSearch = SavedSearch(
-            name: trimmedName,
-            query: query,
-            location: location,
-            filters: filters
-        )
-        
-        do {
-            try savedSearchService.saveSearch(savedSearch)
-            onSave()
-            dismiss()
-        } catch {
-            errorMessage = "Failed to save search: \(error.localizedDescription)"
-            showError = true
         }
     }
 }
 
 #Preview {
-    SaveSearchSheet(
+    let config = AppConfiguration.shared
+    let interactor = config.createCoreInteractor()
+    let viewModel = DiscoveryViewModel(interactor: interactor)
+    return SaveSearchSheet(
         query: "Pizza",
         location: (latitude: 37.7749, longitude: -122.4194),
         filters: .highlyRated,
-        savedSearchService: SavedSearchService(modelContext: SwiftDataStorageManager.shared.mainContext),
+        viewModel: viewModel,
         onSave: {}
     )
 }

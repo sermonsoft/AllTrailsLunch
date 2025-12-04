@@ -12,11 +12,12 @@ struct MapResultsView: View {
     // MARK: - Properties
 
     let places: [Place]
-    let onToggleFavorite: (Place) -> Void
+    let favoriteIds: Set<String>
+    let onToggleFavorite: (Place) async -> Void
     let isSearchActive: Bool
+    let loadPhoto: ([String], Int, Int) async -> Data?
+    let loadPlaceDetails: (String) async throws -> PlaceDetail
 
-    @Environment(FavoritesManager.self) var favoritesManager
-    @Environment(\.photoManager) private var photoManager
     @State private var position: MapCameraPosition = .automatic
     @State private var selectedPlace: Place?
 
@@ -44,6 +45,7 @@ struct MapResultsView: View {
                 Annotation("", coordinate: place.coordinate) {
                     MapPinView(
                         place: place,
+                        isFavorite: favoriteIds.contains(place.id),
                         isSelected: selectedPlace?.id == place.id,
                         isSearchResult: isSearchActive,
                         appearanceDelay: Double(index) * 0.05 // Stagger animation
@@ -87,15 +89,21 @@ struct MapResultsView: View {
 
     private func selectedPlaceCard(_ place: Place) -> some View {
         NavigationLink(destination:
-            RestaurantDetailView(place: place, onToggleFavorite: onToggleFavorite)
-                .photoManager(photoManager ?? AppConfiguration.shared.createPhotoManager())
+            RestaurantDetailView(
+                place: place,
+                onToggleFavorite: onToggleFavorite,
+                loadPhoto: loadPhoto,
+                loadPlaceDetails: loadPlaceDetails
+            )
         ) {
             RestaurantRow(
                 place: place,
-                onToggleFavorite: { onToggleFavorite(place) }
+                isFavorite: favoriteIds.contains(place.id),
+                onToggleFavorite: { await onToggleFavorite(place) },
+                loadPhoto: loadPhoto
             )
             // Force view refresh when place or favorite status changes
-            .id("\(place.id)-\(favoritesManager.isFavorite(place.id))")
+            .id("\(place.id)-\(favoriteIds.contains(place.id))")
         }
         .buttonStyle(.plain)
         .padding(.horizontal, DesignSystem.Spacing.lg)
@@ -129,11 +137,11 @@ struct MapPinView: View {
     // MARK: - Properties
 
     let place: Place
+    let isFavorite: Bool
     let isSelected: Bool
     let isSearchResult: Bool
     let appearanceDelay: Double
 
-    @Environment(FavoritesManager.self) var favoritesManager
     @State private var hasAppeared = false
 
     // MARK: - Constants
@@ -159,7 +167,7 @@ struct MapPinView: View {
             )
             .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isSelected)
             // Animate color changes when favorite status changes
-            .animation(.easeInOut(duration: 0.2), value: favoritesManager.favoriteIds)
+            .animation(.easeInOut(duration: 0.2), value: isFavorite)
             // Appear/Disappear animations
             .scaleEffect(hasAppeared ? 1.0 : 0.3)
             .opacity(hasAppeared ? 1.0 : 0.0)
@@ -193,7 +201,7 @@ struct MapPinView: View {
     private var pinColor: Color {
         if isSelected {
             return DesignSystem.Colors.primary
-        } else if favoritesManager.isFavorite(place.id) {
+        } else if isFavorite {
             return DesignSystem.Colors.favorite
         } else if isSearchResult {
             // Search results use a distinct blue color
@@ -221,9 +229,29 @@ struct MapPinView: View {
                 isFavorite: false
             )
         ],
+        favoriteIds: [],
         onToggleFavorite: { _ in },
-        isSearchActive: false
+        isSearchActive: false,
+        loadPhoto: { _, _, _ in nil },
+        loadPlaceDetails: { _ in
+            PlaceDetail(
+                place: Place(
+                    id: "1",
+                    name: "Test Restaurant",
+                    rating: 4.5,
+                    userRatingsTotal: 120,
+                    priceLevel: 2,
+                    latitude: 37.7749,
+                    longitude: -122.4194,
+                    address: "123 Main St",
+                    photoReferences: [],
+                    isFavorite: false
+                ),
+                phoneNumber: nil,
+                openingHours: nil,
+                website: nil,
+                reviews: nil
+            )
+        }
     )
-    .environment(AppConfiguration.shared.createFavoritesManager())
-    .photoManager(AppConfiguration.shared.createPhotoManager())
 }

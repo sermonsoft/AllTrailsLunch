@@ -12,6 +12,10 @@ import SwiftData
 
 /// SwiftData-based implementation of FavoritesService.
 /// Stores favorite places with full metadata for better querying and offline access.
+///
+/// This service is @MainActor isolated because ModelContext requires main actor access.
+/// This is safe because FavoritesManager (the caller) is also @MainActor.
+@MainActor
 class SwiftDataFavoritesService: FavoritesService {
     private let modelContext: ModelContext
 
@@ -21,102 +25,89 @@ class SwiftDataFavoritesService: FavoritesService {
 
     // MARK: - FavoritesService Protocol
 
-    nonisolated func getFavoriteIds() -> Set<String> {
-        MainActor.assumeIsolated {
-            let descriptor = FetchDescriptor<FavoritePlace>()
-            guard let favorites = try? modelContext.fetch(descriptor) else {
-                return []
-            }
-            return Set(favorites.map { $0.placeId })
+    func getFavoriteIds() -> Set<String> {
+        let descriptor = FetchDescriptor<FavoritePlace>()
+        guard let favorites = try? modelContext.fetch(descriptor) else {
+            return []
         }
+        return Set(favorites.map { $0.placeId })
     }
 
-    nonisolated func saveFavoriteIds(_ ids: Set<String>) throws {
-        try MainActor.assumeIsolated {
-            // This method is not ideal for SwiftData since we want to store full Place objects
-            // For compatibility, we'll keep existing favorites and remove ones not in the set
-            let descriptor = FetchDescriptor<FavoritePlace>()
-            let existingFavorites = try modelContext.fetch(descriptor)
+    func saveFavoriteIds(_ ids: Set<String>) throws {
+        // This method is not ideal for SwiftData since we want to store full Place objects
+        // For compatibility, we'll keep existing favorites and remove ones not in the set
+        let descriptor = FetchDescriptor<FavoritePlace>()
+        let existingFavorites = try modelContext.fetch(descriptor)
 
-            // Remove favorites not in the new set
-            for favorite in existingFavorites {
-                if !ids.contains(favorite.placeId) {
-                    modelContext.delete(favorite)
-                }
-            }
-
-            try modelContext.save()
-        }
-    }
-
-    nonisolated func isFavorite(_ placeId: String) -> Bool {
-        MainActor.assumeIsolated {
-            let predicate = #Predicate<FavoritePlace> { favorite in
-                favorite.placeId == placeId
-            }
-            let descriptor = FetchDescriptor<FavoritePlace>(predicate: predicate)
-
-            guard let count = try? modelContext.fetchCount(descriptor) else {
-                return false
-            }
-            return count > 0
-        }
-    }
-
-    nonisolated func addFavorite(_ placeId: String) throws {
-        try MainActor.assumeIsolated {
-            // Check if already exists
-            guard !isFavorite(placeId) else { return }
-
-            // Create a minimal favorite (we'll enhance this later to accept full Place objects)
-            let favorite = FavoritePlace(
-                placeId: placeId,
-                name: "Unknown", // Placeholder - should be updated with full place data
-                latitude: 0,
-                longitude: 0
-            )
-
-            modelContext.insert(favorite)
-            try modelContext.save()
-        }
-    }
-
-    nonisolated func removeFavorite(_ placeId: String) throws {
-        try MainActor.assumeIsolated {
-            let predicate = #Predicate<FavoritePlace> { favorite in
-                favorite.placeId == placeId
-            }
-            let descriptor = FetchDescriptor<FavoritePlace>(predicate: predicate)
-
-            guard let favorites = try? modelContext.fetch(descriptor) else {
-                return
-            }
-
-            for favorite in favorites {
+        // Remove favorites not in the new set
+        for favorite in existingFavorites {
+            if !ids.contains(favorite.placeId) {
                 modelContext.delete(favorite)
             }
-
-            try modelContext.save()
         }
+
+        try modelContext.save()
     }
 
-    nonisolated func clearAllFavorites() throws {
-        try MainActor.assumeIsolated {
-            let descriptor = FetchDescriptor<FavoritePlace>()
-            let favorites = try modelContext.fetch(descriptor)
-
-            for favorite in favorites {
-                modelContext.delete(favorite)
-            }
-
-            try modelContext.save()
+    func isFavorite(_ placeId: String) -> Bool {
+        let predicate = #Predicate<FavoritePlace> { favorite in
+            favorite.placeId == placeId
         }
+        let descriptor = FetchDescriptor<FavoritePlace>(predicate: predicate)
+
+        guard let count = try? modelContext.fetchCount(descriptor) else {
+            return false
+        }
+        return count > 0
     }
-    
+
+    func addFavorite(_ placeId: String) throws {
+        // Check if already exists
+        guard !isFavorite(placeId) else { return }
+
+        // Create a minimal favorite (we'll enhance this later to accept full Place objects)
+        let favorite = FavoritePlace(
+            placeId: placeId,
+            name: "Unknown", // Placeholder - should be updated with full place data
+            latitude: 0,
+            longitude: 0
+        )
+
+        modelContext.insert(favorite)
+        try modelContext.save()
+    }
+
+    func removeFavorite(_ placeId: String) throws {
+        let predicate = #Predicate<FavoritePlace> { favorite in
+            favorite.placeId == placeId
+        }
+        let descriptor = FetchDescriptor<FavoritePlace>(predicate: predicate)
+
+        guard let favorites = try? modelContext.fetch(descriptor) else {
+            return
+        }
+
+        for favorite in favorites {
+            modelContext.delete(favorite)
+        }
+
+        try modelContext.save()
+    }
+
+    func clearAllFavorites() throws {
+        let descriptor = FetchDescriptor<FavoritePlace>()
+        let favorites = try modelContext.fetch(descriptor)
+
+        for favorite in favorites {
+            modelContext.delete(favorite)
+        }
+
+        try modelContext.save()
+    }
+
     // MARK: - Enhanced Methods (SwiftData-specific)
 
     /// Add a favorite with full place data
-    @MainActor
     func addFavorite(_ place: Place) throws {
         // Check if already exists
         if isFavorite(place.id) {
@@ -131,7 +122,6 @@ class SwiftDataFavoritesService: FavoritesService {
     }
 
     /// Update an existing favorite with new data
-    @MainActor
     func updateFavorite(_ place: Place) throws {
         let placeId = place.id // Capture in local variable for predicate
         let predicate = #Predicate<FavoritePlace> { favorite in
@@ -155,9 +145,8 @@ class SwiftDataFavoritesService: FavoritesService {
 
         try modelContext.save()
     }
-    
+
     /// Get all favorite places with full data
-    @MainActor
     func getAllFavorites() throws -> [FavoritePlace] {
         let descriptor = FetchDescriptor<FavoritePlace>(
             sortBy: [SortDescriptor(\.addedAt, order: .reverse)]
@@ -166,7 +155,6 @@ class SwiftDataFavoritesService: FavoritesService {
     }
 
     /// Get favorites sorted by rating
-    @MainActor
     func getFavoritesSortedByRating() throws -> [FavoritePlace] {
         let descriptor = FetchDescriptor<FavoritePlace>(
             sortBy: [SortDescriptor(\.rating, order: .reverse)]
@@ -175,7 +163,6 @@ class SwiftDataFavoritesService: FavoritesService {
     }
 
     /// Get favorites within a distance from a location
-    @MainActor
     func getFavoritesNear(latitude: Double, longitude: Double, radiusInMeters: Double) throws -> [FavoritePlace] {
         let allFavorites = try getAllFavorites()
 
