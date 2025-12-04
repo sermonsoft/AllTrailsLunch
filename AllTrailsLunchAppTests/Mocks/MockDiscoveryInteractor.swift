@@ -152,6 +152,10 @@ final class MockDiscoveryInteractor: DiscoveryInteractor {
         return []
     }
 
+    var favoriteIdsPublisher: AnyPublisher<Set<String>, Never> {
+        return favoritesManager.$favoriteIds.eraseToAnyPublisher()
+    }
+
     // MARK: - Photo Loading
 
     nonisolated func loadPhoto(
