@@ -33,16 +33,16 @@ class DataPipelineCoordinator {
     // MARK: - Dependencies
 
     private let combineService: CombinePlacesService
-    private let cache: LocalPlacesCache?
+    nonisolated private let cache: LocalPlacesCache?
     private let favoritesManager: FavoritesManager
     private let locationManager: LocationManager
 
     // Background queue for expensive data processing (can be accessed from any isolation domain)
     nonisolated private let processingQueue = DispatchQueue(label: "com.alltrails.pipeline.processing", qos: .userInitiated)
 
-    // Cached publishers for thread-safe access
-    private let userLocationPublisher: AnyPublisher<CLLocationCoordinate2D?, Never>
-    private let favoriteIdsPublisher: AnyPublisher<Set<String>, Never>
+    // Cached publishers for thread-safe access (nonisolated for access from any context)
+    nonisolated private let userLocationPublisher: AnyPublisher<CLLocationCoordinate2D?, Never>
+    nonisolated private let favoriteIdsPublisher: AnyPublisher<Set<String>, Never>
 
     // MARK: - Cancellables (MainActor isolated for thread safety)
 
@@ -179,9 +179,7 @@ class DataPipelineCoordinator {
         // Enrichment happens on background thread
         return Publishers.CombineLatest(mergedDataPublisher, favoritesPublisher)
             .subscribe(on: processingQueue) // Enrichment on background thread
-            .map { [weak self] places, favoriteIds -> [Place] in
-                guard let self = self else { return [] }
-
+            .map { places, favoriteIds -> [Place] in
                 // Enrich places with favorite status on background thread
                 return places.map { place in
                     var enrichedPlace = place
