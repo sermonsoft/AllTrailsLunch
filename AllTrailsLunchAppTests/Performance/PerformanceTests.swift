@@ -115,11 +115,28 @@ final class PerformanceTests: XCTestCase {
         mockInteractor.placesToReturn = largePlaceList
         await viewModel.initialize()
 
-        // Measure filter application - run multiple iterations manually
-        for _ in 0..<5 {
+        // Measure filter application with manual timing
+        var totalTime: CFAbsoluteTime = 0
+        let iterations = 5
+
+        for iteration in 0..<iterations {
+            let start = CFAbsoluteTimeGetCurrent()
             await viewModel.applyFilters(SearchFiltersFixtures.highRatingFilter)
+            let end = CFAbsoluteTimeGetCurrent()
+
+            let elapsed = end - start
+            totalTime += elapsed
+            print("Iteration \(iteration + 1): \(String(format: "%.4f", elapsed))s")
+
             await viewModel.clearFilters()
         }
+
+        let averageTime = totalTime / Double(iterations)
+        print("Average filter application time: \(String(format: "%.4f", averageTime))s (1000 places)")
+        print("Total time: \(String(format: "%.4f", totalTime))s")
+
+        // Performance threshold: filtering 1000 places should complete in under 100ms on average
+        XCTAssertLessThan(averageTime, 0.1, "Filter application should complete in under 100ms on average, got \(String(format: "%.4f", averageTime))s")
 
         // Final verification - apply filter one more time
         await viewModel.applyFilters(SearchFiltersFixtures.highRatingFilter)
